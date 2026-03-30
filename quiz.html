@@ -24,6 +24,14 @@ box-shadow:0 4px 10px rgba(0,0,0,0.1);
 text-align:center;
 }
 
+.correct {
+background:#2196f3 !important;
+}
+
+.wrong {
+background:#f44336 !important;
+}
+
 h1 {
 margin-bottom:20px;
 }
@@ -204,19 +212,35 @@ let originalIndex = allQuiz[subject].indexOf(quiz[quizIndex]);
 
 let wrong = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
 
+function checkAnswer(num){
+
+let correct = quiz[quizIndex].answer;
+let buttons = document.querySelectorAll(".choiceBtn");
+
+// 全ボタン無効化
+buttons.forEach(btn => btn.disabled = true);
+
 if(num === correct){
-alert("⭕ 正解！");
+
+buttons[num].classList.add("correct");
 score++;
 results.push(true);
-wrong = wrong.filter(i => i !== originalIndex);
+
 }else{
-alert("❌ 不正解");
+
+buttons[num].classList.add("wrong");
+buttons[correct].classList.add("correct");
 results.push(false);
-if(!wrong.includes(originalIndex)){
-wrong.push(originalIndex);
-}
+
 }
 
+// 少し待って次へ
+setTimeout(()=>{
+quizIndex++;
+showQuiz();
+}, 1000);
+
+}
 localStorage.setItem("wrongQuestions_"+subject, JSON.stringify(wrong));
 
 quizIndex++;
