@@ -216,3 +216,11 @@ showQuiz();
 
 </body>
 </html>
+function startNormal(){
+if(!allQuiz[subject]){
+alert("問題がありません");
+return;
+}
+quiz = allQuiz[subject];
+startQuiz();
+}
