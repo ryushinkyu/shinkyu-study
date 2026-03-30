@@ -71,7 +71,7 @@ background:#777;
 
 <div class="container">
 
-<h1>クイズ</h1>
+<h1 id="title">クイズ</h1>
 
 <div id="menu"></div>
 <div id="quiz"></div>
@@ -83,28 +83,40 @@ background:#777;
 <script>
 
 let subject = localStorage.getItem("selectedSubject");
-let allQuiz = window.allQuiz || {};
+let allQuiz = window.allQuiz;
 
 let quiz = [];
 let quizIndex = 0;
 let score = 0;
 let results = [];
 
+// ===== 初期 =====
 showMenu();
 
+// ===== メニュー =====
 function showMenu(){
+
 document.getElementById("quiz").innerHTML = "";
+
 document.getElementById("menu").innerHTML =
 "<button class='menuBtn' onclick='startNormal()'>通常クイズ</button>" +
 "<button class='menuBtn' onclick='startReview()'>間違えた問題だけ</button>" +
 "<br><button class='backBtn' onclick=\"location.href='quizMenu.html'\">科目選択に戻る</button>";
 }
 
+// ===== 通常 =====
 function startNormal(){
-quiz = allQuiz[subject] || [];
+
+if(!allQuiz || !allQuiz[subject]){
+alert("この科目の問題はまだありません");
+return;
+}
+
+quiz = allQuiz[subject];
 startQuiz();
 }
 
+// ===== 復習 =====
 function startReview(){
 
 let wrongIndexes = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
@@ -118,14 +130,19 @@ quiz = wrongIndexes.map(i => allQuiz[subject][i]);
 startQuiz();
 }
 
+// ===== クイズ開始 =====
 function startQuiz(){
+
 quizIndex = 0;
 score = 0;
 results = [];
+
 document.getElementById("menu").innerHTML = "";
+
 showQuiz();
 }
 
+// ===== 表示 =====
 function showQuiz(){
 
 if(quizIndex >= quiz.length){
@@ -157,6 +174,7 @@ html += "<br><button onclick=\"location.href='quizMenu.html'\">科目選択へ</
 html += "<br><button onclick=\"location.href='home.html'\">ホーム</button>";
 
 document.getElementById("quiz").innerHTML = html;
+
 return;
 }
 
@@ -174,6 +192,7 @@ html += "<button class='choiceBtn' onclick='checkAnswer(" + index + ")'>"
 document.getElementById("quiz").innerHTML = html;
 }
 
+// ===== 回答 =====
 function checkAnswer(num){
 
 let correct = quiz[quizIndex].answer;
@@ -189,6 +208,7 @@ if(num === correct){
 buttons[num].classList.add("correct");
 score++;
 results.push(true);
+
 wrong = wrong.filter(i => i !== originalIndex);
 
 }else{
@@ -216,11 +236,3 @@ showQuiz();
 
 </body>
 </html>
-function startNormal(){
-if(!allQuiz[subject]){
-alert("問題がありません");
-return;
-}
-quiz = allQuiz[subject];
-startQuiz();
-}
