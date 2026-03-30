@@ -47,7 +47,24 @@ background:#4caf50;
 .backBtn {
 background:#777;
 }
-</style>
+</style>.questionBox {
+background:#f9f9f9;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+font-size:16px;
+}
+
+.choiceBtn {
+width:100%;
+padding:12px;
+margin:6px 0;
+border:none;
+border-radius:8px;
+background:#0288d1;
+color:white;
+font-size:16px;
+}
 
 </head>
 
@@ -153,8 +170,24 @@ return;
 
 const q = quiz[quizIndex];
 
-let html = "<h2>問題 " + (quizIndex+1) + "</h2>";
-html += "<p>" + q.question + "</p>";
+.questionBox {
+background:#f9f9f9;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+font-size:16px;
+}
+
+.choiceBtn {
+width:100%;
+padding:12px;
+margin:6px 0;
+border:none;
+border-radius:8px;
+background:#0288d1;
+color:white;
+font-size:16px;
+}
 
 q.choices.forEach((choice,index)=>{
 html += "<button onclick='checkAnswer(" + index + ")'>" + (index+1) + "．" + choice + "</button>";
