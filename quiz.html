@@ -24,16 +24,11 @@ box-shadow:0 4px 10px rgba(0,0,0,0.1);
 text-align:center;
 }
 
-h1 {
-margin-bottom:20px;
-}
-
 .questionBox {
 background:#f9f9f9;
 padding:15px;
 border-radius:10px;
 margin-bottom:15px;
-font-size:16px;
 }
 
 .choiceBtn {
@@ -44,25 +39,13 @@ border:none;
 border-radius:8px;
 background:#0288d1;
 color:white;
-font-size:16px;
-cursor:pointer;
 }
 
-.correct {
-background:#2196f3 !important;
-}
+.correct { background:#2196f3 !important; }
+.wrong { background:#f44336 !important; }
 
-.wrong {
-background:#f44336 !important;
-}
-
-.menuBtn {
-background:#4caf50;
-}
-
-.backBtn {
-background:#777;
-}
+.menuBtn { background:#4caf50; }
+.backBtn { background:#777; }
 </style>
 
 </head>
@@ -71,31 +54,67 @@ background:#777;
 
 <div class="container">
 
-<h1 id="title">クイズ</h1>
+<h1>クイズ</h1>
 
 <div id="menu"></div>
 <div id="quiz"></div>
 
 </div>
 
-<script src="questions.js"></script>
-
 <script>
 
+// ===== 問題（ここに直接書く） =====
+const allQuiz = {
+
+"衛生学・公衆衛生学":[
+{
+question:"市町村保健センターの役割はどれか？",
+choices:[
+"食品衛生に関する業務",
+"環境衛生に関する業務",
+"エイズに関する相談",
+"乳幼児健診"
+],
+answer:3
+},
+{
+question:"保健所について誤っているのはどれか？",
+choices:[
+"地域保健法で規定される",
+"保健所長は医師である必要がある",
+"栄養の改善および食品衛生に関する業務を行う",
+"地域保健に係わる統計に関する業務を行う"
+],
+answer:1
+}
+],
+
+"解剖学":[
+{
+question:"骨の役割はどれか？",
+choices:[
+"血液を送る",
+"体を支える",
+"消化する",
+"呼吸する"
+],
+answer:1
+}
+]
+
+};
+
+// ===== ここから処理 =====
 let subject = localStorage.getItem("selectedSubject");
-let allQuiz = window.allQuiz;
 
 let quiz = [];
 let quizIndex = 0;
 let score = 0;
 let results = [];
 
-// ===== 初期 =====
 showMenu();
 
-// ===== メニュー =====
 function showMenu(){
-
 document.getElementById("quiz").innerHTML = "";
 
 document.getElementById("menu").innerHTML =
@@ -104,19 +123,15 @@ document.getElementById("menu").innerHTML =
 "<br><button class='backBtn' onclick=\"location.href='quizMenu.html'\">科目選択に戻る</button>";
 }
 
-// ===== 通常 =====
 function startNormal(){
-
-if(!allQuiz || !allQuiz[subject]){
-alert("この科目の問題はまだありません");
+if(!allQuiz[subject]){
+alert("問題がありません");
 return;
 }
-
 quiz = allQuiz[subject];
 startQuiz();
 }
 
-// ===== 復習 =====
 function startReview(){
 
 let wrongIndexes = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
@@ -130,37 +145,17 @@ quiz = wrongIndexes.map(i => allQuiz[subject][i]);
 startQuiz();
 }
 
-// ===== クイズ開始 =====
 function startQuiz(){
-
 quizIndex = 0;
 score = 0;
 results = [];
-
 document.getElementById("menu").innerHTML = "";
-
 showQuiz();
 }
 
-// ===== 表示 =====
 function showQuiz(){
 
 if(quizIndex >= quiz.length){
-
-let currentUser = localStorage.getItem("currentUser");
-let history = JSON.parse(localStorage.getItem("quizHistory") || "{}");
-
-if(!history[currentUser]) history[currentUser] = [];
-
-history[currentUser].push({
-date: new Date().toLocaleString(),
-score: score,
-total: quiz.length,
-subject: subject,
-detail: results
-});
-
-localStorage.setItem("quizHistory", JSON.stringify(history));
 
 let html = "<h2>終了！</h2>";
 html += "<p>スコア："+score+" / "+quiz.length+"</p>";
@@ -174,14 +169,12 @@ html += "<br><button onclick=\"location.href='quizMenu.html'\">科目選択へ</
 html += "<br><button onclick=\"location.href='home.html'\">ホーム</button>";
 
 document.getElementById("quiz").innerHTML = html;
-
 return;
 }
 
 const q = quiz[quizIndex];
 
-let html = "<h2 style='color:#0288d1'>問題 " + (quizIndex+1) + "</h2>";
-
+let html = "<h2>問題 " + (quizIndex+1) + "</h2>";
 html += "<div class='questionBox'>" + q.question + "</div>";
 
 q.choices.forEach((choice,index)=>{
@@ -192,7 +185,6 @@ html += "<button class='choiceBtn' onclick='checkAnswer(" + index + ")'>"
 document.getElementById("quiz").innerHTML = html;
 }
 
-// ===== 回答 =====
 function checkAnswer(num){
 
 let correct = quiz[quizIndex].answer;
@@ -200,27 +192,19 @@ let buttons = document.querySelectorAll(".choiceBtn");
 
 buttons.forEach(btn => btn.disabled = true);
 
-let originalIndex = allQuiz[subject].indexOf(quiz[quizIndex]);
 let wrong = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
+let originalIndex = allQuiz[subject].indexOf(quiz[quizIndex]);
 
 if(num === correct){
-
 buttons[num].classList.add("correct");
 score++;
 results.push(true);
-
 wrong = wrong.filter(i => i !== originalIndex);
-
 }else{
-
 buttons[num].classList.add("wrong");
 buttons[correct].classList.add("correct");
 results.push(false);
-
-if(!wrong.includes(originalIndex)){
-wrong.push(originalIndex);
-}
-
+if(!wrong.includes(originalIndex)) wrong.push(originalIndex);
 }
 
 localStorage.setItem("wrongQuestions_"+subject, JSON.stringify(wrong));
@@ -228,7 +212,7 @@ localStorage.setItem("wrongQuestions_"+subject, JSON.stringify(wrong));
 setTimeout(()=>{
 quizIndex++;
 showQuiz();
-}, 1000);
+},1000);
 
 }
 
