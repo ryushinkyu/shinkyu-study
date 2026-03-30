@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鍼灸Study - ログイン or 登録</title>
+<style>
+body { font-family: Arial; background:#f0f0f0; padding:30px; }
+.container { background:#fff; padding:20px; border-radius:12px; max-width:400px; margin:auto; box-shadow:0 4px 10px rgba(0,0,0,0.1); text-align:center; }
+h2 { margin-bottom:20px; }
+button { width:80%; padding:10px; margin:10px 0; border-radius:6px; border:none; background:#0288d1; color:white; cursor:pointer; font-size:16px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>鍼灸Study</h2>
+  <p>ログインするか、新規登録してください</p>
+  <button id="loginBtn">ログイン</button>
+  <button id="registerBtn">新規登録</button>
+</div>
+
+<script>
+document.getElementById('loginBtn').addEventListener('click', ()=>{
+    window.location.href = 'login.html';    // 既存ユーザーは login.html に
+});
+document.getElementById('registerBtn').addEventListener('click', ()=>{
+    window.location.href = 'register.html'; // 新規ユーザーは register.html に
+});
+</script>
+
+</body>
+</html>
