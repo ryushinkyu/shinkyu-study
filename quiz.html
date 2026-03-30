@@ -24,38 +24,11 @@ box-shadow:0 4px 10px rgba(0,0,0,0.1);
 text-align:center;
 }
 
-.correct {
-background:#2196f3 !important;
-}
-
-.wrong {
-background:#f44336 !important;
-}
-
 h1 {
 margin-bottom:20px;
 }
 
-button {
-width:90%;
-padding:12px;
-margin:8px 0;
-font-size:16px;
-border:none;
-border-radius:8px;
-background:#0288d1;
-color:white;
-cursor:pointer;
-}
-
-.menuBtn {
-background:#4caf50;
-}
-
-.backBtn {
-background:#777;
-}
-</style>.questionBox {
+.questionBox {
 background:#f9f9f9;
 padding:15px;
 border-radius:10px;
@@ -72,7 +45,25 @@ border-radius:8px;
 background:#0288d1;
 color:white;
 font-size:16px;
+cursor:pointer;
 }
+
+.correct {
+background:#2196f3 !important;
+}
+
+.wrong {
+background:#f44336 !important;
+}
+
+.menuBtn {
+background:#4caf50;
+}
+
+.backBtn {
+background:#777;
+}
+</style>
 
 </head>
 
@@ -80,7 +71,7 @@ font-size:16px;
 
 <div class="container">
 
-<h1 id="title">クイズ</h1>
+<h1>クイズ</h1>
 
 <div id="menu"></div>
 <div id="quiz"></div>
@@ -91,18 +82,14 @@ font-size:16px;
 
 <script>
 
-// 科目取得
 let subject = localStorage.getItem("selectedSubject");
-
-// 問題セット
-const allQuiz = window.allQuiz || {};
+let allQuiz = window.allQuiz || {};
 
 let quiz = [];
 let quizIndex = 0;
 let score = 0;
 let results = [];
 
-// 初期画面
 showMenu();
 
 function showMenu(){
@@ -113,14 +100,13 @@ document.getElementById("menu").innerHTML =
 "<br><button class='backBtn' onclick=\"location.href='quizMenu.html'\">科目選択に戻る</button>";
 }
 
-// 通常
 function startNormal(){
 quiz = allQuiz[subject] || [];
 startQuiz();
 }
 
-// 復習
 function startReview(){
+
 let wrongIndexes = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
 
 if(wrongIndexes.length === 0){
@@ -132,7 +118,6 @@ quiz = wrongIndexes.map(i => allQuiz[subject][i]);
 startQuiz();
 }
 
-// クイズ開始
 function startQuiz(){
 quizIndex = 0;
 score = 0;
@@ -141,7 +126,6 @@ document.getElementById("menu").innerHTML = "";
 showQuiz();
 }
 
-// 表示
 function showQuiz(){
 
 if(quizIndex >= quiz.length){
@@ -178,53 +162,34 @@ return;
 
 const q = quiz[quizIndex];
 
-.questionBox {
-background:#f9f9f9;
-padding:15px;
-border-radius:10px;
-margin-bottom:15px;
-font-size:16px;
-}
+let html = "<h2 style='color:#0288d1'>問題 " + (quizIndex+1) + "</h2>";
 
-.choiceBtn {
-width:100%;
-padding:12px;
-margin:6px 0;
-border:none;
-border-radius:8px;
-background:#0288d1;
-color:white;
-font-size:16px;
-}
+html += "<div class='questionBox'>" + q.question + "</div>";
 
 q.choices.forEach((choice,index)=>{
-html += "<button onclick='checkAnswer(" + index + ")'>" + (index+1) + "．" + choice + "</button>";
+html += "<button class='choiceBtn' onclick='checkAnswer(" + index + ")'>" 
++ (index+1) + "．" + choice + "</button>";
 });
 
 document.getElementById("quiz").innerHTML = html;
 }
-
-// 回答
-function checkAnswer(num){
-
-let correct = quiz[quizIndex].answer;
-let originalIndex = allQuiz[subject].indexOf(quiz[quizIndex]);
-
-let wrong = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
 
 function checkAnswer(num){
 
 let correct = quiz[quizIndex].answer;
 let buttons = document.querySelectorAll(".choiceBtn");
 
-// 全ボタン無効化
 buttons.forEach(btn => btn.disabled = true);
+
+let originalIndex = allQuiz[subject].indexOf(quiz[quizIndex]);
+let wrong = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
 
 if(num === correct){
 
 buttons[num].classList.add("correct");
 score++;
 results.push(true);
+wrong = wrong.filter(i => i !== originalIndex);
 
 }else{
 
@@ -232,19 +197,19 @@ buttons[num].classList.add("wrong");
 buttons[correct].classList.add("correct");
 results.push(false);
 
+if(!wrong.includes(originalIndex)){
+wrong.push(originalIndex);
 }
 
-// 少し待って次へ
+}
+
+localStorage.setItem("wrongQuestions_"+subject, JSON.stringify(wrong));
+
 setTimeout(()=>{
 quizIndex++;
 showQuiz();
 }, 1000);
 
-}
-localStorage.setItem("wrongQuestions_"+subject, JSON.stringify(wrong));
-
-quizIndex++;
-showQuiz();
 }
 
 </script>
