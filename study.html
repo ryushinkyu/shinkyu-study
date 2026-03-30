@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鍼灸Study - 学習</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f0f0f0;
+padding:30px;
+}
+
+.container{
+background:#fff;
+padding:20px;
+border-radius:12px;
+max-width:500px;
+margin:auto;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+text-align:left;
+}
+
+h1{
+text-align:center;
+margin-bottom:20px;
+}
+
+.section{
+margin-bottom:15px;
+padding:10px;
+border-left:5px solid #0288d1;
+background:#f0f8ff;
+border-radius:6px;
+}
+
+.point{
+background:#fff3cd;
+padding:10px;
+border-radius:8px;
+margin-top:15px;
+}
+
+button{
+padding:10px;
+margin:8px 0;
+width:100%;
+border:none;
+border-radius:6px;
+background:#0288d1;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1 id="title">学習</h1>
+
+<div id="content"></div>
+
+<div class="point">
+<strong>⭐ 試験ポイント</strong>
+<div id="point"></div>
+</div>
+
+<button onclick="goQuiz()">この内容のクイズへ</button> <button onclick="location.href='studyMenu.html'">科目選択に戻る</button> <button onclick="location.href='home.html'">ホーム</button>
+
+</div>
+
+<script>
+
+// ===== 科目取得 =====
+let subject = localStorage.getItem("selectedSubject");
+
+document.getElementById("title").textContent = subject + " 学習";
+
+// ===== 学習データ =====
+const studyData = {
+
+"衛生学・公衆衛生学":{
+content:`
+<div class="section">
+<h3>市町村保健センター</h3>
+<p>乳幼児健診を行う</p>
+</div>
+
+<div class="section">
+<h3>保健所</h3>
+<p>感染症・食品衛生を担当</p>
+</div>
+`,
+point:`
+・保健センター → 乳幼児健診<br>
+・保健所 → 食品衛生・感染症
+`
+},
+
+"解剖学":{
+content:`
+<div class="section">
+<h3>骨</h3>
+<p>体を支える役割</p>
+</div>
+`,
+point:`
+・骨 → 支える
+`
+}
+
+};
+
+// 表示
+if(studyData[subject]){
+document.getElementById("content").innerHTML = studyData[subject].content;
+document.getElementById("point").innerHTML = studyData[subject].point;
+}else{
+document.getElementById("content").innerHTML = "この科目は準備中";
+document.getElementById("point").innerHTML = "";
+}
+
+// クイズへ
+function goQuiz(){
+localStorage.setItem("selectedSubject", subject);
+location.href = "quiz.html";
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ログイン</title>
+
+<style>
+body {
+font-family: Arial;
+background:#f0f0f0;
+padding:30px;
+}
+
+.container {
+background:#fff;
+padding:20px;
+border-radius:12px;
+max-width:400px;
+margin:auto;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+h2 {
+margin-bottom:20px;
+}
+
+input {
+width:90%;
+padding:10px;
+margin:10px 0;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:16px;
+}
+
+button {
+width:90%;
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:6px;
+background:#0288d1;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>ログイン</h2>
+
+<input type="text" id="username" placeholder="ユーザー名">
+<input type="password" id="password" placeholder="パスワード">
+
+<button onclick="login()">ログイン</button>
+
+<button onclick="location.href='loginOrRegister.html'">戻る</button>
+
+</div>
+
+<script>
+
+function login(){
+
+let username = document.getElementById("username").value.trim();
+let password = document.getElementById("password").value;
+
+let users = JSON.parse(localStorage.getItem("users") || "{}");
+
+if(users[username] && users[username].password === password){
+
+localStorage.setItem("currentUser", username);
+
+// 👉 ホームへ
+location.href = "home.html";
+
+}else{
+alert("ログイン失敗");
+}
+
+}
+
+</script>
+
+</body>
+</html>

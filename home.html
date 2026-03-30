@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鍼灸Study - ホーム</title>
+<style>
+body { font-family: Arial; background:#f0f0f0; padding:30px; }
+.container { background:#fff; padding:20px; border-radius:12px; max-width:400px; margin:auto; box-shadow:0 4px 10px rgba(0,0,0,0.1); text-align:center; }
+h2 { margin-bottom:20px; }
+button { padding:10px 20px; margin:10px 0; border-radius:6px; border:none; background:#0288d1; color:white; cursor:pointer; font-size:16px; width:80%; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>ホーム画面</h2>
+  <p id="welcomeMsg"></p>
+
+  <!-- 画面遷移ボタン -->
+  <button onclick="location.href='mypage.html'">マイページ</button>
+  <button onclick="location.href='studyMenu.html'">学習</button>
+  <button onclick="location.href='quizMenu.html'">クイズ</button>
+  <button onclick="location.href='admin.html'">管理</button>
+  <button onclick="logout()">ログアウト</button>
+</div>
+
+<script>
+// ログインユーザー確認
+const currentUser = localStorage.getItem('currentUser');
+const users = JSON.parse(localStorage.getItem('users') || '{}');
+
+if(currentUser && users[currentUser]){
+    document.getElementById('welcomeMsg').textContent =
+        `ようこそ、${users[currentUser].fullname} さん！`;
+}else{
+    // ログイン情報がない場合は loginOrRegister.html へ
+    window.location.href = 'loginOrRegister.html';
+}
+
+// ログアウト関数
+function logout(){
+    localStorage.removeItem('currentUser');
+    window.location.href = 'loginOrRegister.html';
+}
+</script>
+</body>
+</html>

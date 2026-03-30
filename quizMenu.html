@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>クイズ科目選択</title>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+padding:40px;
+background:#f0f0f0;
+}
+
+button{
+padding:12px 20px;
+margin:10px;
+font-size:16px;
+cursor:pointer;
+width:250px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>科目を選択</h1>
+
+<div id="subjectList"></div>
+
+<br>
+
+<button onclick="location.href='home.html'">戻る</button>
+
+<script>
+
+// 科目リスト
+const subjects = [
+"医療概論",
+"衛生学・公衆衛生学",
+"関係法規",
+"解剖学",
+"生理学",
+"病理学概論",
+"臨床医学総論",
+"臨床医学各論",
+"リハビリテーション医学",
+"東洋医学概論",
+"経絡経穴概論",
+"東洋医学臨床論"
+];
+
+// ボタン自動生成
+let html = "";
+
+subjects.forEach(sub=>{
+html += `<button onclick="selectSubject('${sub}')">${sub}</button><br>`;
+});
+
+document.getElementById("subjectList").innerHTML = html;
+
+// 科目選択
+function selectSubject(subject){
+localStorage.setItem("selectedSubject", subject);
+location.href = "quiz.html";
+}
+
+</script>
+
+</body>
+</html>

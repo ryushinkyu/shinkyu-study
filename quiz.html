@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鍼灸Study - クイズ</title>
+</head>
+
+<body>
+
+<h1 id="title">クイズ</h1>
+
+<div id="quiz"></div>
+
+<script src="questions.js"></script>
+
+<script>
+
+let subject = localStorage.getItem("selectedSubject");
+let baseQuiz = allQuiz[subject] || [];
+
+document.getElementById("title").textContent = subject + " クイズ";
+
+let quiz = [];
+let quizIndex = 0;
+let score = 0;
+let results = [];
+
+// ===== スタート画面 =====
+showStart();
+
+function showStart(){
+document.getElementById("quiz").innerHTML =
+`<h2>${subject}</h2>
+<button onclick="startNormal()">通常クイズ</button>
+<button onclick="startReview()">間違えた問題だけ</button>
+<br><br>
+<button onclick="location.href='quizMenu.html'">科目選択に戻る</button>`;
+}
+
+// ===== 通常 =====
+function startNormal(){
+quiz = [...baseQuiz];
+startQuiz();
+}
+
+// ===== 復習 =====
+function startReview(){
+
+let wrongIndexes = JSON.parse(localStorage.getItem("wrongQuestions") || "[]");
+
+if(wrongIndexes.length === 0){
+alert("間違えた問題がありません");
+return;
+}
+
+quiz = wrongIndexes.map(i => baseQuiz[i]).filter(q => q);
+
+startQuiz();
+}
+
+// ===== クイズ開始 =====
+function startQuiz(){
+quizIndex = 0;
+score = 0;
+results = [];
+showQuiz();
+}
+
+// ===== 問題表示 =====
+function showQuiz(){
+
+if(quizIndex >= quiz.length){
+
+// ===== 保存処理（ここが重要）=====
+let currentUser = localStorage.getItem("currentUser");
+
+if(!currentUser){
+alert("ログイン情報がありません");
+return;
+}
+
+let history = JSON.parse(localStorage.getItem("quizHistory") || "{}");
+
+if(!history[currentUser]){
+history[currentUser] = [];
+}
+
+history[currentUser].push({
+date: new Date().toLocaleString(),
+score: score,
+total: quiz.length,
+subject: subject,
+detail: results
+});
+
+localStorage.setItem("quizHistory", JSON.stringify(history));
+
+// ===== 結果表示 =====
+let html = "<h2>終了！</h2>";
+html += "<p>スコア："+score+" / "+quiz.length+"</p>";
+
+html += "<button onclick=\"location.href='mypage.html'\">マイページ</button>";
+html += "<button onclick=\"location.href='quizMenu.html'\">科目選択</button>";
+html += "<button onclick=\"location.href='home.html'\">ホーム</button>";
+
+document.getElementById("quiz").innerHTML = html;
+
+return;
+}
+
+const q = quiz[quizIndex];
+
+let html = "<h2>問題 " + (quizIndex+1) + "</h2>";
+html += "<p>" + q.question + "</p>";
+
+q.choices.forEach((choice,index)=>{
+html += "<button onclick='checkAnswer(" + index + ")'>" + (index+1) + "．" + choice + "</button><br>";
+});
+
+document.getElementById("quiz").innerHTML = html;
+
+}
+
+// ===== 回答 =====
+function checkAnswer(num){
+
+let correct = quiz[quizIndex].answer;
+
+if(num === correct){
+alert("⭕ 正解！");
+score++;
+results.push(true);
+}else{
+alert("❌ 不正解");
+results.push(false);
+}
+
+quizIndex++;
+showQuiz();
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学習科目選択</title>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+padding:40px;
+background:#f0f0f0;
+}
+
+button{
+padding:12px;
+margin:8px;
+width:250px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>学習する科目を選択</h1>
+
+<div id="subjects"></div>
+
+<button onclick="location.href='home.html'">戻る</button>
+
+<script>
+
+const subjects = [
+"医療概論",
+"衛生学・公衆衛生学",
+"関係法規",
+"解剖学",
+"生理学",
+"病理学概論",
+"臨床医学総論",
+"臨床医学各論",
+"リハビリテーション医学",
+"東洋医学概論",
+"経絡経穴概論",
+"東洋医学臨床論"
+];
+
+let html = "";
+
+subjects.forEach(sub=>{
+html += `<button onclick="selectSubject('${sub}')">${sub}</button><br>`;
+});
+
+document.getElementById("subjects").innerHTML = html;
+
+function selectSubject(subject){
+localStorage.setItem("selectedSubject", subject);
+location.href = "study.html";
+}
+
+</script>
+
+</body>
+</html>
