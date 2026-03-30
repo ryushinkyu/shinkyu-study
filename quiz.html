@@ -5,87 +5,126 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>鍼灸Study - クイズ</title>
+
+<style>
+body {
+font-family: Arial;
+background:#f0f0f0;
+padding:20px;
+margin:0;
+}
+
+.container {
+background:#fff;
+padding:20px;
+border-radius:12px;
+max-width:500px;
+margin:auto;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+h1 {
+margin-bottom:20px;
+}
+
+button {
+width:90%;
+padding:12px;
+margin:8px 0;
+font-size:16px;
+border:none;
+border-radius:8px;
+background:#0288d1;
+color:white;
+cursor:pointer;
+}
+
+.menuBtn {
+background:#4caf50;
+}
+
+.backBtn {
+background:#777;
+}
+</style>
+
 </head>
 
 <body>
 
+<div class="container">
+
 <h1 id="title">クイズ</h1>
 
+<div id="menu"></div>
 <div id="quiz"></div>
+
+</div>
 
 <script src="questions.js"></script>
 
 <script>
 
+// 科目取得
 let subject = localStorage.getItem("selectedSubject");
-let baseQuiz = allQuiz[subject] || [];
 
-document.getElementById("title").textContent = subject + " クイズ";
+// 問題セット
+const allQuiz = window.allQuiz || {};
 
 let quiz = [];
 let quizIndex = 0;
 let score = 0;
 let results = [];
 
-// ===== スタート画面 =====
-showStart();
+// 初期画面
+showMenu();
 
-function showStart(){
-document.getElementById("quiz").innerHTML =
-`<h2>${subject}</h2>
-<button onclick="startNormal()">通常クイズ</button>
-<button onclick="startReview()">間違えた問題だけ</button>
-<br><br>
-<button onclick="location.href='quizMenu.html'">科目選択に戻る</button>`;
+function showMenu(){
+document.getElementById("quiz").innerHTML = "";
+document.getElementById("menu").innerHTML =
+"<button class='menuBtn' onclick='startNormal()'>通常クイズ</button>" +
+"<button class='menuBtn' onclick='startReview()'>間違えた問題だけ</button>" +
+"<br><button class='backBtn' onclick=\"location.href='quizMenu.html'\">科目選択に戻る</button>";
 }
 
-// ===== 通常 =====
+// 通常
 function startNormal(){
-quiz = [...baseQuiz];
+quiz = allQuiz[subject] || [];
 startQuiz();
 }
 
-// ===== 復習 =====
+// 復習
 function startReview(){
-
-let wrongIndexes = JSON.parse(localStorage.getItem("wrongQuestions") || "[]");
+let wrongIndexes = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
 
 if(wrongIndexes.length === 0){
 alert("間違えた問題がありません");
 return;
 }
 
-quiz = wrongIndexes.map(i => baseQuiz[i]).filter(q => q);
-
+quiz = wrongIndexes.map(i => allQuiz[subject][i]);
 startQuiz();
 }
 
-// ===== クイズ開始 =====
+// クイズ開始
 function startQuiz(){
 quizIndex = 0;
 score = 0;
 results = [];
+document.getElementById("menu").innerHTML = "";
 showQuiz();
 }
 
-// ===== 問題表示 =====
+// 表示
 function showQuiz(){
 
 if(quizIndex >= quiz.length){
 
-// ===== 保存処理（ここが重要）=====
 let currentUser = localStorage.getItem("currentUser");
-
-if(!currentUser){
-alert("ログイン情報がありません");
-return;
-}
-
 let history = JSON.parse(localStorage.getItem("quizHistory") || "{}");
 
-if(!history[currentUser]){
-history[currentUser] = [];
-}
+if(!history[currentUser]) history[currentUser] = [];
 
 history[currentUser].push({
 date: new Date().toLocaleString(),
@@ -97,16 +136,18 @@ detail: results
 
 localStorage.setItem("quizHistory", JSON.stringify(history));
 
-// ===== 結果表示 =====
 let html = "<h2>終了！</h2>";
 html += "<p>スコア："+score+" / "+quiz.length+"</p>";
 
-html += "<button onclick=\"location.href='mypage.html'\">マイページ</button>";
-html += "<button onclick=\"location.href='quizMenu.html'\">科目選択</button>";
-html += "<button onclick=\"location.href='home.html'\">ホーム</button>";
+results.forEach((r,i)=>{
+html += `<p>問題${i+1}：${r ? "⭕" : "❌"}</p>`;
+});
+
+html += "<br><button onclick='showMenu()'>もう一度</button>";
+html += "<br><button onclick=\"location.href='quizMenu.html'\">科目選択へ</button>";
+html += "<br><button onclick=\"location.href='home.html'\">ホーム</button>";
 
 document.getElementById("quiz").innerHTML = html;
-
 return;
 }
 
@@ -116,30 +157,37 @@ let html = "<h2>問題 " + (quizIndex+1) + "</h2>";
 html += "<p>" + q.question + "</p>";
 
 q.choices.forEach((choice,index)=>{
-html += "<button onclick='checkAnswer(" + index + ")'>" + (index+1) + "．" + choice + "</button><br>";
+html += "<button onclick='checkAnswer(" + index + ")'>" + (index+1) + "．" + choice + "</button>";
 });
 
 document.getElementById("quiz").innerHTML = html;
-
 }
 
-// ===== 回答 =====
+// 回答
 function checkAnswer(num){
 
 let correct = quiz[quizIndex].answer;
+let originalIndex = allQuiz[subject].indexOf(quiz[quizIndex]);
+
+let wrong = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
 
 if(num === correct){
 alert("⭕ 正解！");
 score++;
 results.push(true);
+wrong = wrong.filter(i => i !== originalIndex);
 }else{
 alert("❌ 不正解");
 results.push(false);
+if(!wrong.includes(originalIndex)){
+wrong.push(originalIndex);
 }
+}
+
+localStorage.setItem("wrongQuestions_"+subject, JSON.stringify(wrong));
 
 quizIndex++;
 showQuiz();
-
 }
 
 </script>
