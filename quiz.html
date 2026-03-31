@@ -31,6 +31,25 @@ border-radius:10px;
 margin-bottom:15px;
 }
 
+.mainBtn {
+width:100%;
+padding:14px;
+margin:10px 0;
+font-size:16px;
+border:none;
+border-radius:10px;
+background:#0288d1;
+color:white;
+cursor:pointer;
+box-shadow:0 2px 5px rgba(0,0,0,0.2);
+}
+
+.mainBtn:hover {
+opacity:0.9;
+}
+
+.green { background:#4caf50; }
+.gray { background:#777; }
 .choiceBtn {
 width:100%;
 padding:12px;
@@ -115,14 +134,20 @@ let results = [];
 showMenu();
 
 function showMenu(){
+
 document.getElementById("quiz").innerHTML = "";
 
-document.getElementById("menu").innerHTML =
-"<button class='menuBtn' onclick='startNormal()'>通常クイズ</button>" +
-"<button class='menuBtn' onclick='startReview()'>間違えた問題だけ</button>" +
-"<br><button class='backBtn' onclick=\"location.href='quizMenu.html'\">科目選択に戻る</button>";
-}
+document.getElementById("menu").innerHTML = `
+<div class="questionBox">
+<h3>クイズを選択</h3>
+<button class="mainBtn green" onclick="startNormal()">通常クイズ</button>
+<button class="mainBtn green" onclick="startReview()">間違えた問題</button>
+</div>
 
+<button class="mainBtn gray" onclick="location.href='quizMenu.html'">科目選択に戻る</button>
+`;
+
+}
 function startNormal(){
 if(!allQuiz[subject]){
 alert("問題がありません");
@@ -155,8 +180,6 @@ showQuiz();
 
 function showQuiz(){
 
-if(quizIndex >= quiz.length){
-
 let html = "<h2>終了！</h2>";
 html += "<p>スコア："+score+" / "+quiz.length+"</p>";
 
@@ -164,14 +187,14 @@ results.forEach((r,i)=>{
 html += `<p>問題${i+1}：${r ? "⭕" : "❌"}</p>`;
 });
 
-html += "<br><button onclick='showMenu()'>もう一度</button>";
-html += "<br><button onclick=\"location.href='quizMenu.html'\">科目選択へ</button>";
-html += "<br><button onclick=\"location.href='home.html'\">ホーム</button>";
+html += `
+<br>
+<button class="mainBtn green" onclick="showMenu()">もう一度</button>
+<button class="mainBtn gray" onclick="location.href='quizMenu.html'">科目選択へ</button>
+<button class="mainBtn gray" onclick="location.href='home.html'">ホーム</button>
+`;
 
 document.getElementById("quiz").innerHTML = html;
-return;
-}
-
 const q = quiz[quizIndex];
 
 let html = "<h2>問題 " + (quizIndex+1) + "</h2>";
