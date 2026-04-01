@@ -1,58 +1,60 @@
 <!DOCTYPE html>
 
 <html lang="ja">
+<!-- メイン操作 -->
+<div style="margin-top:30px;">
+<button class="secondary" onclick="location.href='studyMenu.html'">科目選択</button>
+</div>
+
+<!-- 固定ナビ -->
+<div class="bottomNav">
+<button class="homeBtn" onclick="location.href='home.html'">ホーム</button>
+</div>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>鍼灸Study - 学習</title>
 
 <style>
-body{
-font-family:Arial;
-background:#f0f0f0;
-padding:30px;
-}
-
-.container{
-background:#fff;
-padding:20px;
-border-radius:12px;
-max-width:500px;
-margin:auto;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
-text-align:left;
-}
-
-h1{
-text-align:center;
-margin-bottom:20px;
-}
-
-.section{
-margin-bottom:15px;
-padding:10px;
-border-left:5px solid #0288d1;
-background:#f0f8ff;
-border-radius:6px;
-}
-
-.point{
-background:#fff3cd;
-padding:10px;
-border-radius:8px;
-margin-top:15px;
-}
-
 button{
-padding:10px;
-margin:8px 0;
 width:100%;
+padding:14px;
+margin-top:15px;
 border:none;
-border-radius:6px;
-background:#0288d1;
-color:white;
+border-radius:10px;
 font-size:16px;
 cursor:pointer;
+}
+
+.primary{
+background:#0288d1;
+color:white;
+}
+
+.secondary{
+background:#4caf50;
+color:white;
+}
+
+.homeBtn{
+background:#777;
+color:white;
+}
+
+/* ボタンエリア固定 */
+.bottomNav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:#fff;
+padding:10px;
+box-shadow:0 -2px 10px rgba(0,0,0,0.1);
+}
+
+/* 下に隠れないように余白 */
+body{
+padding-bottom:120px;
 }
 </style>
 
@@ -64,72 +66,79 @@ cursor:pointer;
 
 <h1 id="title">学習</h1>
 
-<div id="content"></div>
+<div id="study"></div>
 
-<div class="point">
-<strong>⭐ 試験ポイント</strong>
-<div id="point"></div>
-</div>
-
-<button onclick="goQuiz()">この内容のクイズへ</button> <button onclick="location.href='studyMenu.html'">科目選択に戻る</button> <button onclick="location.href='home.html'">ホーム</button>
+<button onclick="location.href='studyMenu.html'">科目選択</button> <button onclick="location.href='home.html'">ホーム</button>
 
 </div>
 
 <script>
 
-// ===== 科目取得 =====
 let subject = localStorage.getItem("selectedSubject");
 
 document.getElementById("title").textContent = subject + " 学習";
 
-// ===== 学習データ =====
-const studyData = {
+// ===== 問題 =====
+const studyQuiz = {
 
-"衛生学・公衆衛生学":{
-content:`
-<div class="section">
-<h3>市町村保健センター</h3>
-<p>乳幼児健診を行う</p>
-</div>
-
-<div class="section">
-<h3>保健所</h3>
-<p>感染症・食品衛生を担当</p>
-</div>
-`,
-point:`
-・保健センター → 乳幼児健診<br>
-・保健所 → 食品衛生・感染症
-`
+"衛生学・公衆衛生学":[
+{
+question:"市町村保健センターは（　）を行う",
+choices:["食品衛生","乳幼児健診","感染症"],
+answer:1
 },
-
-"解剖学":{
-content:`
-<div class="section">
-<h3>骨</h3>
-<p>体を支える役割</p>
-</div>
-`,
-point:`
-・骨 → 支える
-`
+{
+question:"保健所は主に（　）を担当する",
+choices:["美容","感染症","スポーツ"],
+answer:1
 }
+]
 
 };
 
-// 表示
-if(studyData[subject]){
-document.getElementById("content").innerHTML = studyData[subject].content;
-document.getElementById("point").innerHTML = studyData[subject].point;
-}else{
-document.getElementById("content").innerHTML = "この科目は準備中";
-document.getElementById("point").innerHTML = "";
+let quiz = studyQuiz[subject] || [];
+let index = 0;
+
+show();
+
+function show(){
+
+if(index >= quiz.length){
+document.getElementById("study").innerHTML =
+"<h2>学習完了！</h2>";
+return;
 }
 
-// クイズへ
-function goQuiz(){
-localStorage.setItem("selectedSubject", subject);
-location.href = "quiz.html";
+let q = quiz[index];
+
+let html = "<div class='questionBox'>" + q.question + "</div>";
+
+q.choices.forEach((c,i)=>{
+html += "<button class='choiceBtn' onclick='answer("+i+")'>"+c+"</button>";
+});
+
+document.getElementById("study").innerHTML = html;
+}
+
+function answer(num){
+
+let correct = quiz[index].answer;
+let buttons = document.querySelectorAll(".choiceBtn");
+
+buttons.forEach(b=>b.disabled=true);
+
+if(num === correct){
+buttons[num].classList.add("correct");
+}else{
+buttons[num].classList.add("wrong");
+buttons[correct].classList.add("correct");
+}
+
+setTimeout(()=>{
+index++;
+show();
+},1000);
+
 }
 
 </script>
