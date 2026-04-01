@@ -1,21 +1,50 @@
 <!DOCTYPE html>
-
 <html lang="ja">
-<!-- メイン操作 -->
-<div style="margin-top:30px;">
-<button class="secondary" onclick="location.href='studyMenu.html'">科目選択</button>
-</div>
 
-<!-- 固定ナビ -->
-<div class="bottomNav">
-<button class="homeBtn" onclick="location.href='home.html'">ホーム</button>
-</div>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>鍼灸Study - 学習</title>
 
 <style>
+body{
+font-family:Arial;
+background:#f0f0f0;
+padding:20px;
+padding-bottom:120px;
+}
+
+.container{
+background:#fff;
+padding:20px;
+border-radius:12px;
+max-width:500px;
+margin:auto;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+h1{text-align:center;}
+
+.questionBox{
+background:#f9f9f9;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+}
+
+.choiceBtn{
+width:100%;
+padding:10px;
+margin:5px 0;
+border:none;
+border-radius:8px;
+background:#0288d1;
+color:white;
+}
+
+.correct{background:#2196f3;}
+.wrong{background:#f44336;}
+
 button{
 width:100%;
 padding:14px;
@@ -24,11 +53,6 @@ border:none;
 border-radius:10px;
 font-size:16px;
 cursor:pointer;
-}
-
-.primary{
-background:#0288d1;
-color:white;
 }
 
 .secondary{
@@ -41,7 +65,6 @@ background:#777;
 color:white;
 }
 
-/* ボタンエリア固定 */
 .bottomNav{
 position:fixed;
 bottom:0;
@@ -50,11 +73,6 @@ width:100%;
 background:#fff;
 padding:10px;
 box-shadow:0 -2px 10px rgba(0,0,0,0.1);
-}
-
-/* 下に隠れないように余白 */
-body{
-padding-bottom:120px;
 }
 </style>
 
@@ -68,14 +86,19 @@ padding-bottom:120px;
 
 <div id="study"></div>
 
-<button onclick="location.href='studyMenu.html'">科目選択</button> <button onclick="location.href='home.html'">ホーム</button>
+<div style="margin-top:30px;">
+<button class="secondary" onclick="location.href='studyMenu.html'">科目選択</button>
+</div>
 
+</div>
+
+<div class="bottomNav">
+<button class="homeBtn" onclick="location.href='home.html'">ホーム</button>
 </div>
 
 <script>
 
 let subject = localStorage.getItem("selectedSubject");
-
 document.getElementById("title").textContent = subject + " 学習";
 
 // ===== 問題 =====
@@ -85,12 +108,14 @@ const studyQuiz = {
 {
 question:"市町村保健センターは（　）を行う",
 choices:["食品衛生","乳幼児健診","感染症"],
-answer:1
+answer:1,
+explanation:"市町村保健センターは地域住民の健康管理を担い、乳幼児健診などを行う。"
 },
 {
 question:"保健所は主に（　）を担当する",
 choices:["美容","感染症","スポーツ"],
-answer:1
+answer:1,
+explanation:"保健所は感染症対策や食品衛生など公衆衛生に関する業務を担う。"
 }
 ]
 
@@ -104,41 +129,106 @@ show();
 function show(){
 
 if(index >= quiz.length){
-document.getElementById("study").innerHTML =
-"<h2>学習完了！</h2>";
+
+let html = "<h2>学習完了！</h2>";
+
+// クイズへ
+html += `
+<button onclick="goQuiz()" class="secondary">
+この科目のクイズへ
+</button>
+`;
+
+// 科目選択へ
+html += `
+<button onclick="location.href='studyMenu.html'">
+他の科目を学習
+</button>
+`;
+
+document.getElementById("study").innerHTML = html;
+
 return;
 }
-
 let q = quiz[index];
+let shuffledChoices = shuffle([...q.choices]);
+let correctText = q.choices[q.answer];
 
 let html = "<div class='questionBox'>" + q.question + "</div>";
 
-q.choices.forEach((c,i)=>{
-html += "<button class='choiceBtn' onclick='answer("+i+")'>"+c+"</button>";
+shuffledChoices.forEach((c,i)=>{
+html += "<button class='choiceBtn' onclick='answerChoice(\""+c+"\")'>"+c+"</button>";
 });
-
 document.getElementById("study").innerHTML = html;
 }
 
-function answer(num){
+function answerChoice(choice){
 
-let correct = quiz[index].answer;
+let q = quiz[index];
+let correctText = q.choices[q.answer];
+
 let buttons = document.querySelectorAll(".choiceBtn");
 
 buttons.forEach(b=>b.disabled=true);
 
-if(num === correct){
-buttons[num].classList.add("correct");
+let html = "";
+
+if(choice === correctText){
+
+buttons.forEach(btn=>{
+if(btn.textContent === choice){
+btn.classList.add("correct");
+}
+});
+
+html += "<h3 style='color:#2196f3'>⭕ 正解！</h3>";
+
 }else{
-buttons[num].classList.add("wrong");
-buttons[correct].classList.add("correct");
+
+buttons.forEach(btn=>{
+if(btn.textContent === choice){
+btn.classList.add("wrong");
+}
+if(btn.textContent === correctText){
+btn.classList.add("correct");
+}
+});
+
+html += "<h3 style='color:#f44336'>❌ 不正解</h3>";
+
 }
 
-setTimeout(()=>{
+html += `
+<div style="margin-top:15px; background:#fff3cd; padding:10px; border-radius:8px;">
+<strong>解説</strong><br>
+${q.explanation}
+</div>
+`;
+
+html += `
+<button onclick="nextQuestion()">次へ</button>
+`;
+
+document.getElementById("study").innerHTML += html;
+
+}
+
+function nextQuestion(){
 index++;
 show();
-},1000);
+}
 
+function goQuiz(){
+localStorage.setItem("selectedSubject", subject);
+location.href = "quiz.html";
+}
+
+function shuffle(array){
+for(let i = array.length - 1; i > 0; i--){
+const j = Math.floor(Math.random() * (i + 1));
+[array[i], array[j]] = [array[j], array[i]];
+}
+return array;
 }
 
 </script>

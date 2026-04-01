@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>講義</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f0f0f0;
+padding:20px;
+}
+
+.container{
+background:#fff;
+padding:20px;
+border-radius:12px;
+max-width:600px;
+margin:auto;
+}
+
+.section{
+margin-bottom:20px;
+padding:12px;
+background:#f9f9f9;
+border-radius:8px;
+
+/* ここ追加 */
+border:2px solid #000;
+
+/* 押せる感じ */
+cursor:pointer;
+}
+
+.section:hover{
+background:#e3f2fd;
+}
+
+.section:hover{
+background:#e3f2fd;
+}
+
+
+
+.point{
+background:#fff3cd;
+padding:10px;
+border-radius:8px;
+}
+
+.red{
+color:red;
+font-weight:bold;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#0288d1;
+color:white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1 id="title"></h1>
+
+<div id="content"></div>
+
+<button id="nextBtn" onclick="next()">次へ</button>
+<button onclick="location.href='lectureMenu.html'">科目選択</button>
+<button onclick="location.href='home.html'">ホーム</button>
+
+</div>
+
+<script>
+
+let subject = localStorage.getItem("selectedSubject");
+document.getElementById("title").textContent = subject + " 講義";
+
+// ===== 状態 =====
+let step = 0;
+let index = 0;
+
+// ===== データ =====
+const lectureData = {
+
+"衛生学・公衆衛生学":[
+
+{
+title:"市町村保健センター",
+content:"地域住民の健康管理を行う施設。乳幼児健診などを実施する。",
+point:"市町村 → <span class='red'>乳幼児健診</span>"
+},
+
+{
+title:"保健所",
+content:"地域保健法に基づく機関。感染症対策や食品衛生を担当。",
+point:"保健所 → <span class='red'>感染症・食品衛生</span>"
+}
+
+]
+
+};
+
+let data = lectureData[subject] || [];
+
+show();
+
+// ===== 表示 =====
+function show(){
+
+document.getElementById("nextBtn").style.display = "block";
+
+// ① 目次
+if(step === 0){
+
+document.getElementById("nextBtn").style.display = "none";
+
+let html = "<h3>目次（選択してください）</h3>";
+
+data.forEach((d,i)=>{
+html += `
+<div class="section" onclick="selectLecture(${i})" style="cursor:pointer;">
+${i+1}. ${d.title}
+</div>
+`;
+});
+
+document.getElementById("content").innerHTML = html;
+return;
+}
+// ② 内容
+if(step === 1){
+
+let d = data[index];
+
+let html = `
+<div class="section">
+<h3>${d.title}</h3>
+<p>${d.content}</p>
+</div>
+`;
+
+document.getElementById("content").innerHTML = html;
+return;
+}
+
+// ③ 重要ポイント
+if(step === 2){
+
+let d = data[index];
+
+let html = `
+<div class="point">
+<strong>試験ポイント</strong><br>
+${d.point}
+</div>
+`;
+
+document.getElementById("content").innerHTML = html;
+return;
+}
+
+}
+
+// ===== 次へ =====
+function next(){
+
+if(step === 0){
+step = 1;
+}
+else if(step === 1){
+step = 2;
+}
+else if(step === 2){
+index++;
+step = 1;
+
+if(index >= data.length){
+document.getElementById("content").innerHTML = "<h2>講義終了！</h2>";
+return;
+}
+}
+
+show();
+
+}
+
+function selectLecture(i){
+index = i;
+step = 1;
+show();
+}
+
+</script>
+
+</body>
+</html>
