@@ -37,12 +37,6 @@ cursor:pointer;
 background:#e3f2fd;
 }
 
-.section:hover{
-background:#e3f2fd;
-}
-
-
-
 .point{
 background:#fff3cd;
 padding:10px;
@@ -174,24 +168,48 @@ return;
 // ===== 次へ =====
 function next(){
 
-if(step === 0){
-step = 1;
-}
-else if(step === 1){
+if(step === 1){
 step = 2;
 }
 else if(step === 2){
+
+let goNext = confirm("次の項目に進みますか？");
+
+if(goNext){
+
 index++;
-step = 1;
 
 if(index >= data.length){
-document.getElementById("content").innerHTML = "<h2>講義終了！</h2>";
+
+document.getElementById("nextBtn").style.display = "none";
+
+document.getElementById("content").innerHTML = `
+<h2>講義終了！</h2>
+<button onclick="location.href='study.html'">この内容を学習する</button>
+<button onclick="location.href='quiz.html'">クイズへ</button>
+`;
+
 return;
 }
+
+step = 1;
+
+}else{
+
+document.getElementById("nextBtn").style.display = "none";
+
+document.getElementById("content").innerHTML = `
+<h2>ここまで学習しました！</h2>
+<button onclick="location.href='study.html'">この内容を学習する</button>
+<button onclick="location.href='quiz.html'">クイズへ</button>
+`;
+
+return;
+}
+
 }
 
 show();
-
 }
 
 function selectLecture(i){
