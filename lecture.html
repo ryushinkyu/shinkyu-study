@@ -10,6 +10,7 @@ body{
 font-family:Arial;
 background:#f0f0f0;
 padding:20px;
+margin:0;
 }
 
 .container{
@@ -18,18 +19,15 @@ padding:20px;
 border-radius:12px;
 max-width:600px;
 margin:auto;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
 }
 
 .section{
-margin-bottom:20px;
+margin-bottom:15px;
 padding:12px;
 background:#f9f9f9;
 border-radius:8px;
-
-/* ここ追加 */
 border:2px solid #000;
-
-/* 押せる感じ */
 cursor:pointer;
 }
 
@@ -39,7 +37,7 @@ background:#e3f2fd;
 
 .point{
 background:#fff3cd;
-padding:10px;
+padding:12px;
 border-radius:8px;
 }
 
@@ -56,6 +54,17 @@ border:none;
 border-radius:8px;
 background:#0288d1;
 color:white;
+font-size:16px;
+}
+
+.fixed-bottom{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:#fff;
+padding:10px;
+box-shadow:0 -2px 10px rgba(0,0,0,0.1);
 }
 </style>
 </head>
@@ -69,9 +78,13 @@ color:white;
 <div id="content"></div>
 
 <button id="nextBtn" onclick="next()">次へ</button>
+
+</div>
+
+<!-- 下固定 -->
+<div class="fixed-bottom">
 <button onclick="location.href='lectureMenu.html'">科目選択</button>
 <button onclick="location.href='home.html'">ホーム</button>
-
 </div>
 
 <script>
@@ -90,18 +103,28 @@ const lectureData = {
 
 {
 title:"市町村保健センター",
-content:"地域住民の健康管理を行う施設。乳幼児健診などを実施する。",
+content:"地域住民の健康管理を行う施設。乳幼児健診や健康相談を行う。",
 point:"市町村 → <span class='red'>乳幼児健診</span>"
 },
 
 {
 title:"保健所",
-content:"地域保健法に基づく機関。感染症対策や食品衛生を担当。",
+content:"地域保健法に基づく機関。感染症対策や食品衛生を行う。",
 point:"保健所 → <span class='red'>感染症・食品衛生</span>"
 }
 
-]
+],
 
+// 他は空でOK（あとで追加）
+"解剖学":[],
+"生理学":[],
+"病理学概論":[],
+"臨床医学総論":[],
+"臨床医学各論":[],
+"リハビリテーション医学":[],
+"東洋医学概論":[],
+"経絡経穴概論":[],
+"東洋医学臨床論":[]
 };
 
 let data = lectureData[subject] || [];
@@ -113,7 +136,7 @@ function show(){
 
 document.getElementById("nextBtn").style.display = "block";
 
-// ① 目次
+// ===== 目次 =====
 if(step === 0){
 
 document.getElementById("nextBtn").style.display = "none";
@@ -121,9 +144,13 @@ document.getElementById("nextBtn").style.display = "none";
 let html = "<h3>目次（選択してください）</h3>";
 
 data.forEach((d,i)=>{
+
+let count = localStorage.getItem("lecture_"+subject+"_"+i) || 0;
+let checked = count > 0 ? "✔" : "□";
+
 html += `
-<div class="section" onclick="selectLecture(${i})" style="cursor:pointer;">
-${i+1}. ${d.title}
+<div class="section" onclick="selectLecture(${i})">
+${checked} ${i+1}. ${d.title}（${count}回）
 </div>
 `;
 });
@@ -131,7 +158,8 @@ ${i+1}. ${d.title}
 document.getElementById("content").innerHTML = html;
 return;
 }
-// ② 内容
+
+// ===== 内容 =====
 if(step === 1){
 
 let d = data[index];
@@ -147,7 +175,7 @@ document.getElementById("content").innerHTML = html;
 return;
 }
 
-// ③ 重要ポイント
+// ===== ポイント =====
 if(step === 2){
 
 let d = data[index];
@@ -177,22 +205,10 @@ let goNext = confirm("次の項目に進みますか？");
 
 if(goNext){
 
-index++;
-
-if(index >= data.length){
-
-document.getElementById("nextBtn").style.display = "none";
-
-document.getElementById("content").innerHTML = `
-<h2>講義終了！</h2>
-<button onclick="location.href='study.html'">この内容を学習する</button>
-<button onclick="location.href='quiz.html'">クイズへ</button>
-`;
-
+// ★目次に戻る
+step = 0;
+show();
 return;
-}
-
-step = 1;
 
 }else{
 
@@ -200,7 +216,7 @@ document.getElementById("nextBtn").style.display = "none";
 
 document.getElementById("content").innerHTML = `
 <h2>ここまで学習しました！</h2>
-<button onclick="location.href='study.html'">この内容を学習する</button>
+<button onclick="location.href='study.html'">学習へ</button>
 <button onclick="location.href='quiz.html'">クイズへ</button>
 `;
 
@@ -212,9 +228,18 @@ return;
 show();
 }
 
+// ===== 選択 =====
 function selectLecture(i){
+
 index = i;
 step = 1;
+
+// 回数カウント
+let key = "lecture_"+subject+"_"+i;
+let count = parseInt(localStorage.getItem(key) || "0");
+count++;
+localStorage.setItem(key, count);
+
 show();
 }
 
