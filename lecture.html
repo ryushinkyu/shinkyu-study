@@ -229,6 +229,21 @@ return;
 
 show();
 }
+
+function selectLecture(i){
+
+index = i;
+step = 1;
+
+// 回数カウント
+let key = "lecture_"+subject+"_"+i;
+let count = parseInt(localStorage.getItem(key) || "0");
+count++;
+localStorage.setItem(key, count);
+
+show();
+}
+
 </script>
 
 </body>
