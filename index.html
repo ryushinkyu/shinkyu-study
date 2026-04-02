@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <link rel="stylesheet" href="style.css">
@@ -13,26 +12,34 @@ location.href = "gate.html";
 }
 </script>
 
-
-
 </head>
 
 <body>
 
-<div class="card selectable">
-  <h2>鍼灸Study</h2>
-  <p>ログインするか、新規登録してください</p>
-  <button id="loginBtn">ログイン</button>
-  <button id="registerBtn">新規登録</button>
+<div class="container">
+
+  <div class="card">
+
+    <h2>鍼灸Study</h2>
+    <p>ログインするか、新規登録してください</p>
+
+    <button id="loginBtn">ログイン</button>
+    <button id="registerBtn">新規登録</button>
+
+  </div>
+
 </div>
 
 <script>
+
 document.getElementById('loginBtn').addEventListener('click', ()=>{
-    window.location.href = 'login.html';
+    location.href = 'login.html';
 });
+
 document.getElementById('registerBtn').addEventListener('click', ()=>{
-    window.location.href = 'register.html';
+    location.href = 'register.html';
 });
+
 </script>
 
 </body>

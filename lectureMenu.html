@@ -5,20 +5,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>講義選択</title>
-
-
 </head>
 
 <body>
 
-<div class="card selectable">
+<div class="container">
 
-<h2>講義を選択</h2>
+  <div class="card">
 
-<button onclick="selectSubject('衛生学・公衆衛生学')">衛生学</button>
-<button onclick="selectSubject('解剖学')">解剖学</button>
+    <h2>講義を選択</h2>
 
-<button onclick="location.href='home.html'">ホーム</button>
+    <!-- 科目ボタン -->
+    <button onclick="selectSubject('衛生学・公衆衛生学')">衛生学・公衆衛生学</button>
+    <button onclick="selectSubject('解剖学')">解剖学</button>
+
+    <!-- 余白 -->
+    <div style="height:10px;"></div>
+
+    <!-- 戻る -->
+    <button style="background:#777;" onclick="location.href='home.html'">ホーム</button>
+
+  </div>
 
 </div>
 

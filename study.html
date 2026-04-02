@@ -1,32 +1,33 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
 <link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>鍼灸Study - 学習</title>
-
-
-
 </head>
 
 <body>
 
-<div class="card selectable">
+<div class="container">
 
-<h1 id="title">学習</h1>
+  <div class="card" style="margin-bottom:100px;">
 
-<div id="study"></div>
+    <h1 id="title">学習</h1>
 
-<div style="margin-top:30px;">
-<button class="secondary" onclick="location.href='studyMenu.html'">科目選択</button>
+    <div id="study"></div>
+
+    <button style="background:#777;" onclick="location.href='studyMenu.html'">
+      科目選択へ戻る
+    </button>
+
+  </div>
+
 </div>
 
-</div>
-
-<div class="bottomNav">
-<button class="homeBtn" onclick="location.href='home.html'">ホーム</button>
+<!-- 下固定 -->
+<div class="fixed-bottom">
+  <button onclick="location.href='home.html'">ホーム</button>
 </div>
 
 <script>
@@ -59,42 +60,42 @@ let index = 0;
 
 show();
 
+// ===== 表示 =====
 function show(){
 
 if(index >= quiz.length){
 
-let html = "<h2>学習完了！</h2>";
+let html = `
+<h2>学習完了！</h2>
 
-// クイズへ
-html += `
-<button onclick="goQuiz()" class="secondary">
+<button onclick="goQuiz()">
 この科目のクイズへ
 </button>
-`;
 
-// 科目選択へ
-html += `
-<button onclick="location.href='studyMenu.html'">
+<button style="background:#777;" onclick="location.href='studyMenu.html'">
 他の科目を学習
 </button>
 `;
 
 document.getElementById("study").innerHTML = html;
-
 return;
 }
+
 let q = quiz[index];
 let shuffledChoices = shuffle([...q.choices]);
 let correctText = q.choices[q.answer];
 
-let html = "<div class='questionBox'>" + q.question + "</div>";
+let html = `<div class='questionBox'>${q.question}</div>`;
 
-shuffledChoices.forEach((c,i)=>{
-html += "<button class='choiceBtn' onclick='answerChoice(\""+c+"\")'>"+c+"</button>";
+shuffledChoices.forEach((c)=>{
+html += `<button class='choiceBtn' onclick='answerChoice("${c}")'>${c}</button>`;
 });
+
 document.getElementById("study").innerHTML = html;
+
 }
 
+// ===== 回答 =====
 function answerChoice(choice){
 
 let q = quiz[index];
@@ -128,17 +129,14 @@ btn.classList.add("correct");
 });
 
 html += "<h3 style='color:#f44336'>❌ 不正解</h3>";
-
 }
 
 html += `
-<div style="margin-top:15px; background:#fff3cd; padding:10px; border-radius:8px;">
+<div class="point">
 <strong>解説</strong><br>
 ${q.explanation}
 </div>
-`;
 
-html += `
 <button onclick="nextQuestion()">次へ</button>
 `;
 
@@ -146,16 +144,19 @@ document.getElementById("study").innerHTML += html;
 
 }
 
+// ===== 次へ =====
 function nextQuestion(){
 index++;
 show();
 }
 
+// ===== クイズへ =====
 function goQuiz(){
 localStorage.setItem("selectedSubject", subject);
 location.href = "quiz.html";
 }
 
+// ===== シャッフル =====
 function shuffle(array){
 for(let i = array.length - 1; i > 0; i--){
 const j = Math.floor(Math.random() * (i + 1));

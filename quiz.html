@@ -1,30 +1,28 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>鍼灸Study - クイズ</title>
-
-
-
 </head>
 
 <body>
 
-<div class="card selectable">
+<div class="container">
 
-<h1>クイズ</h1>
+  <div class="card">
+    <h1>クイズ</h1>
+  </div>
 
-<div id="menu"></div>
-<div id="quiz"></div>
+  <div id="menu"></div>
+  <div id="quiz"></div>
 
 </div>
 
 <script>
 
-// ===== 問題（ここに直接書く） =====
+// ===== 問題 =====
 const allQuiz = {
 
 "衛生学・公衆衛生学":[
@@ -65,7 +63,6 @@ answer:1
 
 };
 
-// ===== ここから処理 =====
 let subject = localStorage.getItem("selectedSubject");
 
 let quiz = [];
@@ -75,21 +72,25 @@ let results = [];
 
 showMenu();
 
+// ===== メニュー =====
 function showMenu(){
 
 document.getElementById("quiz").innerHTML = "";
 
 document.getElementById("menu").innerHTML = `
-<div class="questionBox">
+<div class="card">
 <h3>クイズを選択</h3>
-<button class="mainBtn green" onclick="startNormal()">通常クイズ</button>
-<button class="mainBtn green" onclick="startReview()">間違えた問題</button>
-</div>
 
-<button class="mainBtn gray" onclick="location.href='quizMenu.html'">科目選択に戻る</button>
+<button onclick="startNormal()">通常クイズ</button>
+<button onclick="startReview()">間違えた問題</button>
+
+<button style="background:#777;" onclick="location.href='quizMenu.html'">科目選択に戻る</button>
+</div>
 `;
 
 }
+
+// ===== 通常 =====
 function startNormal(){
 if(!allQuiz[subject]){
 alert("問題がありません");
@@ -99,6 +100,7 @@ quiz = allQuiz[subject];
 startQuiz();
 }
 
+// ===== 復習 =====
 function startReview(){
 
 let wrongIndexes = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
@@ -112,6 +114,7 @@ quiz = wrongIndexes.map(i => allQuiz[subject][i]);
 startQuiz();
 }
 
+// ===== 開始 =====
 function startQuiz(){
 quizIndex = 0;
 score = 0;
@@ -120,44 +123,53 @@ document.getElementById("menu").innerHTML = "";
 showQuiz();
 }
 
+// ===== 表示 =====
 function showQuiz(){
 
-// ===== 終了処理 =====
+// 終了
 if(quizIndex >= quiz.length){
 
-let html = "<h2>終了！</h2>";
-html += "<p>スコア："+score+" / "+quiz.length+"</p>";
+let html = `
+<div class="card">
+<h2>終了！</h2>
+<p>スコア：${score} / ${quiz.length}</p>
+`;
 
 results.forEach((r,i)=>{
 html += `<p>問題${i+1}：${r ? "⭕" : "❌"}</p>`;
 });
 
 html += `
-<br>
-<button class="mainBtn green" onclick="showMenu()">もう一度</button>
-<button class="mainBtn gray" onclick="location.href='quizMenu.html'">科目選択へ</button>
-<button class="mainBtn gray" onclick="location.href='home.html'">ホーム</button>
+<button onclick="showMenu()">もう一度</button>
+<button style="background:#777;" onclick="location.href='quizMenu.html'">科目選択へ</button>
+<button style="background:#777;" onclick="location.href='home.html'">ホーム</button>
+</div>
 `;
 
 document.getElementById("quiz").innerHTML = html;
-
-return; // 
+return;
 }
 
-// ===== 問題表示 =====
+// 問題
 const q = quiz[quizIndex];
 
-let html = "<h2>問題 " + (quizIndex+1) + "</h2>";
-html += "<div class='questionBox'>" + q.question + "</div>";
+let html = `
+<div class="card">
+<h2>問題 ${quizIndex+1}</h2>
+<p>${q.question}</p>
+`;
 
 q.choices.forEach((choice,index)=>{
-html += "<button class='choiceBtn' onclick='checkAnswer(" + index + ")'>" 
-+ (index+1) + "．" + choice + "</button>";
+html += `<button class="choiceBtn" onclick="checkAnswer(${index})">${index+1}．${choice}</button>`;
 });
+
+html += `</div>`;
 
 document.getElementById("quiz").innerHTML = html;
 
 }
+
+// ===== 判定 =====
 function checkAnswer(num){
 
 let correct = quiz[quizIndex].answer;

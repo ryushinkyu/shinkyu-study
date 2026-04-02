@@ -1,26 +1,26 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>鍼灸Study - 入室</title>
-
-
-
 </head>
 
 <body>
 
-<div class="card selectable">
+<div class="container">
 
-<h2>鍼灸Study</h2>
-<p>合言葉を入力してください</p>
+  <div class="card">
 
-<input type="password" id="pass" placeholder="パスワード">
+    <h2>鍼灸Study</h2>
+    <p>合言葉を入力してください</p>
 
-<button onclick="check()">入る</button>
+    <input type="password" id="pass" placeholder="パスワード">
+
+    <button onclick="check()">入る</button>
+
+  </div>
 
 </div>
 
@@ -30,7 +30,6 @@ function check(){
 
 const pass = document.getElementById("pass").value;
 
-// 👇 ここ好きなパスワードに変更
 if(pass === "sums2026shinkyu"){
 localStorage.setItem("gate", "ok");
 location.href = "index.html";
@@ -44,4 +43,3 @@ alert("違います");
 
 </body>
 </html>
-

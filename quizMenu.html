@@ -1,23 +1,27 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>クイズ科目選択</title>
-
 </head>
 
 <body>
 
-<h1>科目を選択</h1>
+<div class="container">
 
-<div class="card selectable">
+  <div class="card">
 
-<br>
+    <h2>科目を選択</h2>
 
-<button onclick="location.href='home.html'">戻る</button>
+    <div id="subjectList"></div>
+
+    <button style="background:#777;" onclick="location.href='home.html'">戻る</button>
+
+  </div>
+
+</div>
 
 <script>
 
@@ -37,16 +41,16 @@ const subjects = [
 "東洋医学臨床論"
 ];
 
-// ボタン自動生成
+// ボタン生成
 let html = "";
 
 subjects.forEach(sub=>{
-html += `<button onclick="selectSubject('${sub}')">${sub}</button><br>`;
+html += `<button onclick="selectSubject('${sub}')">${sub}</button>`;
 });
 
 document.getElementById("subjectList").innerHTML = html;
 
-// 科目選択
+// 選択
 function selectSubject(subject){
 localStorage.setItem("selectedSubject", subject);
 location.href = "quiz.html";

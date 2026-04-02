@@ -4,42 +4,59 @@
 <link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>鍼灸Study - ホーム</title>
-
 </head>
-<body>
-<div class="card selectable">
-  <h2>ホーム画面</h2>
-  <p id="welcomeMsg"></p>
 
-  <!-- 画面遷移ボタン -->
-  <button onclick="location.href='mypage.html'">マイページ</button>
-  <button onclick="location.href='lectureMenu.html'">講義</button>
-  <button onclick="location.href='studyMenu.html'">学習</button>
-  <button onclick="location.href='quizMenu.html'">クイズ</button>
-  <button onclick="location.href='admin.html'">管理</button>
-  <button onclick="logout()">ログアウト</button>
+<body>
+
+<div class="container">
+
+  <div class="card">
+
+    <h2>ホーム画面</h2>
+    <p id="welcomeMsg"></p>
+
+    <!-- 画面遷移 -->
+    <button onclick="location.href='mypage.html'">マイページ</button>
+    <button onclick="location.href='lectureMenu.html'">講義</button>
+    <button onclick="location.href='studyMenu.html'">学習</button>
+    <button onclick="location.href='quizMenu.html'">クイズ</button>
+
+    <!-- 管理者だけ表示 -->
+    <button id="adminBtn" style="display:none;" onclick="location.href='admin.html'">管理</button>
+
+    <button onclick="logout()">ログアウト</button>
+
+  </div>
+
 </div>
 
 <script>
-// ログインユーザー確認
+
 const currentUser = localStorage.getItem('currentUser');
 const users = JSON.parse(localStorage.getItem('users') || '{}');
 
 if(currentUser && users[currentUser]){
+
     document.getElementById('welcomeMsg').textContent =
         `ようこそ、${users[currentUser].fullname} さん！`;
+
+    // 管理者だけ表示
+    if(currentUser === "admin"){
+        document.getElementById('adminBtn').style.display = "block";
+    }
+
 }else{
-    // ログイン情報がない場合は loginOrRegister.html へ
-    window.location.href = 'loginOrRegister.html';
+    location.href = 'loginOrRegister.html';
 }
 
-// ログアウト関数
+// ログアウト
 function logout(){
     localStorage.removeItem('currentUser');
-    window.location.href = 'loginOrRegister.html';
+    location.href = 'loginOrRegister.html';
 }
+
 </script>
+
 </body>
 </html>

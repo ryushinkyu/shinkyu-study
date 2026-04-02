@@ -1,23 +1,29 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>学習科目選択</title>
-
-
-
 </head>
 
 <body>
 
-<h1>学習する科目を選択</h1>
+<div class="container">
 
-<div class="card selectable">
+  <div class="card">
 
-<button onclick="location.href='home.html'">戻る</button>
+    <h2>学習する科目を選択</h2>
+
+    <div id="subjects"></div>
+
+    <button style="background:#777;" onclick="location.href='home.html'">
+      戻る
+    </button>
+
+  </div>
+
+</div>
 
 <script>
 
@@ -39,7 +45,7 @@ const subjects = [
 let html = "";
 
 subjects.forEach(sub=>{
-html += `<button onclick="selectSubject('${sub}')">${sub}</button><br>`;
+html += `<button onclick="selectSubject('${sub}')">${sub}</button>`;
 });
 
 document.getElementById("subjects").innerHTML = html;

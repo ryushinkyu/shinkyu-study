@@ -5,26 +5,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>講義</title>
-
-
 </head>
 
 <body>
 
-<div class="card selectable">
+<div class="container">
 
-<h1 id="title"></h1>
+  <div class="card" style="margin-bottom:100px;">
 
-<div id="content"></div>
+    <h1 id="title"></h1>
 
-<button id="nextBtn" onclick="next()">次へ</button>
+    <div id="content"></div>
+
+    <button id="nextBtn" onclick="next()">次へ</button>
+
+  </div>
 
 </div>
 
 <!-- 下固定 -->
 <div class="fixed-bottom">
-<button onclick="location.href='lectureMenu.html'">科目選択</button>
-<button onclick="location.href='home.html'">ホーム</button>
+  <button onclick="location.href='lectureMenu.html'">科目選択</button>
+  <button onclick="location.href='home.html'">ホーム</button>
 </div>
 
 <script>
@@ -32,30 +34,24 @@
 let subject = localStorage.getItem("selectedSubject");
 document.getElementById("title").textContent = subject + " 講義";
 
-// ===== 状態 =====
 let step = 0;
 let index = 0;
 
-// ===== データ =====
 const lectureData = {
 
 "衛生学・公衆衛生学":[
-
 {
 title:"市町村保健センター",
 content:"地域住民の健康管理を行う施設。乳幼児健診や健康相談を行う。",
 point:"市町村 → <span class='red'>乳幼児健診</span>"
 },
-
 {
 title:"保健所",
 content:"地域保健法に基づく機関。感染症対策や食品衛生を行う。",
 point:"保健所 → <span class='red'>感染症・食品衛生</span>"
 }
-
 ],
 
-// 他は空でOK（あとで追加）
 "解剖学":[],
 "生理学":[],
 "病理学概論":[],
@@ -65,6 +61,7 @@ point:"保健所 → <span class='red'>感染症・食品衛生</span>"
 "東洋医学概論":[],
 "経絡経穴概論":[],
 "東洋医学臨床論":[]
+
 };
 
 let data = lectureData[subject] || [];
@@ -89,7 +86,7 @@ let count = localStorage.getItem("lecture_"+subject+"_"+i) || 0;
 let checked = count > 0 ? "✔" : "□";
 
 html += `
-<div class="section" onclick="selectLecture(${i})">
+<div class="card selectable" onclick="selectLecture(${i})">
 ${checked} ${i+1}. ${d.title}（${count}回）
 </div>
 `;
@@ -104,14 +101,13 @@ if(step === 1){
 
 let d = data[index];
 
-let html = `
-<div class="section">
+document.getElementById("content").innerHTML = `
+<div class="card">
 <h3>${d.title}</h3>
 <p>${d.content}</p>
 </div>
 `;
 
-document.getElementById("content").innerHTML = html;
 return;
 }
 
@@ -120,14 +116,13 @@ if(step === 2){
 
 let d = data[index];
 
-let html = `
+document.getElementById("content").innerHTML = `
 <div class="point">
 <strong>試験ポイント</strong><br>
 ${d.point}
 </div>
 `;
 
-document.getElementById("content").innerHTML = html;
 return;
 }
 
@@ -144,11 +139,7 @@ else if(step === 2){
 let goNext = confirm("目次に戻りますか？");
 
 if(goNext){
-
-// ⭐ 完全リセットして目次へ
 step = 0;
-
-
 show();
 return;
 
@@ -164,12 +155,12 @@ document.getElementById("content").innerHTML = `
 
 return;
 }
-
 }
 
 show();
 }
 
+// ===== 選択 =====
 function selectLecture(i){
 
 index = i;

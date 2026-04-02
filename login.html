@@ -1,28 +1,28 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ログイン</title>
-
-
-
 </head>
 
 <body>
 
-<div class="card selectable">
+<div class="container">
 
-<h2>ログイン</h2>
+  <div class="card">
 
-<input type="text" id="username" placeholder="ユーザー名">
-<input type="password" id="password" placeholder="パスワード">
+    <h2>ログイン</h2>
 
-<button onclick="login()">ログイン</button>
+    <input type="text" id="username" placeholder="ユーザー名">
+    <input type="password" id="password" placeholder="パスワード">
 
-<button onclick="location.href='loginOrRegister.html'">戻る</button>
+    <button onclick="login()">ログイン</button>
+
+    <button style="background:#777;" onclick="location.href='loginOrRegister.html'">戻る</button>
+
+  </div>
 
 </div>
 
@@ -39,7 +39,6 @@ if(users[username] && users[username].password === password){
 
 localStorage.setItem("currentUser", username);
 
-// 👉 ホームへ
 location.href = "home.html";
 
 }else{

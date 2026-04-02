@@ -4,25 +4,38 @@
 <link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>鍼灸Study - 新規登録</title>
-
 </head>
+
 <body>
-<div class="card selectable">
-  <h2>新規登録</h2>
-  <input type="text" id="fullname" placeholder="氏名">
-  <input type="text" id="kana" placeholder="カタカナ">
-  <input type="date" id="birthdate" placeholder="生年月日">
-  <input type="email" id="email" placeholder="メールアドレス">
-  <input type="password" id="password" placeholder="パスワード">
-  <input type="text" id="username" placeholder="ユーザー名">
-  <button id="registerBtn">登録</button>
+
+<div class="container">
+
+  <div class="card">
+
+    <h2>新規登録</h2>
+
+    <input type="text" id="fullname" placeholder="氏名">
+    <input type="text" id="kana" placeholder="カタカナ">
+    <input type="date" id="birthdate">
+    <input type="email" id="email" placeholder="メールアドレス">
+    <input type="password" id="password" placeholder="パスワード">
+    <input type="text" id="username" placeholder="ユーザー名">
+
+    <button id="registerBtn">登録</button>
+
+    <button style="background:#777;" onclick="location.href='loginOrRegister.html'">戻る</button>
+
+  </div>
+
 </div>
 
 <script>
-// 初期化：adminを必ず登録（番号000固定）
+
+// ===== admin 初期化 =====
 let users = JSON.parse(localStorage.getItem('users') || '{}');
+
+if(!users['admin']){
 users['admin'] = {
     fullname: '管理者',
     kana: 'カンリシャ',
@@ -32,8 +45,9 @@ users['admin'] = {
     memberId: '000',
     username: 'admin'
 };
+}
 
-// lastUserId は admin を除く一般ユーザー用
+// ===== ID管理 =====
 let maxId = 0;
 for(const uname in users){
     if(uname !== 'admin'){
@@ -44,8 +58,9 @@ for(const uname in users){
 localStorage.setItem('lastUserId', maxId);
 localStorage.setItem('users', JSON.stringify(users));
 
-// 登録処理
+// ===== 登録処理 =====
 document.getElementById('registerBtn').addEventListener('click', ()=>{
+
     const fullname = document.getElementById('fullname').value.trim();
     const kana = document.getElementById('kana').value.trim();
     const birthdate = document.getElementById('birthdate').value;
@@ -58,22 +73,29 @@ document.getElementById('registerBtn').addEventListener('click', ()=>{
     }
 
     let users = JSON.parse(localStorage.getItem('users') || '{}');
+
     if(users[username]){
         alert("このユーザー名は既に使われています"); return;
     }
 
-    // 会員番号自動付与（admin除く）
     let lastId = parseInt(localStorage.getItem('lastUserId') || '0', 10);
     lastId += 1;
+
     const memberId = String(lastId).padStart(3,'0');
+
     localStorage.setItem('lastUserId', lastId);
 
     users[username] = { fullname, kana, birthdate, email, password, memberId, username };
+
     localStorage.setItem('users', JSON.stringify(users));
 
     localStorage.setItem('currentUser', username);
-    window.location.href = 'home.html';
+
+    location.href = 'home.html';
+
 });
+
 </script>
+
 </body>
 </html>

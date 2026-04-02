@@ -1,27 +1,29 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>マイページ</title>
-
-
-
 </head>
 
 <body>
 
-<div class="card selectable">
+<div class="container">
 
-<h2>マイページ</h2>
+  <!-- ユーザー情報 -->
+  <div class="card">
+    <h2>マイページ</h2>
+    <div id="userInfo"></div>
+  </div>
 
-<div id="userInfo" class="info"></div>
+  <!-- 履歴 -->
+  <div id="history"></div>
 
-<div id="history"></div>
-
-<button onclick="location.href='home.html'">ホーム</button>
+  <!-- 戻る -->
+  <div class="card">
+    <button style="background:#777;" onclick="location.href='home.html'">ホーム</button>
+  </div>
 
 </div>
 
@@ -34,10 +36,11 @@ let users = JSON.parse(localStorage.getItem("users") || "{}");
 if(users[currentUser]){
 let u = users[currentUser];
 
-document.getElementById("userInfo").innerHTML =
-"👤 名前：" + u.fullname + "<br>" +
-"🆔 会員番号：" + u.memberId + "<br>" +
-"📛 ユーザー名：" + u.username;
+document.getElementById("userInfo").innerHTML = `
+<p>👤 名前：${u.fullname}</p>
+<p>🆔 会員番号：${u.memberId}</p>
+<p>📛 ユーザー名：${u.username}</p>
+`;
 }
 
 // ===== 履歴 =====
@@ -57,7 +60,11 @@ grouped[subject].push(h);
 
 Object.keys(grouped).forEach(subject=>{
 
-html += `<div class="subject"><h3>📚 ${subject}</h3></div>`;
+html += `
+<div class="card">
+<h3>📚 ${subject}</h3>
+</div>
+`;
 
 grouped[subject].slice().reverse().forEach(h=>{
 
@@ -66,9 +73,9 @@ let rate = Math.round((h.score / h.total) * 100);
 html += `
 <div class="card">
 <p>🕒 ${h.date}</p>
-<p>🎯 ${h.score}/${h.total}（${rate}%）</p>
+<p><strong>🎯 ${h.score}/${h.total}（${rate}%）</strong></p>
 
-<div class="detail">
+<div style="margin-top:10px;">
 ${(h.detail || []).map((d,i)=>`問題${i+1}：${d ? "⭕" : "❌"}`).join("<br>")}
 </div>
 </div>
@@ -79,7 +86,7 @@ ${(h.detail || []).map((d,i)=>`問題${i+1}：${d ? "⭕" : "❌"}`).join("<br>"
 });
 
 }else{
-html = "<p>履歴なし</p>";
+html = "<div class='card'><p>履歴なし</p></div>";
 }
 
 document.getElementById("history").innerHTML = html;
