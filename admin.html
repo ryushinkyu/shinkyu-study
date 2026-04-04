@@ -81,11 +81,17 @@ const rate = obj.rate;
 
 // 🔍 検索
 if(keyword !== ""){
-if(!user.username.includes(keyword) && !user.fullname.includes(keyword)){
+
+const key = keyword.toLowerCase();
+
+const uname = user.username.toLowerCase();
+const fname = user.fullname.toLowerCase();
+
+if(!uname.includes(key) && !fname.includes(key)){
 return;
 }
-}
 
+}
 // 🏆 メダル
 let medal = "";
 if(rank === 1) medal = "🥇";
