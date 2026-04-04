@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "ここに貼る",
+  authDomain: "ここに貼る",
+  projectId: "ここに貼る"
+};
+
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
 <meta charset="UTF-8">
 <link rel="stylesheet" href="style.css">
 <title>管理画面</title>
@@ -37,13 +51,29 @@ location.href = 'home.html';
 // ===== ユーザー一覧 =====
 function renderUsers(){
 
-const users = JSON.parse(localStorage.getItem('users') || '{}');
-const history = JSON.parse(localStorage.getItem('quizHistory') || '{}');
-const keyword = document.getElementById("search").value.trim();
-
 const listDiv = document.getElementById('userList');
 listDiv.innerHTML = '';
 
+db.collection("users").get().then(snapshot => {
+
+snapshot.forEach(doc => {
+
+const user = doc.data();
+
+const div = document.createElement('div');
+div.className = 'card';
+
+div.innerHTML = `
+<p>${user.memberId} | ${user.username} | ${user.fullname}</p>
+`;
+
+listDiv.appendChild(div);
+
+});
+
+});
+
+}
 // ===== データ整理 + ランキング =====
 const userArray = Object.keys(users)
 .filter(u => u !== "admin")
@@ -160,8 +190,20 @@ if(confirm("削除しますか？")){
 let users = JSON.parse(localStorage.getItem('users') || '{}');
 delete users[username];
 
-localStorage.setItem('users', JSON.stringify(users));
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 
+<script>
+const firebaseConfig = {
+  apiKey: "ここに貼る",
+  authDomain: "ここに貼る",
+  projectId: "ここに貼る"
+};
+
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
 renderUsers();
 
 }
