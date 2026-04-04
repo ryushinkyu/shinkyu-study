@@ -64,8 +64,13 @@ let q = allQuiz[subject][i];
 
 html += `
 <div class="card">
-<p><strong>${q.question}</strong></p>
-<p style="color:#0288d1">正解：${q.choices[q.answer]}</p>
+<p>
+正解：
+<span class="mask" onclick="reveal(this)">
+${q.choices[q.answer]}
+</span>
+</p>
+
 </div>
 `;
 });
@@ -80,7 +85,26 @@ html = "<p>復習する問題はありません</p>";
 
 document.getElementById("reviewList").innerHTML = html;
 
+function reveal(el){
+el.classList.toggle("show");
+}
 </script>
 
+<style>
+.mask{
+background:#333;
+color:transparent; /* ←これが重要 */
+padding:5px 10px;
+border-radius:6px;
+cursor:pointer;
+display:inline-block;
+user-select:none;
+}
+
+.show{
+background:#e3f2fd;
+color:#000;
+}
+</style>
 </body>
 </html>
