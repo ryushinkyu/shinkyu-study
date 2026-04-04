@@ -51,35 +51,35 @@ let wrong = JSON.parse(localStorage.getItem(key) || "[]");
 
 if(wrong.length > 0){
 
-html += `<h3>📚 ${subject}</h3>`;
+html += `<div class="card"><h3>📚 ${subject}</h3>`;
 
 wrong.forEach(w=>{
 
-// ⭐ ここが進化ポイント（データ直接保存）
 let q = w.questionData;
 
+if(!q) return;
+
 html += `
-<div class="card">
+<div style="margin-top:10px; padding:10px; background:#f9f9f9; border-radius:8px;">
 <p><strong>${q.question}</strong></p>
 
-<p style="color:#0288d1;">
-あなたの答え：${q.choices[w.userAnswer]}
+<p style="color:#0288d1; font-weight:bold;">
+あなたの答え：：${q.choices[w.userAnswer]}
 </p>
 
 <p>
-正解：
-<span class="mask" onclick="reveal(this)">
-${q.choices[q.answer]}
+<strong>正解：</strong>
+<span class="mask" onclick="reveal(this)">${q.choices[q.answer]}
 </span>
 </p>
-
 </div>
 `;
 
 });
 
-}
+html += `</div>`;
 
+}
 }
 
 }
