@@ -7,17 +7,22 @@
 <title>ログイン</title>
 <link rel="stylesheet" href="style.css">
 
-<!-- Firebase（ここ重要） -->
+<!-- Firebase（compat版） -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
 const firebaseConfig = {
-  apiKey: "ここに貼る",
-  authDomain: "ここに貼る",
-  projectId: "ここに貼る"
+  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
+  authDomain: "shinkyu-study.firebaseapp.com",
+  projectId: "shinkyu-study"
 };
 
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
+
+// 初期化（これ絶対必要）
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 </script>
@@ -45,40 +50,41 @@ const db = firebase.firestore();
 
 function login(){
 
-let username = document.getElementById("username").value.trim();
-let password = document.getElementById("password").value;
+  let username = document.getElementById("username").value.trim();
+  let password = document.getElementById("password").value;
 
-// 入力チェック
-if(!username || !password){
-alert("入力してください");
-return;
-}
+  // 入力チェック
+  if(!username || !password){
+    alert("入力してください");
+    return;
+  }
 
-// Firebaseから取得
-db.collection("users").doc(username).get()
-.then(doc => {
+  // Firebaseから取得
+  db.collection("users").doc(username).get()
+  .then(doc => {
 
-if(doc.exists){
+    if(doc.exists){
 
-let user = doc.data();
+      let user = doc.data();
 
-if(user.password === password){
+      if(user.password === password){
 
-localStorage.setItem("currentUser", username);
-location.href = "home.html";
+        localStorage.setItem("currentUser", username);
+        location.href = "home.html";
 
-}else{
-alert("パスワード違う");
-}
+      }else{
+        alert("パスワード違う");
+      }
 
-}else{
-alert("ユーザー存在しない");
-}
+    }else{
+      alert("ユーザー存在しない");
+    }
 
-}).catch(err=>{
-console.error(err);
-alert("通信エラー");
-});
+  })
+  .catch(err=>{
+    console.error(err);
+    alert("通信エラー");
+  });
 
 }
 

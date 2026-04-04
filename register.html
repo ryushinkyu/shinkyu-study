@@ -1,53 +1,92 @@
-document.getElementById('registerBtn').addEventListener('click', ()=>{
+<!DOCTYPE html>
+<html lang="ja">
+<head>
 
-const fullname = document.getElementById('fullname').value.trim();
-const kana = document.getElementById('kana').value.trim();
-const birthdate = document.getElementById('birthdate').value;
-const email = document.getElementById('email').value.trim();
-const password = document.getElementById('password').value;
-const username = document.getElementById('username').value.trim();
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ログイン</title>
+<link rel="stylesheet" href="style.css">
 
-// ===== 入力チェック =====
-if(!fullname || !kana || !birthdate || !email || !password || !username){
-alert("全て入力してください");
+<!-- Firebase（compat版が重要） -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+// ===== Firebase設定 =====
+const firebaseConfig = {
+  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
+  authDomain: "shinkyu-study.firebaseapp.com",
+  projectId: "shinkyu-study"
+};
+
+// ===== 初期化 =====
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
+
+</head>
+
+<body>
+
+<div class="container">
+  <div class="card">
+
+    <h2>ログイン</h2>
+
+    <input type="text" id="username" placeholder="ユーザー名">
+    <input type="password" id="password" placeholder="パスワード">
+
+    <button onclick="login()">ログイン</button>
+
+    <button style="background:#777;" onclick="location.href='loginOrRegister.html'">
+      戻る
+    </button>
+
+  </div>
+</div>
+
+<script>
+
+function login(){
+
+let username = document.getElementById("username").value.trim();
+let password = document.getElementById("password").value;
+
+// 入力チェック
+if(!username || !password){
+alert("入力してください");
 return;
 }
 
-if(password.length < 4){
-alert("パスワードは4文字以上にしてください");
-return;
-}
-
-// ===== ユーザー存在チェック =====
-db.collection("users").doc(username).get().then(doc => {
+// Firebaseから取得
+db.collection("users").doc(username).get()
+.then(doc => {
 
 if(doc.exists){
-alert("このユーザー名は既に使われています");
-return;
+
+let user = doc.data();
+
+if(user.password === password){
+
+localStorage.setItem("currentUser", username);
+location.href = "home.html";
+
+}else{
+alert("パスワードが違います");
 }
 
-// ===== Firebase保存 =====
-db.collection("users").doc(username).set({
-fullname: fullname,
-kana: kana,
-birthdate: birthdate,
-email: email,
-password: password,
-memberId: String(Math.floor(100 + Math.random() * 900)), // 3桁ID
-username: username
-}).then(()=>{
-
-// ログイン状態にする
-localStorage.setItem("currentUser", username);
-
-// ホームへ
-location.href = "home.html";
+}else{
+alert("ユーザーが存在しません");
+}
 
 }).catch(err=>{
 console.error(err);
-alert("登録エラー");
+alert("通信エラー");
 });
 
-});
+}
 
-});
+</script>
+
+</body>
+</html>
