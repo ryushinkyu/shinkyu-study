@@ -1,3 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+<title>管理画面</title>
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+
+<h2>管理画面（管理者専用）</h2>
+
+<input type="text" id="search" placeholder="ユーザー検索" oninput="renderUsers()">
+
+<div id="userList"></div>
+
+<button onclick="resetData()" style="background:#f44336;">全データ削除</button>
+<button onclick="location.href='home.html'">ホームに戻る</button>
+
+</div>
+</div>
+
+<script>
+
+// ===== 管理者チェック =====
+const adminUser = 'admin';
+const currentUser = localStorage.getItem('currentUser');
+
+if(currentUser !== adminUser){
+alert('管理者以外はアクセスできません');
+location.href = 'home.html';
+}
+
+// ===== ユーザー一覧 =====
 function renderUsers(){
 
 const users = JSON.parse(localStorage.getItem('users') || '{}');
@@ -7,6 +44,7 @@ const keyword = document.getElementById("search").value.trim();
 const listDiv = document.getElementById('userList');
 listDiv.innerHTML = '';
 
+// ===== データ整理 + ランキング =====
 const userArray = Object.keys(users)
 .filter(u => u !== "admin")
 .map(username => {
@@ -23,11 +61,16 @@ correct += h.score;
 
 let rate = total ? Math.round((correct/total)*100) : 0;
 
-return { username, user: users[username], rate };
+return {
+username,
+user: users[username],
+rate
+};
 
 })
 .sort((a,b)=> b.rate - a.rate);
 
+// ===== 表示 =====
 let rank = 1;
 
 userArray.forEach(obj => {
@@ -54,6 +97,7 @@ let color = "#4caf50";
 if(rate < 60) color = "#f44336";
 else if(rate < 80) color = "#ff9800";
 
+// ===== カード生成 =====
 const div = document.createElement('div');
 div.className = 'card';
 
@@ -75,3 +119,67 @@ rank++;
 });
 
 }
+
+// ===== 詳細表示 =====
+function viewDetail(username){
+
+const history = JSON.parse(localStorage.getItem('quizHistory') || '{}');
+const div = document.getElementById("detail_"+username);
+
+if(!history[username]){
+div.innerHTML = "<p>履歴なし</p>";
+return;
+}
+
+let html = "<h4>履歴</h4>";
+
+history[username].slice().reverse().forEach(h=>{
+html += `
+<div style="background:#f9f9f9; padding:10px; margin:5px 0;">
+<p>${h.subject || "不明"} | ${h.score}/${h.total}</p>
+<p>${h.date}</p>
+</div>
+`;
+});
+
+div.innerHTML = html;
+
+}
+
+// ===== ユーザー削除 =====
+function deleteUser(username){
+
+if(confirm("削除しますか？")){
+
+let users = JSON.parse(localStorage.getItem('users') || '{}');
+delete users[username];
+
+localStorage.setItem('users', JSON.stringify(users));
+
+renderUsers();
+
+}
+
+}
+
+// ===== 全データ削除 =====
+function resetData(){
+
+if(confirm("全データ削除しますか？（戻せません）")){
+
+localStorage.clear();
+alert("削除しました");
+
+location.href = 'loginOrRegister.html';
+
+}
+
+}
+
+// 初期表示
+renderUsers();
+
+</script>
+
+</body>
+</html>
