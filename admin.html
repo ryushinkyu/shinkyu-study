@@ -13,9 +13,13 @@
 <div class="card">
 <h2>管理画面（管理者専用）</h2>
 
+<input type="text" id="search" placeholder="ユーザー検索" oninput="renderUsers()">
+
 <div id="userList"></div>
 
+<button onclick="resetData()" style="background:#f44336;">全データ削除</button>
 <button onclick="location.href='home.html'">ホームに戻る</button>
+
 </div>
 
 </div>
@@ -30,11 +34,14 @@ alert('管理者以外はアクセスできません');
 location.href = 'home.html';
 }
 
+// ===== ユーザー一覧 =====
 function renderUsers(){
 
 const users = JSON.parse(localStorage.getItem('users') || '{}');
-const listDiv = document.getElementById('userList');
+const history = JSON.parse(localStorage.getItem('quizHistory') || '{}');
+const keyword = document.getElementById("search").value.toLowerCase();
 
+const listDiv = document.getElementById('userList');
 listDiv.innerHTML = '';
 
 for(const username in users){
@@ -43,18 +50,71 @@ if(username === 'admin') continue;
 
 const user = users[username];
 
+// 検索
+if(!user.username.toLowerCase().includes(keyword) &&
+   !user.fullname.toLowerCase().includes(keyword)){
+   continue;
+}
+
+// ===== 正答率計算 =====
+let total = 0;
+let correct = 0;
+
+if(history[username]){
+history[username].forEach(h=>{
+total += h.total;
+correct += h.score;
+});
+}
+
+let rate = total ? Math.round((correct/total)*100) : 0;
+
+// ===== 表示 =====
 const div = document.createElement('div');
 div.className = 'card';
 
 div.innerHTML = `
-<p>${user.memberId} | ${user.username} | ${user.fullname}</p>
+<p><strong>${user.memberId}</strong> | ${user.username} | ${user.fullname}</p>
+<p>正答率：${rate}%</p>
+
+<button onclick="viewDetail('${username}')">詳細</button>
 <button onclick="deleteUser('${username}')">削除</button>
+
+<div id="detail_${username}"></div>
 `;
 
 listDiv.appendChild(div);
 }
 }
 
+// ===== 詳細表示 =====
+function viewDetail(username){
+
+const history = JSON.parse(localStorage.getItem('quizHistory') || {});
+const div = document.getElementById("detail_"+username);
+
+if(!history[username]){
+div.innerHTML = "<p>履歴なし</p>";
+return;
+}
+
+let html = "<h4>履歴</h4>";
+
+history[username].slice().reverse().forEach(h=>{
+
+html += `
+<div style="background:#f9f9f9; padding:10px; margin:5px 0;">
+<p>${h.subject || "不明"} | ${h.score}/${h.total}</p>
+<p>${h.date}</p>
+</div>
+`;
+
+});
+
+div.innerHTML = html;
+}
+
+// ===== 削除 =====
 function deleteUser(username){
 
 if(confirm("削除しますか？")){
@@ -65,6 +125,18 @@ delete users[username];
 localStorage.setItem('users', JSON.stringify(users));
 
 renderUsers();
+}
+}
+
+// ===== 全削除 =====
+function resetData(){
+
+if(confirm("全データ削除しますか？（戻せません）")){
+
+localStorage.clear();
+alert("削除しました");
+
+location.href = 'loginOrRegister.html';
 }
 }
 
