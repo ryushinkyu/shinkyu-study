@@ -39,38 +39,15 @@ font-weight:bold;
 
 <script>
 
-const allQuiz = {
-
-"衛生学・公衆衛生学":[
-{
-question:"市町村保健センターの役割はどれか？",
-choices:[
-"食品衛生に関する業務",
-"環境衛生に関する業務",
-"エイズに関する相談",
-"乳幼児健診"
-],
-answer:3
-},
-{
-question:"保健所について誤っているのはどれか？",
-choices:[
-"地域保健法で規定される",
-"保健所長は医師である必要がある",
-"栄養の改善および食品衛生に関する業務を行う",
-"地域保健に係わる統計に関する業務を行う"
-],
-answer:1
-}
-]
-
-};
-
 let html = "";
 
-Object.keys(allQuiz).forEach(subject=>{
+// ===== 全科目チェック =====
+for(let key in localStorage){
 
-let wrong = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
+if(key.startsWith("wrongQuestions_")){
+
+let subject = key.replace("wrongQuestions_","");
+let wrong = JSON.parse(localStorage.getItem(key) || "[]");
 
 if(wrong.length > 0){
 
@@ -78,7 +55,8 @@ html += `<h3>📚 ${subject}</h3>`;
 
 wrong.forEach(w=>{
 
-let q = allQuiz[subject][w.index];
+// ⭐ ここが進化ポイント（データ直接保存）
+let q = w.questionData;
 
 html += `
 <div class="card">
@@ -102,7 +80,9 @@ ${q.choices[q.answer]}
 
 }
 
-});
+}
+
+}
 
 if(html === ""){
 html = "<p>復習する問題はありません</p>";

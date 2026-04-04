@@ -70,7 +70,10 @@ document.getElementById("menu").innerHTML = `
 }
 
 function startNormal(){
-quiz = allQuiz[subject] || [];
+quiz = (allQuiz[subject] || []).map((q,i)=>({
+...q,
+originalIndex: i
+}));
 startQuiz();
 }
 
@@ -83,7 +86,11 @@ alert("間違えた問題がありません");
 return;
 }
 
-quiz = wrong.map(w => allQuiz[subject][w.index]);
+quiz = wrong.map(w => ({
+...allQuiz[subject][w.index],
+originalIndex: w.index
+}));
+
 startQuiz();
 }
 
@@ -136,26 +143,24 @@ let correct = q.answer;
 
 let wrong = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
 
-// 元のindex取得
-let originalIndex = allQuiz[subject].indexOf(q);
+let originalIndex = q.originalIndex;
 
 if(choice === correct){
 score++;
 results.push(true);
 
-// 正解したら削除
 wrong = wrong.filter(w => w.index !== originalIndex);
 
 }else{
 results.push(false);
 
-// 保存（ここが進化ポイント）
 let exists = wrong.find(w => w.index === originalIndex);
 
 if(!exists){
 wrong.push({
 index: originalIndex,
-userAnswer: choice
+userAnswer: choice,
+questionData: q   // ←これ追加
 });
 }
 }
@@ -166,7 +171,6 @@ quizIndex++;
 showQuiz();
 
 }
-
 </script>
 
 </body>
