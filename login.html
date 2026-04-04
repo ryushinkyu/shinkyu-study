@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ログイン</title>
+<link rel="stylesheet" href="style.css">
+
+<!-- Firebase（ここ重要） -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -12,19 +18,15 @@ const firebaseConfig = {
   projectId: "ここに貼る"
 };
 
-const app = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 </script>
-<link rel="stylesheet" href="style.css">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ログイン</title>
+
 </head>
 
 <body>
 
 <div class="container">
-
   <div class="card">
 
     <h2>ログイン</h2>
@@ -37,7 +39,6 @@ const db = firebase.firestore();
     <button style="background:#777;" onclick="location.href='loginOrRegister.html'">戻る</button>
 
   </div>
-
 </div>
 
 <script>
@@ -46,6 +47,12 @@ function login(){
 
 let username = document.getElementById("username").value.trim();
 let password = document.getElementById("password").value;
+
+// 入力チェック
+if(!username || !password){
+alert("入力してください");
+return;
+}
 
 // Firebaseから取得
 db.collection("users").doc(username).get()
@@ -68,9 +75,13 @@ alert("パスワード違う");
 alert("ユーザー存在しない");
 }
 
+}).catch(err=>{
+console.error(err);
+alert("通信エラー");
 });
 
 }
+
 </script>
 
 </body>

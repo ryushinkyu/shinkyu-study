@@ -1,127 +1,53 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
-
-<script>
-const firebaseConfig = {
-  apiKey: "ここに貼る",
-  authDomain: "ここに貼る",
-  projectId: "ここに貼る"
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-</script>
-<link rel="stylesheet" href="style.css">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>鍼灸Study - 新規登録</title>
-</head>
-
-<body>
-
-<div class="container">
-
-  <div class="card">
-
-    <h2>新規登録</h2>
-
-    <input type="text" id="fullname" placeholder="氏名">
-    <input type="text" id="kana" placeholder="カタカナ">
-    <input type="date" id="birthdate">
-    <input type="email" id="email" placeholder="メールアドレス">
-    <input type="password" id="password" placeholder="パスワード">
-    <input type="text" id="username" placeholder="ユーザー名">
-
-    <button id="registerBtn">登録</button>
-
-    <button style="background:#777;" onclick="location.href='loginOrRegister.html'">戻る</button>
-
-  </div>
-
-</div>
-
-<script>
-
-// ===== admin 初期化 =====
-let users = JSON.parse(localStorage.getItem('users') || '{}');
-
-if(!users['admin']){
-users['admin'] = {
-    fullname: '管理者',
-    kana: 'カンリシャ',
-    birthdate: '2000-01-01',
-    email: 'admin@example.com',
-    password: 'adminpass',
-    memberId: '000',
-    username: 'admin'
-};
-}
-
-// ===== ID管理 =====
-let maxId = 0;
-for(const uname in users){
-    if(uname !== 'admin'){
-        const num = parseInt(users[uname].memberId,10);
-        if(num > maxId) maxId = num;
-    }
-}
-localStorage.setItem('lastUserId', maxId);
-localStorage.setItem('users', JSON.stringify(users));
-
-// ===== 登録処理 =====
 document.getElementById('registerBtn').addEventListener('click', ()=>{
 
-    const fullname = document.getElementById('fullname').value.trim();
-    const kana = document.getElementById('kana').value.trim();
-    const birthdate = document.getElementById('birthdate').value;
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const username = document.getElementById('username').value.trim();
+const fullname = document.getElementById('fullname').value.trim();
+const kana = document.getElementById('kana').value.trim();
+const birthdate = document.getElementById('birthdate').value;
+const email = document.getElementById('email').value.trim();
+const password = document.getElementById('password').value;
+const username = document.getElementById('username').value.trim();
 
-    if(!fullname || !kana || !birthdate || !email || !password || !username){
-        alert("全て入力してください"); return;
-    }
+// ===== 入力チェック =====
+if(!fullname || !kana || !birthdate || !email || !password || !username){
+alert("全て入力してください");
+return;
+}
 
-    let users = JSON.parse(localStorage.getItem('users') || '{}');
+if(password.length < 4){
+alert("パスワードは4文字以上にしてください");
+return;
+}
 
-    if(users[username]){
-        alert("このユーザー名は既に使われています"); return;
-    }
+// ===== ユーザー存在チェック =====
+db.collection("users").doc(username).get().then(doc => {
 
-    let lastId = parseInt(localStorage.getItem('lastUserId') || '0', 10);
-    lastId += 1;
+if(doc.exists){
+alert("このユーザー名は既に使われています");
+return;
+}
 
-    const memberId = String(lastId).padStart(3,'0');
-
-    localStorage.setItem('lastUserId', lastId);
-
-    users[username] = { fullname, kana, birthdate, email, password, memberId, username };
-
-    localStorage.setItem('users', JSON.stringify(users));
-
-    localStorage.setItem('currentUser', username);
-
-    location.href = 'home.html';
-
-});
+// ===== Firebase保存 =====
 db.collection("users").doc(username).set({
-  fullname,
-  kana,
-  birthdate,
-  email,
-  password,
-  memberId,
-  username
+fullname: fullname,
+kana: kana,
+birthdate: birthdate,
+email: email,
+password: password,
+memberId: String(Math.floor(100 + Math.random() * 900)), // 3桁ID
+username: username
 }).then(()=>{
-  localStorage.setItem("currentUser", username);
-  window.location.href = 'home.html';
+
+// ログイン状態にする
+localStorage.setItem("currentUser", username);
+
+// ホームへ
+location.href = "home.html";
+
+}).catch(err=>{
+console.error(err);
+alert("登録エラー");
 });
 
-</script>
+});
 
-</body>
-</html>
+});

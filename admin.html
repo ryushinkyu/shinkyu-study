@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+<title>管理画面</title>
+
 <!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -12,12 +16,10 @@ const firebaseConfig = {
   projectId: "ここに貼る"
 };
 
-const app = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 </script>
-<meta charset="UTF-8">
-<link rel="stylesheet" href="style.css">
-<title>管理画面</title>
+
 </head>
 
 <body>
@@ -27,11 +29,10 @@ const db = firebase.firestore();
 
 <h2>管理画面（管理者専用）</h2>
 
-<input type="text" id="search" placeholder="ユーザー検索" oninput="renderUsers()">
+<input type="text" id="search" placeholder="ユーザー検索">
 
 <div id="userList"></div>
 
-<button onclick="resetData()" style="background:#f44336;">全データ削除</button>
 <button onclick="location.href='home.html'">ホームに戻る</button>
 
 </div>
@@ -51,178 +52,72 @@ location.href = 'home.html';
 // ===== ユーザー一覧 =====
 function renderUsers(){
 
+const keyword = document.getElementById("search").value.toLowerCase();
 const listDiv = document.getElementById('userList');
 listDiv.innerHTML = '';
 
 db.collection("users").get().then(snapshot => {
 
+let users = [];
+
 snapshot.forEach(doc => {
-
-const user = doc.data();
-
-const div = document.createElement('div');
-div.className = 'card';
-
-div.innerHTML = `
-<p>${user.memberId} | ${user.username} | ${user.fullname}</p>
-`;
-
-listDiv.appendChild(div);
-
+users.push(doc.data());
 });
 
-});
+// 並び替え
+users.sort((a,b)=> Number(a.memberId) - Number(b.memberId));
 
-}
-// ===== データ整理 + ランキング =====
-const userArray = Object.keys(users)
-.filter(u => u !== "admin")
-.map(username => {
+// 検索
+const keyword = (document.getElementById("search").value || "").toLowerCase();
+users.forEach((user,index)=>{
 
-let total = 0;
-let correct = 0;
-
-if(history[username]){
-history[username].forEach(h=>{
-total += h.total;
-correct += h.score;
-});
-}
-
-let rate = total ? Math.round((correct/total)*100) : 0;
-
-return {
-username,
-user: users[username],
-rate
-};
-
-})
-.sort((a,b)=> b.rate - a.rate);
-
-// ===== 表示 =====
-let rank = 1;
-
-userArray.forEach(obj => {
-
-const username = obj.username;
-const user = obj.user;
-const rate = obj.rate;
-
-// 🔍 検索
-if(keyword !== ""){
-
-const key = keyword.toLowerCase();
-
-const uname = user.username.toLowerCase();
-const fname = user.fullname.toLowerCase();
-
-if(!uname.includes(key) && !fname.includes(key)){
+if(keyword){
+if(!user.username.toLowerCase().includes(keyword) &&
+   !user.fullname.toLowerCase().includes(keyword)){
 return;
 }
-
 }
-// 🏆 メダル
+
+// 🏆 ランク
 let medal = "";
-if(rank === 1) medal = "🥇";
-else if(rank === 2) medal = "🥈";
-else if(rank === 3) medal = "🥉";
+if(index === 0) medal = "🥇";
+else if(index === 1) medal = "🥈";
+else if(index === 2) medal = "🥉";
 
-// 🎨 色分け
-let color = "#4caf50";
-if(rate < 60) color = "#f44336";
-else if(rate < 80) color = "#ff9800";
-
-// ===== カード生成 =====
 const div = document.createElement('div');
 div.className = 'card';
 
 div.innerHTML = `
-<p><strong>${rank}位 ${medal}</strong></p>
+<p><strong>${index+1}位 ${medal}</strong></p>
 <p>${user.memberId} | ${user.username} | ${user.fullname}</p>
-<p style="color:${color}">正答率：${rate}%</p>
 
-<button onclick="viewDetail('${username}')">詳細</button>
-<button onclick="deleteUser('${username}')">削除</button>
-
-<div id="detail_${username}"></div>
+<button onclick="deleteUser('${user.username}')">削除</button>
 `;
 
 listDiv.appendChild(div);
 
-rank++;
+});
 
 });
 
 }
 
-// ===== 詳細表示 =====
-function viewDetail(username){
-
-const history = JSON.parse(localStorage.getItem('quizHistory') || '{}');
-const div = document.getElementById("detail_"+username);
-
-if(!history[username]){
-div.innerHTML = "<p>履歴なし</p>";
-return;
-}
-
-let html = "<h4>履歴</h4>";
-
-history[username].slice().reverse().forEach(h=>{
-html += `
-<div style="background:#f9f9f9; padding:10px; margin:5px 0;">
-<p>${h.subject || "不明"} | ${h.score}/${h.total}</p>
-<p>${h.date}</p>
-</div>
-`;
-});
-
-div.innerHTML = html;
-
-}
-
-// ===== ユーザー削除 =====
+// ===== 削除（Firebase対応） =====
 function deleteUser(username){
 
 if(confirm("削除しますか？")){
 
-let users = JSON.parse(localStorage.getItem('users') || '{}');
-delete users[username];
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
-
-<script>
-const firebaseConfig = {
-  apiKey: "ここに貼る",
-  authDomain: "ここに貼る",
-  projectId: "ここに貼る"
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-</script>
-renderUsers();
-
-}
-
-}
-
-// ===== 全データ削除 =====
-function resetData(){
-
-if(confirm("全データ削除しますか？（戻せません）")){
-
-localStorage.clear();
+db.collection("users").doc(username).delete().then(()=>{
 alert("削除しました");
+renderUsers();
+});
 
-location.href = 'loginOrRegister.html';
+}
 
 }
 
-}
+// ===== 検索連動 =====
+document.getElementById("search").addEventListener("input", renderUsers);
 
 // 初期表示
 renderUsers();
