@@ -38,28 +38,29 @@ location.href = 'home.html';
 function renderUsers(){
 
 const users = JSON.parse(localStorage.getItem('users') || '{}');
-const keyword = document.getElementById("search").value;const keyword = document.getElementById("search").value.toLowerCase();
+const history = JSON.parse(localStorage.getItem('quizHistory') || '{}');
+const keyword = document.getElementById("search").value.trim();
 
 const listDiv = document.getElementById('userList');
 listDiv.innerHTML = '';
 
 for(const username in users){
 
+if(username === "admin") continue;
+
+const user = users[username];
+
+// ===== 検索 =====
+if(keyword !== ""){
 if(
 !user.username.includes(keyword) &&
 !user.fullname.includes(keyword)
 ){
 continue;
 }
-const user = users[username];
-
-// 検索
-if(!user.username.toLowerCase().includes(keyword) &&
-   !user.fullname.toLowerCase().includes(keyword)){
-   continue;
 }
 
-// ===== 正答率計算 =====
+// ===== 正答率 =====
 let total = 0;
 let correct = 0;
 
@@ -93,7 +94,7 @@ listDiv.appendChild(div);
 // ===== 詳細表示 =====
 function viewDetail(username){
 
-const history = JSON.parse(localStorage.getItem('quizHistory') || {});
+const history = JSON.parse(localStorage.getItem('quizHistory') || '{}');
 const div = document.getElementById("detail_"+username);
 
 if(!history[username]){
@@ -104,14 +105,12 @@ return;
 let html = "<h4>履歴</h4>";
 
 history[username].slice().reverse().forEach(h=>{
-
 html += `
 <div style="background:#f9f9f9; padding:10px; margin:5px 0;">
 <p>${h.subject || "不明"} | ${h.score}/${h.total}</p>
 <p>${h.date}</p>
 </div>
 `;
-
 });
 
 div.innerHTML = html;
@@ -146,6 +145,5 @@ location.href = 'loginOrRegister.html';
 renderUsers();
 
 </script>
-
 </body>
 </html>
