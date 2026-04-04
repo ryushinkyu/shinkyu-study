@@ -4,25 +4,22 @@
 <link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>鍼灸Study - クイズ</title>
+<title>クイズ</title>
 </head>
 
 <body>
 
-<div class="container">
+<div class="card selectable">
 
-  <div class="card">
-    <h1>クイズ</h1>
-  </div>
+<h1>クイズ</h1>
 
-  <div id="menu"></div>
-  <div id="quiz"></div>
+<div id="menu"></div>
+<div id="quiz"></div>
 
 </div>
 
 <script>
 
-// ===== 問題 =====
 const allQuiz = {
 
 "衛生学・公衆衛生学":[
@@ -46,19 +43,6 @@ choices:[
 ],
 answer:1
 }
-],
-
-"解剖学":[
-{
-question:"骨の役割はどれか？",
-choices:[
-"血液を送る",
-"体を支える",
-"消化する",
-"呼吸する"
-],
-answer:1
-}
 ]
 
 };
@@ -72,49 +56,37 @@ let results = [];
 
 showMenu();
 
-// ===== メニュー =====
 function showMenu(){
 
 document.getElementById("quiz").innerHTML = "";
 
 document.getElementById("menu").innerHTML = `
-<div class="card">
 <h3>クイズを選択</h3>
-
 <button onclick="startNormal()">通常クイズ</button>
 <button onclick="startReview()">間違えた問題</button>
-
-<button style="background:#777;" onclick="location.href='quizMenu.html'">科目選択に戻る</button>
-</div>
+<button onclick="location.href='quizMenu.html'">科目選択</button>
 `;
 
 }
 
-// ===== 通常 =====
 function startNormal(){
-if(!allQuiz[subject]){
-alert("問題がありません");
-return;
-}
-quiz = allQuiz[subject];
+quiz = allQuiz[subject] || [];
 startQuiz();
 }
 
-// ===== 復習 =====
 function startReview(){
 
-let wrongIndexes = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
+let wrong = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
 
-if(wrongIndexes.length === 0){
+if(wrong.length === 0){
 alert("間違えた問題がありません");
 return;
 }
 
-quiz = wrongIndexes.map(i => allQuiz[subject][i]);
+quiz = wrong.map(w => allQuiz[subject][w.index]);
 startQuiz();
 }
 
-// ===== 開始 =====
 function startQuiz(){
 quizIndex = 0;
 score = 0;
@@ -123,17 +95,12 @@ document.getElementById("menu").innerHTML = "";
 showQuiz();
 }
 
-// ===== 表示 =====
 function showQuiz(){
 
-// 終了
 if(quizIndex >= quiz.length){
 
-let html = `
-<div class="card">
-<h2>終了！</h2>
-<p>スコア：${score} / ${quiz.length}</p>
-`;
+let html = "<h2>終了！</h2>";
+html += "<p>スコア："+score+" / "+quiz.length+"</p>";
 
 results.forEach((r,i)=>{
 html += `<p>問題${i+1}：${r ? "⭕" : "❌"}</p>`;
@@ -141,63 +108,62 @@ html += `<p>問題${i+1}：${r ? "⭕" : "❌"}</p>`;
 
 html += `
 <button onclick="showMenu()">もう一度</button>
-<button style="background:#777;" onclick="location.href='quizMenu.html'">科目選択へ</button>
-<button style="background:#777;" onclick="location.href='home.html'">ホーム</button>
-</div>
+<button onclick="location.href='quizMenu.html'">科目選択</button>
+<button onclick="location.href='home.html'">ホーム</button>
 `;
 
 document.getElementById("quiz").innerHTML = html;
 return;
 }
 
-// 問題
 const q = quiz[quizIndex];
 
-let html = `
-<div class="card">
-<h2>問題 ${quizIndex+1}</h2>
-<p>${q.question}</p>
-`;
+let html = "<h2>問題 " + (quizIndex+1) + "</h2>";
+html += "<p>" + q.question + "</p>";
 
-q.choices.forEach((choice,index)=>{
-html += `<button class="choiceBtn" onclick="checkAnswer(${index})">${index+1}．${choice}</button>`;
+q.choices.forEach((c,i)=>{
+html += `<button onclick="answer(${i})">${i+1}．${c}</button>`;
 });
-
-html += `</div>`;
 
 document.getElementById("quiz").innerHTML = html;
 
 }
 
-// ===== 判定 =====
-function checkAnswer(num){
+function answer(choice){
 
-let correct = quiz[quizIndex].answer;
-let buttons = document.querySelectorAll(".choiceBtn");
-
-buttons.forEach(btn => btn.disabled = true);
+let q = quiz[quizIndex];
+let correct = q.answer;
 
 let wrong = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
-let originalIndex = allQuiz[subject].indexOf(quiz[quizIndex]);
 
-if(num === correct){
-buttons[num].classList.add("correct");
+// 元のindex取得
+let originalIndex = allQuiz[subject].indexOf(q);
+
+if(choice === correct){
 score++;
 results.push(true);
-wrong = wrong.filter(i => i !== originalIndex);
+
+// 正解したら削除
+wrong = wrong.filter(w => w.index !== originalIndex);
+
 }else{
-buttons[num].classList.add("wrong");
-buttons[correct].classList.add("correct");
 results.push(false);
-if(!wrong.includes(originalIndex)) wrong.push(originalIndex);
+
+// 保存（ここが進化ポイント）
+let exists = wrong.find(w => w.index === originalIndex);
+
+if(!exists){
+wrong.push({
+index: originalIndex,
+userAnswer: choice
+});
+}
 }
 
 localStorage.setItem("wrongQuestions_"+subject, JSON.stringify(wrong));
 
-setTimeout(()=>{
 quizIndex++;
 showQuiz();
-},1000);
 
 }
 

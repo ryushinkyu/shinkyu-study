@@ -5,23 +5,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>復習リスト</title>
+
+<style>
+.mask{
+background:#ffeb3b;
+color:transparent;
+padding:5px 10px;
+border-radius:6px;
+cursor:pointer;
+display:inline-block;
+}
+
+.show{
+background:#e3f2fd;
+color:#0288d1;
+font-weight:bold;
+}
+</style>
+
 </head>
 
 <body>
 
-<div class="container">
+<div class="card">
 
-  <div class="card">
-    <h2>復習リスト</h2>
-    <div id="reviewList"></div>
-    <button style="background:#777;" onclick="location.href='home.html'">ホーム</button>
-  </div>
+<h2>復習リスト</h2>
+
+<div id="reviewList"></div>
+
+<button onclick="location.href='home.html'">ホーム</button>
 
 </div>
 
 <script>
 
-// 問題データ（quizと同じ）
 const allQuiz = {
 
 "衛生学・公衆衛生学":[
@@ -57,13 +74,20 @@ let wrong = JSON.parse(localStorage.getItem("wrongQuestions_"+subject) || "[]");
 
 if(wrong.length > 0){
 
-html += `<div class="card"><h3>📚 ${subject}</h3></div>`;
+html += `<h3>📚 ${subject}</h3>`;
 
-wrong.forEach(i=>{
-let q = allQuiz[subject][i];
+wrong.forEach(w=>{
+
+let q = allQuiz[subject][w.index];
 
 html += `
 <div class="card">
+<p><strong>${q.question}</strong></p>
+
+<p style="color:#0288d1;">
+あなたの答え：${q.choices[w.userAnswer]}
+</p>
+
 <p>
 正解：
 <span class="mask" onclick="reveal(this)">
@@ -73,6 +97,7 @@ ${q.choices[q.answer]}
 
 </div>
 `;
+
 });
 
 }
@@ -88,23 +113,8 @@ document.getElementById("reviewList").innerHTML = html;
 function reveal(el){
 el.classList.toggle("show");
 }
+
 </script>
 
-<style>
-.mask{
-background:#333;
-color:transparent; /* ←これが重要 */
-padding:5px 10px;
-border-radius:6px;
-cursor:pointer;
-display:inline-block;
-user-select:none;
-}
-
-.show{
-background:#e3f2fd;
-color:#000;
-}
-</style>
 </body>
 </html>
