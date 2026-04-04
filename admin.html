@@ -38,16 +38,19 @@ location.href = 'home.html';
 function renderUsers(){
 
 const users = JSON.parse(localStorage.getItem('users') || '{}');
-const history = JSON.parse(localStorage.getItem('quizHistory') || '{}');
-const keyword = document.getElementById("search").value.toLowerCase();
+const keyword = document.getElementById("search").value;const keyword = document.getElementById("search").value.toLowerCase();
 
 const listDiv = document.getElementById('userList');
 listDiv.innerHTML = '';
 
 for(const username in users){
 
-if(username === 'admin') continue;
-
+if(
+!user.username.includes(keyword) &&
+!user.fullname.includes(keyword)
+){
+continue;
+}
 const user = users[username];
 
 // 検索
