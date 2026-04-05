@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 
-<script>
-const firebaseConfig = {
-  apiKey: "ここに貼る",
-  authDomain: "ここに貼る",
-  projectId: "ここに貼る"
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-</script>
-<link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>マイページ</title>
+<link rel="stylesheet" href="style.css">
+
+<!-- Firebase（compat版） -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
+  authDomain: "shinkyu-study.firebaseapp.com",
+  projectId: "shinkyu-study"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
+
 </head>
 
 <body>
@@ -28,7 +31,7 @@ const db = firebase.firestore();
   <!-- ユーザー情報 -->
   <div class="card">
     <h2>マイページ</h2>
-    <div id="userInfo"></div>
+    <div id="userInfo">読み込み中...</div>
   </div>
 
   <!-- 履歴 -->
@@ -43,12 +46,18 @@ const db = firebase.firestore();
 
 <script>
 
-// ===== ユーザー情報 =====
-let currentUser = localStorage.getItem("currentUser");
-let users = JSON.parse(localStorage.getItem("users") || "{}");
+const currentUser = localStorage.getItem("currentUser");
 
-if(users[currentUser]){
-let u = users[currentUser];
+if(!currentUser){
+location.href = "loginOrRegister.html";
+}
+
+// ===== ユーザー情報 =====
+db.collection("users").doc(currentUser).get()
+.then(doc => {
+
+if(doc.exists){
+const u = doc.data();
 
 document.getElementById("userInfo").innerHTML = `
 <p>👤 名前：${u.fullname}</p>
@@ -57,57 +66,39 @@ document.getElementById("userInfo").innerHTML = `
 `;
 }
 
+});
+
 // ===== 履歴 =====
-let history = JSON.parse(localStorage.getItem("quizHistory") || "{}");
+db.collection("quizResults")
+.where("username", "==", currentUser)
+.get()
+.then(snapshot => {
 
 let html = "";
 
-if(history[currentUser]){
+if(snapshot.empty){
+html = "<div class='card'><p>履歴なし</p></div>";
+}else{
 
-let grouped = {};
-
-history[currentUser].forEach(h=>{
-let subject = h.subject || "不明";
-if(!grouped[subject]) grouped[subject] = [];
-grouped[subject].push(h);
-});
-
-Object.keys(grouped).forEach(subject=>{
-
-html += `
-<div class="card">
-<h3>📚 ${subject}</h3>
-</div>
-`;
-
-grouped[subject].slice().reverse().forEach(h=>{
-
+snapshot.forEach(doc => {
+const h = doc.data();
 let rate = Math.round((h.score / h.total) * 100);
 
 html += `
 <div class="card">
-<p>🕒 ${h.date}</p>
+<p>📚 ${h.subject}</p>
 <p><strong>🎯 ${h.score}/${h.total}（${rate}%）</strong></p>
-
-<div style="margin-top:10px;">
-${(h.detail || []).map((d,i)=>`問題${i+1}：${d ? "⭕" : "❌"}`).join("<br>")}
-</div>
+<p>🕒 ${h.date}</p>
 </div>
 `;
-
 });
 
-});
-
-}else{
-html = "<div class='card'><p>履歴なし</p></div>";
 }
 
 document.getElementById("history").innerHTML = html;
 
+});
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </script>
 
 </body>

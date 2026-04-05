@@ -1,33 +1,21 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-<script>
-const firebaseConfig = {
-  apiKey: "ここに貼る",
-  authDomain: "ここに貼る",
-  projectId: "ここに貼る"
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-</script>
-<link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>復習リスト</title>
+<link rel="stylesheet" href="style.css">
 
 <style>
 .mask{
 background:#ffeb3b;
 color:transparent;
-padding:5px 10px;
+padding:6px 12px;
 border-radius:6px;
 cursor:pointer;
 display:inline-block;
+user-select:none;
 }
 
 .show{
@@ -78,12 +66,13 @@ html += `
 <p><strong>${q.question}</strong></p>
 
 <p style="color:#0288d1; font-weight:bold;">
-あなたの答え：：${q.choices[w.userAnswer]}
+あなたの答え：${q.choices[w.userAnswer]}
 </p>
 
 <p>
 <strong>正解：</strong>
-<span class="mask" onclick="reveal(this)">${q.choices[q.answer]}
+<span class="mask" onclick="reveal(this)">
+${q.choices[q.answer]}
 </span>
 </p>
 </div>
@@ -104,6 +93,7 @@ html = "<p>復習する問題はありません</p>";
 
 document.getElementById("reviewList").innerHTML = html;
 
+// ===== マスキング解除 =====
 function reveal(el){
 el.classList.toggle("show");
 }

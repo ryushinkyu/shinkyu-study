@@ -2,12 +2,13 @@
 <html lang="ja">
 <head>
 
-<link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>鍼灸Study - ログイン or 登録</title>
+<link rel="stylesheet" href="style.css">
 
 <script>
+// gateチェック
 if(localStorage.getItem("gate") !== "ok"){
 location.href = "gate.html";
 }
@@ -33,17 +34,15 @@ location.href = "gate.html";
 
 <script>
 
+// ボタン処理
 document.getElementById('loginBtn').addEventListener('click', ()=>{
-    location.href = 'login.html';
+location.href = 'login.html';
 });
 
 document.getElementById('registerBtn').addEventListener('click', ()=>{
-    location.href = 'register.html';
+location.href = 'register.html';
 });
 
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </script>
 
 </body>

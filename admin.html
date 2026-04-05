@@ -6,17 +6,18 @@
 <title>管理画面</title>
 
 <!-- Firebase -->
-<script <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 <script>
 const firebaseConfig = {
-  apiKey: "ここに貼る",
-  authDomain: "ここに貼る",
-  projectId: "ここに貼る"
+  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
+  authDomain: "shinkyu-study.firebaseapp.com",
+  projectId: "shinkyu-study"
 };
 
-firebase-app-compat.js
-firebase-firestore-compat.js
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 </script>
 
 </head>
@@ -51,9 +52,10 @@ location.href = 'home.html';
 // ===== ユーザー一覧 =====
 function renderUsers(){
 
-const keyword = document.getElementById("search").value.toLowerCase();
 const listDiv = document.getElementById('userList');
 listDiv.innerHTML = '';
+
+const keyword = (document.getElementById("search").value || "").toLowerCase();
 
 db.collection("users").get().then(snapshot => {
 
@@ -63,13 +65,12 @@ snapshot.forEach(doc => {
 users.push(doc.data());
 });
 
-// 並び替え
+// 並び替え（ID順）
 users.sort((a,b)=> Number(a.memberId) - Number(b.memberId));
 
-// 検索
-const keyword = (document.getElementById("search").value || "").toLowerCase();
 users.forEach((user,index)=>{
 
+// 検索
 if(keyword){
 if(!user.username.toLowerCase().includes(keyword) &&
    !user.fullname.toLowerCase().includes(keyword)){
@@ -77,7 +78,7 @@ return;
 }
 }
 
-// 🏆 ランク
+// ランク
 let medal = "";
 if(index === 0) medal = "🥇";
 else if(index === 1) medal = "🥈";
@@ -101,7 +102,7 @@ listDiv.appendChild(div);
 
 }
 
-// ===== 削除（Firebase対応） =====
+// ===== 削除 =====
 function deleteUser(username){
 
 if(confirm("削除しますか？")){
@@ -115,15 +116,11 @@ renderUsers();
 
 }
 
-// ===== 検索連動 =====
+// 検索
 document.getElementById("search").addEventListener("input", renderUsers);
 
 // 初期表示
 renderUsers();
-
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 </script>
 

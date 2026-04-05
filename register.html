@@ -7,7 +7,7 @@
 <title>ログイン</title>
 <link rel="stylesheet" href="style.css">
 
-<!-- Firebase（compat版が重要） -->
+<!-- Firebase（compat版） -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
@@ -19,7 +19,7 @@ const firebaseConfig = {
   projectId: "shinkyu-study"
 };
 
-// ===== 初期化 =====
+// ===== 初期化（1回だけ！）=====
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 </script>
@@ -49,40 +49,40 @@ const db = firebase.firestore();
 
 function login(){
 
-let username = document.getElementById("username").value.trim();
-let password = document.getElementById("password").value;
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value;
 
-// 入力チェック
-if(!username || !password){
-alert("入力してください");
-return;
-}
+  // ===== 入力チェック =====
+  if(!username || !password){
+    alert("入力してください");
+    return;
+  }
 
-// Firebaseから取得
-db.collection("users").doc(username).get()
-.then(doc => {
+  // ===== Firestoreから取得 =====
+  db.collection("users").doc(username).get()
+  .then(doc => {
 
-if(doc.exists){
+    if(!doc.exists){
+      alert("ユーザーが存在しません");
+      return;
+    }
 
-let user = doc.data();
+    const user = doc.data();
 
-if(user.password === password){
+    if(user.password !== password){
+      alert("パスワードが違います");
+      return;
+    }
 
-localStorage.setItem("currentUser", username);
-location.href = "home.html";
+    // ===== ログイン成功 =====
+    localStorage.setItem("currentUser", username);
+    location.href = "home.html";
 
-}else{
-alert("パスワードが違います");
-}
-
-}else{
-alert("ユーザーが存在しません");
-}
-
-}).catch(err=>{
-console.error(err);
-alert("通信エラー");
-});
+  })
+  .catch(err=>{
+    console.error("ログインエラー:", err);
+    alert("通信エラー");
+  });
 
 }
 

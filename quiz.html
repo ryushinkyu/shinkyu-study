@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 
-<script>
-const firebaseConfig = {
-  apiKey: "ここに貼る",
-  authDomain: "ここに貼る",
-  projectId: "ここに貼る"
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-</script>
-<link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>クイズ</title>
+<link rel="stylesheet" href="style.css">
+
+<!-- Firebase（compat版） -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
+  authDomain: "shinkyu-study.firebaseapp.com",
+  projectId: "shinkyu-study"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
+
 </head>
 
 <body>
@@ -118,7 +121,19 @@ showQuiz();
 
 function showQuiz(){
 
+// ===== 終了処理 =====
 if(quizIndex >= quiz.length){
+
+// 🔥 ここで保存（正解）
+const username = localStorage.getItem("currentUser");
+
+db.collection("quizResults").add({
+  username: username,
+  subject: subject,
+  score: score,
+  total: quiz.length,
+  date: new Date().toLocaleString()
+});
 
 let html = "<h2>終了！</h2>";
 html += "<p>スコア："+score+" / "+quiz.length+"</p>";
@@ -137,6 +152,7 @@ document.getElementById("quiz").innerHTML = html;
 return;
 }
 
+// ===== 問題表示 =====
 const q = quiz[quizIndex];
 
 let html = "<h2>問題 " + (quizIndex+1) + "</h2>";
@@ -174,7 +190,7 @@ if(!exists){
 wrong.push({
 index: originalIndex,
 userAnswer: choice,
-questionData: q   // ←これ追加
+questionData: q
 });
 }
 }
@@ -186,8 +202,6 @@ showQuiz();
 
 }
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </script>
 
 </body>

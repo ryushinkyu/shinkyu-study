@@ -1,24 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 
-<script>
-const firebaseConfig = {
-  apiKey: "ここに貼る",
-  authDomain: "ここに貼る",
-  projectId: "ここに貼る"
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-</script>
-<link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>講義</title>
+<link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
@@ -87,7 +75,7 @@ function show(){
 
 document.getElementById("nextBtn").style.display = "block";
 
-// ===== 目次 =====
+// 目次
 if(step === 0){
 
 document.getElementById("nextBtn").style.display = "none";
@@ -110,7 +98,7 @@ document.getElementById("content").innerHTML = html;
 return;
 }
 
-// ===== 内容 =====
+// 内容
 if(step === 1){
 
 let d = data[index];
@@ -125,7 +113,7 @@ document.getElementById("content").innerHTML = `
 return;
 }
 
-// ===== ポイント =====
+// ポイント
 if(step === 2){
 
 let d = data[index];
@@ -142,7 +130,7 @@ return;
 
 }
 
-// ===== 次へ =====
+// 次へ
 function next(){
 
 if(step === 1){
@@ -174,7 +162,7 @@ return;
 show();
 }
 
-// ===== 選択 =====
+// 選択
 function selectLecture(i){
 
 index = i;
@@ -188,9 +176,6 @@ localStorage.setItem(key, count);
 
 show();
 }
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 </script>
 

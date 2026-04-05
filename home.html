@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 
-<script>
-const firebaseConfig = {
-  apiKey: "ここに貼る",
-  authDomain: "ここに貼る",
-  projectId: "ここに貼る"
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-</script>
-<link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>鍼灸Study - ホーム</title>
+<link rel="stylesheet" href="style.css">
+
+<!-- Firebase（compat版） -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
+  authDomain: "shinkyu-study.firebaseapp.com",
+  projectId: "shinkyu-study"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
+
 </head>
 
 <body>
@@ -28,15 +31,14 @@ const db = firebase.firestore();
   <div class="card">
 
     <h2>ホーム画面</h2>
-    <p id="welcomeMsg"></p>
+    <p id="welcomeMsg">読み込み中...</p>
 
-    <!-- 画面遷移 -->
     <button onclick="location.href='mypage.html'">マイページ</button>
     <button onclick="location.href='lectureMenu.html'">講義</button>
     <button onclick="location.href='studyMenu.html'">学習</button>
     <button onclick="location.href='quizMenu.html'">クイズ</button>
     <button onclick="location.href='review.html'">復習リスト</button>
-    <!-- 管理者だけ表示 -->
+
     <button id="adminBtn" style="display:none;" onclick="location.href='admin.html'">管理</button>
 
     <button onclick="logout()">ログアウト</button>
@@ -47,32 +49,42 @@ const db = firebase.firestore();
 
 <script>
 
+// ===== ログインチェック =====
 const currentUser = localStorage.getItem('currentUser');
-const users = JSON.parse(localStorage.getItem('users') || '{}');
 
-if(currentUser && users[currentUser]){
+if(!currentUser){
+location.href = 'loginOrRegister.html';
+}
 
-    document.getElementById('welcomeMsg').textContent =
-        `ようこそ、${users[currentUser].fullname} さん！`;
+// ===== ユーザー情報取得（Firebase） =====
+db.collection("users").doc(currentUser).get()
+.then(doc => {
 
-    // 管理者だけ表示
-    if(currentUser === "admin"){
-        document.getElementById('adminBtn').style.display = "block";
-    }
+if(doc.exists){
+
+const user = doc.data();
+
+document.getElementById('welcomeMsg').textContent =
+`ようこそ、${user.fullname} さん！`;
+
+// 管理者表示
+if(currentUser === "admin"){
+document.getElementById('adminBtn').style.display = "block";
+}
 
 }else{
-    location.href = 'loginOrRegister.html';
+alert("ユーザー情報がありません");
+location.href = 'loginOrRegister.html';
 }
 
-// ログアウト
+});
+
+// ===== ログアウト =====
 function logout(){
-    localStorage.removeItem('currentUser');
-    location.href = 'loginOrRegister.html';
+localStorage.removeItem('currentUser');
+location.href = 'loginOrRegister.html';
 }
 
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </script>
 
 </body>
