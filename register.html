@@ -4,22 +4,20 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ログイン</title>
+<title>新規登録</title>
 <link rel="stylesheet" href="style.css">
 
-<!-- Firebase（compat版） -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script>
-// ===== Firebase設定 =====
 const firebaseConfig = {
   apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
   authDomain: "shinkyu-study.firebaseapp.com",
   projectId: "shinkyu-study"
 };
 
-// ===== 初期化（1回だけ！）=====
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 </script>
@@ -31,12 +29,13 @@ const db = firebase.firestore();
 <div class="container">
   <div class="card">
 
-    <h2>ログイン</h2>
+    <h2>新規登録</h2>
 
     <input type="text" id="username" placeholder="ユーザー名">
+    <input type="text" id="fullname" placeholder="名前">
     <input type="password" id="password" placeholder="パスワード">
 
-    <button onclick="login()">ログイン</button>
+    <button onclick="register()">登録</button>
 
     <button style="background:#777;" onclick="location.href='loginOrRegister.html'">
       戻る
@@ -47,42 +46,42 @@ const db = firebase.firestore();
 
 <script>
 
-function login(){
+function register(){
 
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value;
+const username = document.getElementById("username").value.trim();
+const fullname = document.getElementById("fullname").value.trim();
+const password = document.getElementById("password").value;
 
-  // ===== 入力チェック =====
-  if(!username || !password){
-    alert("入力してください");
-    return;
-  }
+if(!username || !fullname || !password){
+alert("入力してください");
+return;
+}
 
-  // ===== Firestoreから取得 =====
-  db.collection("users").doc(username).get()
-  .then(doc => {
+// 🔥 重複チェック
+db.collection("users").doc(username).get().then(doc => {
 
-    if(!doc.exists){
-      alert("ユーザーが存在しません");
-      return;
-    }
+if(doc.exists){
+alert("このユーザー名は使われています");
+return;
+}
 
-    const user = doc.data();
+// 🔥 保存（ここが重要）
+db.collection("users").doc(username).set({
+username: username,
+fullname: fullname,
+password: password,
+memberId: Date.now().toString()
+})
+.then(()=>{
+alert("登録完了！");
+location.href = "login.html";
+})
+.catch(err=>{
+console.error(err);
+alert("登録エラー");
+});
 
-    if(user.password !== password){
-      alert("パスワードが違います");
-      return;
-    }
-
-    // ===== ログイン成功 =====
-    localStorage.setItem("currentUser", username);
-    location.href = "home.html";
-
-  })
-  .catch(err=>{
-    console.error("ログインエラー:", err);
-    alert("通信エラー");
-  });
+});
 
 }
 
