@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ランキング</title>
+<link rel="stylesheet" href="style.css">
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
+  authDomain: "shinkyu-study.firebaseapp.com",
+  projectId: "shinkyu-study"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="card">
+    <h2>ランキング</h2>
+    <div id="ranking"></div>
+
+    <button onclick="location.href='home.html'">戻る</button>
+  </div>
+
+</div>
+
+<script>
+
+db.collection("quizResults").get().then(snapshot => {
+
+let users = {};
+
+snapshot.forEach(doc => {
+
+let d = doc.data();
+
+if(!users[d.username]){
+users[d.username] = { total:0, correct:0 };
+}
+
+users[d.username].total += d.total;
+users[d.username].correct += d.score;
+
+});
+
+let ranking = Object.keys(users).map(name => {
+let u = users[name];
+let rate = Math.round((u.correct/u.total)*100);
+return { name, rate };
+});
+
+ranking.sort((a,b)=> b.rate - a.rate);
+
+let html = "";
+
+ranking.forEach((r,i)=>{
+
+let medal = "";
+if(i === 0) medal = "🥇";
+else if(i === 1) medal = "🥈";
+else if(i === 2) medal = "🥉";
+
+html += `
+<div class="card">
+<p><strong>${i+1}位 ${medal}</strong></p>
+<p>${r.name}</p>
+<p>正答率：${r.rate}%</p>
+</div>
+`;
+
+});
+
+document.getElementById("ranking").innerHTML = html;
+
+});
+
+</script>
+
+</body>
+</html>
