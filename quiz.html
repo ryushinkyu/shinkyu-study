@@ -4,27 +4,37 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>クイズ</title>
 
 <link rel="stylesheet" href="style.css">
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
 
-<script>
+.choiceBtn{
+display:block;
+width:100%;
+margin-top:10px;
+}
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
-  authDomain: "shinkyu-study.firebaseapp.com",
-  projectId: "shinkyu-study"
-};
+.correct{
+background:#2196f3 !important;
+color:white;
+}
 
-firebase.initializeApp(firebaseConfig);
+.wrong{
+background:#f44336 !important;
+color:white;
+}
 
-const db = firebase.firestore();
+.resultBox{
+margin-top:20px;
+padding:15px;
+border-radius:10px;
+background:#f5f5f5;
+}
 
-</script>
+</style>
 
 </head>
 
@@ -32,103 +42,46 @@ const db = firebase.firestore();
 
 <div class="container">
 
-  <div class="card">
+<div class="card">
 
-    <h1>クイズ</h1>
+<h1>クイズ</h1>
 
-    <div id="menu"></div>
+<div id="quiz"></div>
 
-    <div id="quiz"></div>
-
-  </div>
+</div>
 
 </div>
 
 <script>
 
-// ===== 問題データ =====
+// ========================================
+// 科目取得
+// ========================================
+
+const subject = localStorage.getItem("selectedSubject");
+
+
+// ========================================
+// 問題データ
+// ========================================
+
 const allQuiz = {
 
-"衛生学・公衆衛生学":{
-
-"公衆衛生総論":[
+"健康・疾病予防":[
 
 {
-question:"公衆衛生的活動でないのはどれか？",
+question:"一次予防はどれか",
 choices:[
-"健康増進",
-"疾病予防",
-"疾病の早期発見",
-"治療薬の開発"
-],
-answer:3
-},
-
-{
-question:"WHOの主な活動はどれか？",
-choices:[
-"地域紛争の解決",
-"難民の救助援助",
-"労働条件の改善",
-"保健統計の刊行"
-],
-answer:3
-},
-
-{
-question:"第一次予防でないのはどれか？",
-choices:[
-"健康教育",
-"安全な水の供給",
-"予防接種",
-"健康診査"
-],
-answer:3
-}
-
-],
-
-"地域保健":[
-
-{
-question:"市町村保健センターの役割はどれか？",
-choices:[
-"食品衛生に関する業務",
-"環境衛生に関する業務",
-"エイズに関する相談",
-"乳幼児健診"
-],
-answer:3
-},
-
-{
-question:"保健所について誤っているのはどれか？",
-choices:[
-"地域保健法で規定される",
-"保健所長は医師である必要がある",
-"栄養の改善および食品衛生に関する業務を行う",
-"地域保健に係わる統計に関する業務を行う"
+"リハビリ",
+"生活環境改善",
+"がん検診",
+"社会復帰"
 ],
 answer:1
 },
 
 {
-question:"保健所の役割はどれか？",
-choices:[
-"車の排ガス測定",
-"食品衛生の監視",
-"生活保護の認定",
-"医療訴訟の受付"
-],
-answer:1
-}
-
-],
-
-"予防医学":[
-
-{
-question:"二次予防はどれか？",
+question:"二次予防はどれか",
 choices:[
 "健康診断",
 "予防接種",
@@ -139,217 +92,288 @@ answer:0
 },
 
 {
-question:"第三次予防はどれか？",
+question:"三次予防はどれか",
 choices:[
-"リハビリテーション",
+"健康教育",
+"予防接種",
+"健康診査",
+"リハビリテーション"
+],
+answer:3
+},
+
+{
+question:"第一次予防でないのはどれか",
+choices:[
+"予防接種",
+"健康教育",
 "禁煙",
-"がん検診",
-"予防接種"
+"健康診断"
+],
+answer:3
+},
+
+{
+question:"ハイリスクアプローチはどれか",
+choices:[
+"禁煙指導",
+"ウォーキング大会",
+"広報活動",
+"健康教育"
+],
+answer:0
+}
+
+],
+
+"感染症":[
+
+{
+question:"地球上から根絶された感染症はどれか",
+choices:[
+"コレラ",
+"破傷風",
+"痘そう",
+"ポリオ"
+],
+answer:2
+},
+
+{
+question:"細菌感染症はどれか",
+choices:[
+"デング熱",
+"マラリア",
+"ハンセン病",
+"SARS"
+],
+answer:2
+},
+
+{
+question:"ウイルスが原因となる疾病はどれか",
+choices:[
+"淋病",
+"発疹チフス",
+"ジフテリア",
+"エイズ"
+],
+answer:3
+},
+
+{
+question:"蚊が媒介する感染症はどれか",
+choices:[
+"腸チフス",
+"ペスト",
+"日本脳炎",
+"エイズ"
+],
+answer:2
+},
+
+{
+question:"空気感染対策が有効なのはどれか",
+choices:[
+"赤痢",
+"コレラ",
+"結核",
+"ポリオ"
+],
+answer:2
+}
+
+],
+
+"疫学・統計":[
+
+{
+question:"有病率について正しいのはどれか",
+choices:[
+"ある時点での病気の割合",
+"新しく発症した割合",
+"死亡者の割合",
+"出生の割合"
+],
+answer:0
+},
+
+{
+question:"コホート研究で正しいのはどれか",
+choices:[
+"罹患率を求められる",
+"研究期間が短い",
+"後ろ向き研究のみ",
+"まれな疾患向き"
+],
+answer:0
+},
+
+{
+question:"曝露群が非曝露群に比べ何倍罹患しやすいかを示すのはどれか",
+choices:[
+"相対危険",
+"寄与危険",
+"有病率",
+"死亡率"
+],
+answer:0
+},
+
+{
+question:"国勢調査は何年ごとか",
+choices:[
+"3年",
+"5年",
+"7年",
+"10年"
+],
+answer:1
+},
+
+{
+question:"乳児死亡率の分母はどれか",
+choices:[
+"人口",
+"出生数",
+"死亡数",
+"妊婦数"
+],
+answer:1
+}
+
+],
+
+"食中毒・栄養":[
+
+{
+question:"食中毒で正しいのはどれか",
+choices:[
+"サルモネラは水洗いで防止",
+"ブドウ球菌毒素は熱に弱い",
+"腸炎ビブリオは60℃で死滅",
+"ボツリヌス毒素は熱に強い"
+],
+answer:2
+},
+
+{
+question:"最も短時間で発症する食中毒はどれか",
+choices:[
+"ブドウ球菌",
+"サルモネラ",
+"腸炎ビブリオ",
+"病原大腸菌"
+],
+answer:0
+},
+
+{
+question:"アニサキス症の主症状はどれか",
+choices:[
+"発熱",
+"腹痛",
+"下痢",
+"血尿"
+],
+answer:1
+},
+
+{
+question:"食中毒予防でないのはどれか",
+choices:[
+"手洗い",
+"加熱",
+"水質検査",
+"患者隔離"
+],
+answer:3
+},
+
+{
+question:"ノロウイルスと関連するのはどれか",
+choices:[
+"貝類",
+"手指化膿",
+"魚介類",
+"ネズミ"
 ],
 answer:0
 }
 
 ]
 
-}
-
 };
 
-// ===== 科目 =====
-let subject = localStorage.getItem("selectedSubject");
 
-// ===== 章 =====
-let selectedChapter = "";
+// ========================================
+// 問題取得
+// ========================================
 
-// ===== 状態 =====
-let quiz = [];
+let quiz = allQuiz[subject] || [];
 
-let quizIndex = 0;
 
-let score = 0;
+// シャッフル
+quiz = quiz.sort(() => Math.random() - 0.5);
 
-let results = [];
 
-// ===== 初期表示 =====
-showChapterMenu();
+// 5問制限
+quiz = quiz.slice(0,5);
 
-// ===== 章メニュー =====
-function showChapterMenu(){
 
-document.getElementById("quiz").innerHTML = "";
-
-const chapters = allQuiz[subject];
-
-let html = `
-<h3>章を選択</h3>
-`;
-
-for(let chapter in chapters){
-
-html += `
-
-<button onclick="startChapterQuiz('${chapter}')">
-
-${chapter}
-
-</button>
-
-`;
-
-}
-
-html += `
-
-<button onclick="location.href='quizMenu.html'">
-
-科目選択
-
-</button>
-
-`;
-
-document.getElementById("menu").innerHTML = html;
-
-}
-
-// ===== クイズ開始 =====
-function startChapterQuiz(chapter){
-
-selectedChapter = chapter;
-
-quiz = allQuiz[subject][chapter].map((q,i)=>({
+// originalIndex付与
+quiz = quiz.map((q,i)=>({
 
 ...q,
-originalIndex: i
+originalIndex:i
 
 }));
 
-// ===== シャッフル =====
-quiz.sort(()=>Math.random()-0.5);
 
-// ===== 最大5問 =====
-quiz = quiz.slice(0,5);
+let quizIndex = 0;
+let score = 0;
+let results = [];
 
-startQuiz();
 
-}
-
-// ===== 開始 =====
-function startQuiz(){
-
-quizIndex = 0;
-
-score = 0;
-
-results = [];
-
-document.getElementById("menu").innerHTML = "";
+// ========================================
+// 問題表示
+// ========================================
 
 showQuiz();
 
-}
-
-// ===== 問題表示 =====
 function showQuiz(){
 
-// ===== 終了 =====
 if(quizIndex >= quiz.length){
 
-const username = localStorage.getItem("currentUser");
-
-// ===== Firebase保存 =====
-db.collection("quizResults").add({
-
-username: username,
-subject: subject,
-chapter: selectedChapter,
-score: score,
-total: quiz.length,
-date: new Date().toLocaleString()
-
-});
-
-// ===== デイリー達成 =====
-localStorage.setItem("dailyCleared", "true");
-
-// ===== 結果 =====
-let html = "";
-
-html += `
-<h2>終了！</h2>
-`;
-
-html += `
-<p>
-${selectedChapter}
-</p>
-`;
-
-html += `
-<p>
-スコア：${score} / ${quiz.length}
-</p>
-`;
-
-results.forEach((r,i)=>{
-
-html += `
-<p>
-問題${i+1}：${r ? "⭕" : "❌"}
-</p>
-`;
-
-});
-
-html += `
-
-<button onclick="showChapterMenu()">
-章選択へ
-</button>
-
-<button onclick="location.href='home.html'">
-ホーム
-</button>
-
-`;
-
-document.getElementById("quiz").innerHTML = html;
-
+showResult();
 return;
 
 }
 
-// ===== 問題 =====
 const q = quiz[quizIndex];
 
-let html = "";
+let html = `
 
-html += `
 <h2>
-${selectedChapter}
-</h2>
-`;
-
-html += `
-<p>
 問題 ${quizIndex + 1}
-</p>
-`;
+</h2>
 
-html += `
-<p>
+<p style="margin-top:20px;">
 ${q.question}
 </p>
+
 `;
 
-// ===== 選択肢 =====
-q.choices.forEach((c,i)=>{
+q.choices.forEach((choice,i)=>{
 
 html += `
 
-<button onclick="answer(${i})">
+<button
+class="choiceBtn"
+onclick="answer(${i})"
+>
 
-${i+1}．${c}
+${i+1}．${choice}
 
 </button>
 
@@ -361,21 +385,18 @@ document.getElementById("quiz").innerHTML = html;
 
 }
 
-// ===== 回答 =====
+
+// ========================================
+// 回答
+// ========================================
+
 function answer(choice){
 
-let q = quiz[quizIndex];
+const q = quiz[quizIndex];
 
-let correct = q.answer;
+const correct = q.answer;
 
-let wrong = JSON.parse(
-localStorage.getItem("wrongQuestions_"+subject) || "[]"
-);
-
-let originalIndex = q.question;
-
-// ===== ボタン停止 =====
-const buttons = document.querySelectorAll("#quiz button");
+const buttons = document.querySelectorAll(".choiceBtn");
 
 buttons.forEach(btn=>{
 
@@ -383,66 +404,105 @@ btn.disabled = true;
 
 });
 
-// ===== 結果 =====
-let resultHtml = "";
+
+// ===== 復習取得 =====
+
+let wrong = JSON.parse(
+localStorage.getItem("wrongQuestions_"+subject) || "[]"
+);
+
 
 // ===== 正解 =====
+
+let resultHtml = "";
+
 if(choice === correct){
 
 score++;
 
 results.push(true);
 
-// ===== 復習リストから削除 =====
-wrong = wrong.filter(w => w.index !== originalIndex);
+buttons[choice].classList.add("correct");
 
 resultHtml += `
-<h3 style="color:#2196f3; margin-top:20px;">
+
+<div class="resultBox">
+
+<h3 style="color:#2196f3;">
 ⭕ 正解！
 </h3>
+
+</div>
+
 `;
+
+
+// 復習から削除
+
+wrong = wrong.filter(w => w.question !== q.question);
 
 }
 
+
 // ===== 不正解 =====
+
 else{
 
 results.push(false);
 
-let exists = wrong.find(w => w.index === originalIndex);
+buttons[choice].classList.add("wrong");
 
-if(!exists){
-
-wrong.push({
-
-index: originalIndex,
-userAnswer: choice,
-questionData: q
-
-});
-
-}
+buttons[correct].classList.add("correct");
 
 resultHtml += `
-<h3 style="color:#f44336; margin-top:20px;">
+
+<div class="resultBox">
+
+<h3 style="color:#f44336;">
 ❌ 不正解
 </h3>
-`;
 
-}
+<p>
 
-// ===== 正解表示 =====
-resultHtml += `
-
-<div class="point" style="margin-top:15px;">
-
-<strong>正解：</strong><br><br>
-
+正解：
 ${q.choices[correct]}
+
+</p>
 
 </div>
 
-<button onclick="nextQuestion()">
+`;
+
+
+// 重複防止
+
+const exists = wrong.find(w => w.question === q.question);
+
+if(!exists){
+
+wrong.push(q);
+
+}
+
+}
+
+
+// ===== 保存 =====
+
+localStorage.setItem(
+"wrongQuestions_"+subject,
+JSON.stringify(wrong)
+);
+
+
+// ===== 次へ =====
+
+resultHtml += `
+
+<button
+style="margin-top:15px;"
+onclick="nextQuestion()"
+>
 
 次へ
 
@@ -450,23 +510,89 @@ ${q.choices[correct]}
 
 `;
 
-// ===== 保存 =====
-localStorage.setItem(
-"wrongQuestions_"+subject,
-JSON.stringify(wrong)
-);
-
-// ===== 表示 =====
 document.getElementById("quiz").innerHTML += resultHtml;
 
 }
 
-// ===== 次へ =====
+
+// ========================================
+// 次へ
+// ========================================
+
 function nextQuestion(){
 
 quizIndex++;
 
 showQuiz();
+
+}
+
+
+// ========================================
+// 結果
+// ========================================
+
+function showResult(){
+
+let html = `
+
+<h2>
+終了！
+</h2>
+
+<p>
+
+スコア：
+${score} / ${quiz.length}
+
+</p>
+
+`;
+
+results.forEach((r,i)=>{
+
+html += `
+
+<p>
+
+問題${i+1}：
+${r ? "⭕" : "❌"}
+
+</p>
+
+`;
+
+});
+
+html += `
+
+<button onclick="location.reload()">
+
+もう一度
+
+</button>
+
+<button onclick="location.href='review.html'">
+
+復習リスト
+
+</button>
+
+<button onclick="location.href='quizMenu.html'">
+
+科目選択
+
+</button>
+
+<button onclick="location.href='home.html'">
+
+ホーム
+
+</button>
+
+`;
+
+document.getElementById("quiz").innerHTML = html;
 
 }
 
