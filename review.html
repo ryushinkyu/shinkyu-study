@@ -44,6 +44,23 @@ background:#ffebee;
 color:#f44336;
 }
 
+.resultText{
+margin-top:10px;
+font-weight:bold;
+}
+
+.choiceBtn{
+margin-top:8px;
+}
+
+.chapterTitle{
+margin-top:20px;
+padding:10px;
+background:#e3f2fd;
+border-radius:8px;
+font-weight:bold;
+}
+
 </style>
 
 </head>
@@ -52,17 +69,17 @@ color:#f44336;
 
 <div class="container">
 
-  <div class="card">
+<div class="card">
 
-    <h2>復習リスト</h2>
+<h2>復習リスト</h2>
 
-    <div id="reviewList"></div>
+<div id="reviewList"></div>
 
-    <button onclick="location.href='home.html'">
-      ホーム
-    </button>
+<button onclick="location.href='home.html'">
+ホーム
+</button>
 
-  </div>
+</div>
 
 </div>
 
@@ -86,8 +103,38 @@ html += `
 <h3>📚 ${subject}</h3>
 `;
 
+// ===== 章ごと整理 =====
+let chapterMap = {};
+
+wrong.forEach(w=>{
+
+let chapter = w.questionData.chapter || "未分類";
+
+if(!chapterMap[chapter]){
+
+chapterMap[chapter] = [];
+
+}
+
+chapterMap[chapter].push(w);
+
+});
+
+// ===== 章ループ =====
+for(let chapter in chapterMap){
+
+html += `
+
+<div class="chapterTitle">
+
+📖 ${chapter}
+
+</div>
+
+`;
+
 // ===== 問題 =====
-wrong.forEach((w,index)=>{
+chapterMap[chapter].forEach(w=>{
 
 let q = w.questionData;
 
@@ -98,7 +145,13 @@ html += `
 <div class="reviewQuestion">
 
 <p>
-<strong>${q.question}</strong>
+
+<strong>
+
+${q.question}
+
+</strong>
+
 </p>
 
 <p style="
@@ -108,6 +161,7 @@ margin-top:10px;
 ">
 
 あなたの答え：
+
 ${q.choices[w.userAnswer]}
 
 </p>
@@ -129,13 +183,13 @@ ${q.choices[q.answer]}
 
 ${q.choices.map((choice,i)=>`
 
-<button onclick="
+<button class="choiceBtn" onclick="
 checkAnswer(
 this,
 ${i},
 ${q.answer},
 '${subject}',
-${w.index}
+'${q.question}'
 )
 ">
 
@@ -147,11 +201,15 @@ ${i+1}．${choice}
 
 </div>
 
+<div class="resultText"></div>
+
 </div>
 
 `;
 
 });
+
+}
 
 html += `</div>`;
 
@@ -183,12 +241,18 @@ el.classList.toggle("show");
 }
 
 // ===== 回答 =====
-function checkAnswer(btn,choice,correct,subject,index){
+function checkAnswer(btn,choice,correct,subject,question){
 
-const parent = btn.parentElement;
+// ===== 問題ブロック =====
+const questionBox = btn.closest(".reviewQuestion");
 
-const buttons = parent.querySelectorAll("button");
+// ===== 選択肢 =====
+const buttons = questionBox.querySelectorAll(".choiceBtn");
 
+// ===== 結果 =====
+const resultText = questionBox.querySelector(".resultText");
+
+// ===== ボタン停止 =====
 buttons.forEach(b=>{
 
 b.disabled = true;
@@ -200,25 +264,30 @@ if(choice === correct){
 
 btn.classList.add("correct");
 
-alert("⭕ 正解！");
+resultText.innerHTML = "⭕ 正解！";
+resultText.style.color = "#2196f3";
 
 // ===== 復習から削除 =====
 let wrong = JSON.parse(
 localStorage.getItem("wrongQuestions_"+subject) || "[]"
 );
 
-wrong = wrong.filter(w => w.index !== index);
+// ===== 問題文一致で削除 =====
+wrong = wrong.filter(w => 
+w.questionData.question !== question
+);
 
 localStorage.setItem(
 "wrongQuestions_"+subject,
 JSON.stringify(wrong)
 );
 
+// ===== 少し後に更新 =====
 setTimeout(()=>{
 
 location.reload();
 
-},500);
+},800);
 
 }
 
@@ -229,7 +298,12 @@ btn.classList.add("wrong");
 
 buttons[correct].classList.add("correct");
 
-alert("❌ 不正解");
+resultText.innerHTML = `
+❌ 不正解<br>
+正解：${buttons[correct].textContent}
+`;
+
+resultText.style.color = "#f44336";
 
 }
 
