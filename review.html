@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
+
 .mask{
 background:#ffeb3b;
 color:transparent;
@@ -23,19 +24,26 @@ background:#e3f2fd;
 color:#0288d1;
 font-weight:bold;
 }
+
 </style>
 
 </head>
 
 <body>
 
-<div class="card">
+<div class="container">
 
-<h2>復習リスト</h2>
+  <div class="card">
 
-<div id="reviewList"></div>
+    <h2>復習リスト</h2>
 
-<button onclick="location.href='home.html'">ホーム</button>
+    <div id="reviewList"></div>
+
+    <button onclick="location.href='home.html'">
+      ホーム
+    </button>
+
+  </div>
 
 </div>
 
@@ -53,8 +61,13 @@ let wrong = JSON.parse(localStorage.getItem(key) || "[]");
 
 if(wrong.length > 0){
 
-html += `<div class="card"><h3>📚 ${subject}</h3>`;
+html += `
+<div class="card">
 
+<h3>📚 ${subject}</h3>
+`;
+
+// ===== 問題表示 =====
 wrong.forEach(w=>{
 
 let q = w.questionData;
@@ -62,40 +75,97 @@ let q = w.questionData;
 if(!q) return;
 
 html += `
-<div style="margin-top:10px; padding:10px; background:#f9f9f9; border-radius:8px;">
-<p><strong>${q.question}</strong></p>
 
-<p style="color:#0288d1; font-weight:bold;">
-あなたの答え：${q.choices[w.userAnswer]}
+<div style="
+margin-top:10px;
+padding:10px;
+background:#f9f9f9;
+border-radius:8px;
+">
+
+<p>
+<strong>${q.question}</strong>
+</p>
+
+<p style="
+color:#0288d1;
+font-weight:bold;
+">
+
+あなたの答え：
+${q.choices[w.userAnswer]}
+
 </p>
 
 <p>
+
 <strong>正解：</strong>
-<span class="mask" onclick="reveal(this)">
+
+<span class="mask"
+onclick="reveal(this)">
+
 ${q.choices[q.answer]}
+
 </span>
+
 </p>
+
 </div>
+
 `;
 
 });
 
+// ===== 復習ボタン =====
+html += `
+
+<button onclick="startReviewQuiz('${subject}')">
+
+この科目を復習
+
+</button>
+
+`;
+
 html += `</div>`;
 
 }
-}
 
 }
 
+}
+
+// ===== 空 =====
 if(html === ""){
-html = "<p>復習する問題はありません</p>";
+
+html = `
+<div class="card">
+<p>復習する問題はありません</p>
+</div>
+`;
+
 }
 
+// ===== 表示 =====
 document.getElementById("reviewList").innerHTML = html;
 
-// ===== マスキング解除 =====
+// ===== 正解表示 =====
 function reveal(el){
+
 el.classList.toggle("show");
+
+}
+
+// ===== 復習開始 =====
+function startReviewQuiz(subject){
+
+localStorage.setItem("selectedSubject", subject);
+
+// reviewモード
+localStorage.setItem("reviewMode", "true");
+
+location.href = "quiz.html";
+
 }
 
 </script>
