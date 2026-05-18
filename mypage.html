@@ -4,23 +4,37 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>マイページ</title>
+
 <link rel="stylesheet" href="style.css">
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
-  authDomain: "shinkyu-study.firebaseapp.com",
-  projectId: "shinkyu-study"
-};
+.profileCard{
+margin-top:15px;
+padding:20px;
+background:#f9f9f9;
+border-radius:12px;
+line-height:2;
+}
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-</script>
+.label{
+font-weight:bold;
+color:#555;
+}
+
+.streakBox{
+margin-top:20px;
+padding:15px;
+border-radius:12px;
+background:#fff3e0;
+font-size:20px;
+font-weight:bold;
+text-align:center;
+}
+
+</style>
 
 </head>
 
@@ -28,115 +42,157 @@ const db = firebase.firestore();
 
 <div class="container">
 
-  <!-- ユーザー情報 -->
-  <div class="card">
+<div class="card">
 
-    <h2>マイページ</h2>
+<h1>マイページ</h1>
 
-    <div id="userInfo"></div>
+<div id="profile"></div>
 
-  </div>
+<button
+style="margin-top:20px;"
+onclick="location.href='home.html'"
+>
 
-  <!-- 履歴 -->
-  <div id="history"></div>
+ホーム
 
-  <!-- 戻る -->
-  <div class="card">
+</button>
 
-    <button style="background:#777;"
-      onclick="location.href='home.html'">
-
-      ホーム
-
-    </button>
-
-  </div>
+</div>
 
 </div>
 
 <script>
 
-// ===== ログイン確認 =====
+// ========================================
+// ログイン確認
+// ========================================
+
 const currentUser = localStorage.getItem("currentUser");
 
 if(!currentUser){
+
 location.href = "index.html";
+
 }
 
-// ===== ユーザー情報 =====
+
+// ========================================
+// Firebase
+// ========================================
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
+  authDomain: "shinkyu-study.firebaseapp.com",
+  projectId: "shinkyu-study"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+
+// ========================================
+// ユーザー情報取得
+// ========================================
+
 db.collection("users").doc(currentUser).get()
 .then(doc => {
 
-if(doc.exists){
+if(!doc.exists){
 
-const u = doc.data();
-
-document.getElementById("userInfo").innerHTML = `
-
-<p>👤 名前：${u.fullname}</p>
-
-<p>📛 ユーザー名：${u.username}</p>
-
-<p>🎓 学年：${u.grade || "未設定"}</p>
-
-<p>🆔 会員番号：${u.memberId}</p>
-
+document.getElementById("profile").innerHTML = `
+<p>
+ユーザー情報が見つかりません
+</p>
 `;
+
+return;
 
 }
 
-});
+const user = doc.data();
 
-// ===== 履歴 =====
-db.collection("quizResults")
-.where("username", "==", currentUser)
-.get()
-.then(snapshot => {
 
-let html = "";
+// ========================================
+// 連続学習日数
+// ========================================
 
-if(snapshot.empty){
+let streak = Number(
+localStorage.getItem("studyStreak") || "0"
+);
 
-html = `
-<div class="card">
-<p>履歴なし</p>
-</div>
-`;
 
-}else{
+// ========================================
+// 表示
+// ========================================
 
-snapshot.forEach(doc => {
+let html = `
 
-const h = doc.data();
-
-let rate = 0;
-
-if(h.total > 0){
-rate = Math.round((h.score / h.total) * 100);
-}
-
-html += `
-
-<div class="card">
-
-<p>📚 ${h.subject}</p>
+<div class="profileCard">
 
 <p>
-🎯 ${h.score} / ${h.total}
-（${rate}%）
+
+<span class="label">
+
+👤 名前：
+
+</span>
+
+${user.fullname}
+
 </p>
 
-<p>🕒 ${h.date}</p>
+<p>
+
+<span class="label">
+
+📛 ユーザー名：
+
+</span>
+
+${user.username}
+
+</p>
+
+<p>
+
+<span class="label">
+
+🎓 学年：
+
+</span>
+
+${user.grade}
+
+</p>
+
+<p>
+
+<span class="label">
+
+🆔 会員番号：
+
+</span>
+
+${user.memberId}
+
+</p>
+
+</div>
+
+<div class="streakBox">
+
+🔥 連続学習日数
+
+<br><br>
+
+${streak} 日
 
 </div>
 
 `;
 
-});
-
-}
-
-document.getElementById("history").innerHTML = html;
+document.getElementById("profile").innerHTML = html;
 
 });
 
