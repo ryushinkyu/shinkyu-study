@@ -2,17 +2,21 @@
 <html lang="ja">
 <head>
 
+<link rel="stylesheet" href="style.css">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>クイズ</title>
-
-<link rel="stylesheet" href="style.css">
+<title>鍼灸Study - クイズ</title>
 
 <style>
 
+.chapterBtn{
+width:100%;
+margin-top:10px;
+}
+
 .choiceBtn{
-display:block;
 width:100%;
 margin-top:10px;
 }
@@ -27,11 +31,11 @@ background:#f44336 !important;
 color:white;
 }
 
-.resultBox{
-margin-top:20px;
+.point{
+margin-top:15px;
 padding:15px;
+background:#fff3cd;
 border-radius:10px;
-background:#f5f5f5;
 }
 
 </style>
@@ -43,247 +47,250 @@ background:#f5f5f5;
 <div class="container">
 
 <div class="card">
-
 <h1>クイズ</h1>
-
-<div id="quiz"></div>
-
 </div>
+
+<div id="menu"></div>
+<div id="quiz"></div>
 
 </div>
 
 <script>
 
-// ========================================
-// 問題データ
-// ========================================
+// =====================================
+// 科目
+// =====================================
+
+const subject =
+localStorage.getItem("selectedSubject");
+
+
+// =====================================
+// 問題
+// =====================================
 
 const allQuiz = {
 
 "衛生学・公衆衛生学":{
 
-// ========================================
-// 第2章 疾病予防
-// ========================================
-
-"疾病予防":[
+"第2章 疾病予防":[
 
 {
-question:"一次予防はどれか。",
+question:"第一次予防でないのはどれか",
 choices:[
-"リハビリテーション",
-"健康診断",
+"健康教育",
+"安全な水の供給",
 "予防接種",
-"社会復帰支援"
+"健康診査"
 ],
-answer:2
+answer:3
 },
 
 {
-question:"二次予防はどれか。",
+question:"一次予防はどれか",
+choices:[
+"リハビリテーション",
+"生活環境改善",
+"がん検診",
+"社会復帰"
+],
+answer:1
+},
+
+{
+question:"二次予防はどれか",
+choices:[
+"健康診断",
+"予防接種",
+"禁煙",
+"機能訓練"
+],
+answer:0
+},
+
+{
+question:"疾病予防のうち二次予防はどれか",
+choices:[
+"健康教育",
+"健康診断",
+"予防接種",
+"作業療法"
+],
+answer:1
+},
+
+{
+question:"二次予防に分類されるのはどれか",
+choices:[
+"遺伝相談",
+"感染経路対策",
+"発がん物質対策",
+"スクリーニング検査"
+],
+answer:3
+},
+
+{
+question:"第三次予防はどれか",
+choices:[
+"リハビリテーション",
+"禁煙",
+"がん検診",
+"予防接種"
+],
+answer:0
+},
+
+{
+question:"三次予防はどれか",
+choices:[
+"安全な水の供給",
+"がん検診",
+"事故防止",
+"適正配置"
+],
+answer:3
+},
+
+{
+question:"疾病の三次予防はどれか",
 choices:[
 "健康教育",
 "予防接種",
-"健康診断",
-"機能回復訓練"
+"健康診査",
+"リハビリテーション"
 ],
-answer:2
+answer:3
 },
 
 {
-question:"三次予防はどれか。",
+question:"予防保健と対策との組合せで正しいのはどれか",
 choices:[
-"生活習慣改善",
+"健康増進 ― 職業訓練",
+"第一次予防 ― 予防接種",
+"第二次予防 ― 事故防止",
+"第三次予防 ― 職業病対策"
+],
+answer:1
+},
+
+{
+question:"公衆衛生について誤っている組合せはどれか",
+choices:[
+"第一次予防 ─ 健康増進",
+"第二次予防 ─ 予防接種",
+"第三次予防 ─ 社会復帰",
+"包括保健 ─ 総合的保健"
+],
+answer:1
+},
+
+{
+question:"疾患と第一次予防との組合せで効果のないのはどれか",
+choices:[
+"脳梗塞 ─ 動物性脂肪の摂取",
+"心筋梗塞 ─ ストレスの回避",
+"糖尿病 ─ 適度の運動",
+"肺癌 ─ 禁煙"
+],
+answer:0
+},
+
+{
+question:"予防について正しい組合せはどれか",
+choices:[
+"がん検診 ― 第一次予防",
+"予防接種 ― 第二次予防",
+"禁酒 ― 第二次予防",
+"リハビリテーション ― 第三次予防"
+],
+answer:3
+},
+
+{
+question:"健康日本21（第三次）で示された『自然に健康になれる環境づくり』に相当する予防段階はどれか",
+choices:[
+"0次予防",
+"1次予防",
+"2次予防",
+"3次予防"
+],
+answer:0
+},
+
+{
+question:"結核対策で早期発見を目的とするのはどれか",
+choices:[
+"結核登録",
+"定期健康診断",
+"定期予防接種",
+"家庭訪問指導"
+],
+answer:1
+},
+
+{
+question:"ハイリスクアプローチはどれか",
+choices:[
+"受動喫煙を減らす法整備",
+"食習慣改善の広報活動",
+"市民対象のウォーキング大会",
+"喫煙者への禁煙指導"
+],
+answer:3
+},
+
+{
+question:"ハイリスクアプローチでないのはどれか",
+choices:[
+"喫煙者への禁煙指導",
+"市民対象のウォーキング大会",
+"糖尿病予備群への運動指導",
+"塩分摂取量が多い者への食事指導"
+],
+answer:1
+},
+
+{
+question:"一次予防に含まれるのはどれか",
+choices:[
+"健康教育",
+"健康診断",
 "リハビリテーション",
+"機能訓練"
+],
+answer:0
+},
+
+{
+question:"二次予防に含まれるのはどれか",
+choices:[
 "予防接種",
+"健康診断",
+"禁煙指導",
+"運動習慣"
+],
+answer:1
+},
+
+{
+question:"三次予防に含まれるのはどれか",
+choices:[
+"予防接種",
+"健康教育",
+"社会復帰",
 "健康診断"
 ],
-answer:1
-},
-
-{
-question:"疾病の早期発見・早期治療を目的とするのはどれか。",
-choices:[
-"一次予防",
-"二次予防",
-"三次予防",
-"ゼロ次予防"
-],
-answer:1
-},
-
-{
-question:"健康増進を目的とするのはどれか。",
-choices:[
-"一次予防",
-"二次予防",
-"三次予防",
-"四次予防"
-],
-answer:0
-},
-
-{
-question:"予防接種はどれに該当するか。",
-choices:[
-"一次予防",
-"二次予防",
-"三次予防",
-"四次予防"
-],
-answer:0
-},
-
-{
-question:"人間ドックはどれに該当するか。",
-choices:[
-"一次予防",
-"二次予防",
-"三次予防",
-"四次予防"
-],
-answer:1
-},
-
-{
-question:"機能回復訓練はどれに該当するか。",
-choices:[
-"一次予防",
-"二次予防",
-"三次予防",
-"ゼロ次予防"
-],
 answer:2
 },
 
 {
-question:"ハイリスクアプローチはどれか。",
+question:"疾病予防で一次予防に該当するのはどれか",
 choices:[
-"集団全体への健康教育",
-"喫煙者への禁煙指導",
-"地域全体への減塩活動",
-"ウォーキングイベント"
-],
-answer:1
-},
-
-{
-question:"ポピュレーションアプローチはどれか。",
-choices:[
-"糖尿病患者への個別指導",
-"高血圧患者への保健指導",
-"住民全体への減塩運動",
-"喫煙者のみへの禁煙指導"
-],
-answer:2
-},
-
-{
-question:"健康診査の目的として正しいのはどれか。",
-choices:[
-"機能回復",
-"疾病予防",
-"早期発見",
-"社会復帰"
-],
-answer:2
-},
-
-{
-question:"リハビリテーションの目的として正しいのはどれか。",
-choices:[
-"疾病予防",
-"健康増進",
-"社会復帰",
-"発病予防"
-],
-answer:2
-},
-
-{
-question:"がん検診はどれに分類されるか。",
-choices:[
-"一次予防",
-"二次予防",
-"三次予防",
-"四次予防"
-],
-answer:1
-},
-
-{
-question:"禁煙指導はどれに分類されるか。",
-choices:[
-"一次予防",
-"二次予防",
-"三次予防",
-"四次予防"
-],
-answer:0
-},
-
-{
-question:"疾病の再発防止を目的とするのはどれか。",
-choices:[
-"一次予防",
-"二次予防",
-"三次予防",
-"ゼロ次予防"
-],
-answer:2
-},
-
-{
-question:"疾病予防について正しいのはどれか。",
-choices:[
-"一次予防は早期発見を目的とする",
-"二次予防は健康増進を目的とする",
-"三次予防は社会復帰を目的とする",
-"二次予防は発病予防を目的とする"
-],
-answer:2
-},
-
-{
-question:"特定健康診査はどれに該当するか。",
-choices:[
-"一次予防",
-"二次予防",
-"三次予防",
-"ゼロ次予防"
-],
-answer:1
-},
-
-{
-question:"生活習慣病予防のための運動習慣改善はどれか。",
-choices:[
-"一次予防",
-"二次予防",
-"三次予防",
-"四次予防"
-],
-answer:0
-},
-
-{
-question:"脳卒中後の社会復帰支援はどれか。",
-choices:[
-"一次予防",
-"二次予防",
-"三次予防",
-"ゼロ次予防"
-],
-answer:2
-},
-
-{
-question:"疾病予防におけるゼロ次予防で正しいのはどれか。",
-choices:[
-"健康診断を行う",
-"リハビリを行う",
-"自然に健康になれる環境を整える",
-"薬物療法を行う"
+"がん検診",
+"リハビリテーション",
+"予防接種",
+"機能回復訓練"
 ],
 answer:2
 }
@@ -295,414 +302,277 @@ answer:2
 };
 
 
-// ========================================
-// 科目
-// ========================================
-
-const subject = localStorage.getItem("selectedSubject");
-
-
-// ========================================
+// =====================================
 // 状態
-// ========================================
+// =====================================
 
-let selectedChapter = "";
-
-let quiz = [];
-
+let currentQuiz = [];
 let quizIndex = 0;
-
 let score = 0;
+let currentChapter = "";
 
-let results = [];
-
-
-// ========================================
-// 初期表示
-// ========================================
-
-showChapterMenu();
+showMenu();
 
 
-// ========================================
-// 章選択
-// ========================================
+// =====================================
+// メニュー
+// =====================================
 
-function showChapterMenu(){
+function showMenu(){
 
-const chapters = allQuiz[subject];
+document.getElementById("quiz").innerHTML = "";
+
+if(subject === "衛生学・公衆衛生学"){
 
 let html = `
+<div class="card">
 
-<h2>
+<h3>
 
 章を選択
 
-</h2>
-
+</h3>
 `;
+
+const chapters = allQuiz[subject];
 
 for(let chapter in chapters){
 
 html += `
-
 <button
-class="choiceBtn"
+class="chapterBtn"
 onclick="startQuiz('${chapter}')"
 >
 
 ${chapter}
 
 </button>
-
 `;
 
 }
 
 html += `
-
 <button
-style="margin-top:20px;"
+style="background:#777;"
 onclick="location.href='quizMenu.html'"
 >
 
-科目選択へ
+科目選択へ戻る
 
 </button>
 
+</div>
 `;
 
-document.getElementById("quiz").innerHTML = html;
+document.getElementById("menu").innerHTML = html;
+
+}
 
 }
 
 
-// ========================================
-// クイズ開始
-// ========================================
+// =====================================
+// 開始
+// =====================================
 
 function startQuiz(chapter){
 
-selectedChapter = chapter;
+currentChapter = chapter;
 
-quiz = allQuiz[subject][chapter];
-
-quiz = quiz.sort(()=>Math.random()-0.5);
-
-quiz = quiz.slice(0,5);
-
-quiz = quiz.map((q,i)=>({
-
-...q,
-index:i,
-chapter:chapter
-
-}));
+currentQuiz =
+allQuiz[subject][chapter]
+.sort(()=>Math.random()-0.5)
+.slice(0,5);
 
 quizIndex = 0;
-
 score = 0;
 
-results = [];
+document.getElementById("menu").innerHTML = "";
 
-showQuestion();
+showQuiz();
 
 }
 
 
-// ========================================
-// 問題表示
-// ========================================
+// =====================================
+// 表示
+// =====================================
 
-function showQuestion(){
+function showQuiz(){
 
-if(quizIndex >= quiz.length){
+if(quizIndex >= currentQuiz.length){
 
-showResult();
+let html = `
+<div class="card">
+
+<h2>終了！</h2>
+
+<p>
+
+${score} / ${currentQuiz.length}
+
+</p>
+
+<button onclick="showMenu()">
+
+章選択へ戻る
+
+</button>
+
+<button
+style="background:#777;"
+onclick="location.href='home.html'"
+>
+
+ホーム
+
+</button>
+
+</div>
+`;
+
+document.getElementById("quiz").innerHTML = html;
 
 return;
 
 }
 
-const q = quiz[quizIndex];
+const q = currentQuiz[quizIndex];
 
 let html = `
+<div class="card">
+
+<h3>
+
+${currentChapter}
+
+</h3>
 
 <h2>
 
-${selectedChapter}
+問題 ${quizIndex+1}
 
 </h2>
 
 <p>
 
-問題 ${quizIndex+1}
-
-</p>
-
-<p style="margin-top:20px;">
-
 ${q.question}
 
 </p>
-
 `;
 
-q.choices.forEach((choice,i)=>{
+q.choices.forEach((choice,index)=>{
 
 html += `
-
 <button
 class="choiceBtn"
-onclick="answer(${i})"
+onclick="checkAnswer(${index})"
 >
 
-${i+1}．${choice}
+${index+1}．${choice}
 
 </button>
-
 `;
 
 });
+
+html += `</div>`;
 
 document.getElementById("quiz").innerHTML = html;
 
 }
 
 
-// ========================================
-// 回答
-// ========================================
+// =====================================
+// 判定
+// =====================================
 
-function answer(choice){
+function checkAnswer(num){
 
-const q = quiz[quizIndex];
+let q = currentQuiz[quizIndex];
 
-const correct = q.answer;
+let buttons =
+document.querySelectorAll(".choiceBtn");
 
-const buttons = document.querySelectorAll(".choiceBtn");
-
-buttons.forEach(btn=>{
-
-btn.disabled = true;
-
-});
-
-let resultHtml = "";
-
-
-// ========================================
-// 復習取得
-// ========================================
+buttons.forEach(btn=>btn.disabled=true);
 
 let wrong = JSON.parse(
-localStorage.getItem("wrongQuestions_"+subject) || "[]"
+localStorage.getItem(
+"wrongQuestions_"+subject
+) || "[]"
 );
 
 
-// ========================================
-// 正解
-// ========================================
+// ===== 正解 =====
 
-if(choice === correct){
+if(num === q.answer){
+
+buttons[num].classList.add("correct");
 
 score++;
 
-results.push(true);
-
-buttons[choice].classList.add("correct");
-
-resultHtml += `
-
-<div class="resultBox">
-
-<h3 style="color:#2196f3;">
-
-⭕ 正解！
-
-</h3>
-
-</div>
-
-`;
-
-wrong = wrong.filter(w =>
-
-w.questionData.question !== q.question
-
-);
-
 }
-
-
-// ========================================
-// 不正解
-// ========================================
-
 else{
 
-results.push(false);
+buttons[num].classList.add("wrong");
 
-buttons[choice].classList.add("wrong");
-
-buttons[correct].classList.add("correct");
-
-resultHtml += `
-
-<div class="resultBox">
-
-<h3 style="color:#f44336;">
-
-❌ 不正解
-
-</h3>
-
-<p>
-
-正解：
-${q.choices[correct]}
-
-</p>
-
-</div>
-
-`;
-
-const exists = wrong.find(w =>
-
-w.questionData.question === q.question
-
-);
-
-if(!exists){
+buttons[q.answer].classList.add("correct");
 
 wrong.push({
-
-index:q.index,
-
-userAnswer:choice,
-
-questionData:q
-
+questionData:q,
+userAnswer:num,
+chapter:currentChapter
 });
-
-}
-
-}
-
-
-// ========================================
-// 保存
-// ========================================
 
 localStorage.setItem(
 "wrongQuestions_"+subject,
 JSON.stringify(wrong)
 );
 
+}
 
-// ========================================
-// 次へ
-// ========================================
 
-resultHtml += `
+// ===== 解説 =====
+
+let html = `
+<div class="point">
+
+<strong>
+
+正解：
+
+</strong>
+
+<br><br>
+
+${q.choices[q.answer]}
+
+</div>
 
 <button
-style="margin-top:15px;"
 onclick="nextQuestion()"
 >
 
 次へ
 
 </button>
-
 `;
 
-document.getElementById("quiz").innerHTML += resultHtml;
+document.getElementById("quiz")
+.innerHTML += html;
 
 }
 
 
-// ========================================
+// =====================================
 // 次へ
-// ========================================
+// =====================================
 
 function nextQuestion(){
 
 quizIndex++;
 
-showQuestion();
-
-}
-
-
-// ========================================
-// 結果
-// ========================================
-
-function showResult(){
-
-let html = `
-
-<h2>
-
-終了！
-
-</h2>
-
-<p>
-
-${selectedChapter}
-
-</p>
-
-<p>
-
-スコア：
-${score} / ${quiz.length}
-
-</p>
-
-`;
-
-results.forEach((r,i)=>{
-
-html += `
-
-<p>
-
-問題${i+1}：
-${r ? "⭕" : "❌"}
-
-</p>
-
-`;
-
-});
-
-html += `
-
-<button onclick="showChapterMenu()">
-
-章選択へ
-
-</button>
-
-<button onclick="location.href='review.html'">
-
-復習リスト
-
-</button>
-
-<button onclick="location.href='home.html'">
-
-ホーム
-
-</button>
-
-`;
-
-document.getElementById("quiz").innerHTML = html;
+showQuiz();
 
 }
 
