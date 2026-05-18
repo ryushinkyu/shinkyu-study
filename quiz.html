@@ -1,280 +1,3 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>クイズ</title>
-<link rel="stylesheet" href="style.css">
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
-  authDomain: "shinkyu-study.firebaseapp.com",
-  projectId: "shinkyu-study"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-</script>
-
-</head>
-
-<body>
-
-<div class="container">
-
-  <div class="card selectable">
-
-    <h1>クイズ</h1>
-
-    <div id="menu"></div>
-    <div id="quiz"></div>
-
-  </div>
-
-</div>
-
-<script>
-
-// ===== 問題データ =====
-const allQuiz = {
-
-"衛生学・公衆衛生学":[
-
-{
-question:"市町村保健センターの役割はどれか？",
-choices:[
-"食品衛生に関する業務",
-"環境衛生に関する業務",
-"エイズに関する相談",
-"乳幼児健診"
-],
-answer:3
-},
-
-{
-question:"保健所について誤っているのはどれか？",
-choices:[
-"地域保健法で規定される",
-"保健所長は医師である必要がある",
-"栄養の改善および食品衛生に関する業務を行う",
-"地域保健に係わる統計に関する業務を行う"
-],
-answer:1
-}
-
-]
-
-};
-
-// ===== 科目 =====
-let subject = localStorage.getItem("selectedSubject");
-
-// ===== 状態 =====
-let quiz = [];
-let quizIndex = 0;
-let score = 0;
-let results = [];
-
-// ===== reviewモード =====
-if(localStorage.getItem("reviewMode") === "true"){
-
-localStorage.removeItem("reviewMode");
-
-startReview();
-
-}else{
-
-showMenu();
-
-}
-
-// ===== メニュー =====
-function showMenu(){
-
-document.getElementById("quiz").innerHTML = "";
-
-document.getElementById("menu").innerHTML = `
-
-<h3>クイズを選択</h3>
-
-<button onclick="startNormal()">
-通常クイズ
-</button>
-
-<button onclick="startReview()">
-間違えた問題
-</button>
-
-<button onclick="location.href='quizMenu.html'">
-科目選択
-</button>
-
-`;
-
-}
-
-// ===== 通常クイズ =====
-function startNormal(){
-
-quiz = (allQuiz[subject] || []).map((q,i)=>({
-
-...q,
-originalIndex: i
-
-}));
-
-startQuiz();
-
-}
-
-// ===== 復習クイズ =====
-function startReview(){
-
-let wrong = JSON.parse(
-localStorage.getItem("wrongQuestions_"+subject) || "[]"
-);
-
-if(wrong.length === 0){
-
-alert("間違えた問題がありません");
-
-showMenu();
-
-return;
-
-}
-
-quiz = wrong.map(w => ({
-
-...allQuiz[subject][w.index],
-originalIndex: w.index
-
-}));
-
-startQuiz();
-
-}
-
-// ===== クイズ開始 =====
-function startQuiz(){
-
-quizIndex = 0;
-score = 0;
-results = [];
-
-document.getElementById("menu").innerHTML = "";
-
-showQuiz();
-
-}
-
-// ===== 問題表示 =====
-function showQuiz(){
-
-// ===== 終了 =====
-if(quizIndex >= quiz.length){
-
-const username = localStorage.getItem("currentUser");
-
-// ===== Firebase保存 =====
-db.collection("quizResults").add({
-
-username: username,
-subject: subject,
-score: score,
-total: quiz.length,
-date: new Date().toLocaleString()
-
-});
-
-// ===== デイリー達成 =====
-localStorage.setItem("dailyCleared", "true");
-
-// ===== 結果表示 =====
-let html = "";
-
-html += `
-<h2>終了！</h2>
-`;
-
-html += `
-<p>
-スコア：${score} / ${quiz.length}
-</p>
-`;
-
-results.forEach((r,i)=>{
-
-html += `
-<p>
-問題${i+1}：${r ? "⭕" : "❌"}
-</p>
-`;
-
-});
-
-html += `
-
-<button onclick="showMenu()">
-もう一度
-</button>
-
-<button onclick="location.href='quizMenu.html'">
-科目選択
-</button>
-
-<button onclick="location.href='home.html'">
-ホーム
-</button>
-
-`;
-
-document.getElementById("quiz").innerHTML = html;
-
-return;
-
-}
-
-// ===== 問題 =====
-const q = quiz[quizIndex];
-
-let html = "";
-
-html += `
-<h2>
-問題 ${quizIndex + 1}
-</h2>
-`;
-
-html += `
-<p>
-${q.question}
-</p>
-`;
-
-// ===== 選択肢 =====
-q.choices.forEach((c,i)=>{
-
-html += `
-<button onclick="answer(${i})">
-
-${i+1}．${c}
-
-</button>
-`;
-
-});
-
-document.getElementById("quiz").innerHTML = html;
-
-}
-
 // ===== 回答 =====
 function answer(choice){
 
@@ -288,6 +11,19 @@ localStorage.getItem("wrongQuestions_"+subject) || "[]"
 
 let originalIndex = q.originalIndex;
 
+// ===== ボタン取得 =====
+const buttons = document.querySelectorAll("#quiz button");
+
+// ===== ボタン停止 =====
+buttons.forEach(btn=>{
+
+btn.disabled = true;
+
+});
+
+// ===== 結果HTML =====
+let resultHtml = "";
+
 // ===== 正解 =====
 if(choice === correct){
 
@@ -297,6 +33,19 @@ results.push(true);
 
 // 復習リストから削除
 wrong = wrong.filter(w => w.index !== originalIndex);
+
+resultHtml += `
+
+<h3 style="
+color:#2196f3;
+margin-top:20px;
+">
+
+⭕ 正解！
+
+</h3>
+
+`;
 
 }
 
@@ -319,7 +68,39 @@ questionData: q
 
 }
 
+resultHtml += `
+
+<h3 style="
+color:#f44336;
+margin-top:20px;
+">
+
+❌ 不正解
+
+</h3>
+
+`;
+
 }
+
+// ===== 正解表示 =====
+resultHtml += `
+
+<div class="point" style="margin-top:15px;">
+
+<strong>正解：</strong><br><br>
+
+${q.choices[correct]}
+
+</div>
+
+<button onclick="nextQuestion()">
+
+次へ
+
+</button>
+
+`;
 
 // ===== 保存 =====
 localStorage.setItem(
@@ -327,14 +108,16 @@ localStorage.setItem(
 JSON.stringify(wrong)
 );
 
+// ===== 表示 =====
+document.getElementById("quiz").innerHTML += resultHtml;
+
+}
+
 // ===== 次へ =====
+function nextQuestion(){
+
 quizIndex++;
 
 showQuiz();
 
 }
-
-</script>
-
-</body>
-</html>
