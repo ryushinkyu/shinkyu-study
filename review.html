@@ -145,13 +145,9 @@ html += `
 <div class="reviewQuestion">
 
 <p>
-
 <strong>
-
 ${q.question}
-
 </strong>
-
 </p>
 
 <p style="
@@ -189,7 +185,7 @@ this,
 ${i},
 ${q.answer},
 '${subject}',
-'${q.question}'
+'${w.index}'
 )
 ">
 
@@ -241,7 +237,7 @@ el.classList.toggle("show");
 }
 
 // ===== 回答 =====
-function checkAnswer(btn,choice,correct,subject,question){
+function checkAnswer(btn,choice,correct,subject,index){
 
 // ===== 問題ブロック =====
 const questionBox = btn.closest(".reviewQuestion");
@@ -272,9 +268,9 @@ let wrong = JSON.parse(
 localStorage.getItem("wrongQuestions_"+subject) || "[]"
 );
 
-// ===== 問題文一致で削除 =====
+// ===== index一致で削除 =====
 wrong = wrong.filter(w => 
-w.questionData.question !== question
+w.index != index
 );
 
 localStorage.setItem(
