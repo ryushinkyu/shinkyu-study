@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+
 <meta charset="UTF-8">
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>管理画面</title>
+<link rel="stylesheet" href="style.css">
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -25,76 +27,164 @@ const db = firebase.firestore();
 <body>
 
 <div class="container">
-<div class="card">
 
-<h2>管理画面（管理者専用）</h2>
+  <div class="card">
 
-<input type="text" id="search" placeholder="ユーザー検索">
+    <h2>管理画面（管理者専用）</h2>
 
-<div id="userList"></div>
+    <input type="text" id="search" placeholder="ユーザー検索">
 
-<button onclick="location.href='home.html'">ホームに戻る</button>
+    <div id="userList"></div>
 
-</div>
+    <button onclick="location.href='home.html'">
+      ホームに戻る
+    </button>
+
+  </div>
+
 </div>
 
 <script>
 
-// ===== 管理者チェック =====
-const adminUser = 'admin';
-const currentUser = localStorage.getItem('currentUser');
+// ===== ログイン確認 =====
+const currentUser = localStorage.getItem("currentUser");
 
-if(currentUser !== adminUser){
-alert('管理者以外はアクセスできません');
-location.href = 'home.html';
+if(!currentUser){
+location.href = "index.html";
 }
 
-// ===== ユーザー一覧 =====
+// ===== 管理者チェック =====
+if(currentUser !== "admin"){
+alert("管理者以外はアクセスできません");
+location.href = "home.html";
+}
+
+// ===== ユーザー表示 =====
 function renderUsers(){
 
-const listDiv = document.getElementById('userList');
-listDiv.innerHTML = '';
+const listDiv = document.getElementById("userList");
+listDiv.innerHTML = "";
 
-const keyword = (document.getElementById("search").value || "").toLowerCase();
+const keyword =
+(document.getElementById("search").value || "").toLowerCase();
 
-db.collection("users").get().then(snapshot => {
+// ===== users取得 =====
+db.collection("users").get().then(userSnapshot => {
 
 let users = [];
 
-snapshot.forEach(doc => {
+userSnapshot.forEach(doc => {
 users.push(doc.data());
 });
 
-// 並び替え（ID順）
-users.sort((a,b)=> Number(a.memberId) - Number(b.memberId));
+// ===== quizResults取得 =====
+db.collection("quizResults").get().then(resultSnapshot => {
 
+let scores = {};
+
+// ===== 正解数集計 =====
+resultSnapshot.forEach(doc => {
+
+const r = doc.data();
+
+if(!scores[r.username]){
+scores[r.username] = {
+total:0,
+correct:0
+};
+}
+
+scores[r.username].total += r.total;
+scores[r.username].correct += r.score;
+
+});
+
+// ===== 正答率計算 =====
+users = users.map(user => {
+
+let total = 0;
+let correct = 0;
+
+if(scores[user.username]){
+total = scores[user.username].total;
+correct = scores[user.username].correct;
+}
+
+let rate = total > 0
+? Math.round((correct / total) * 100)
+: 0;
+
+return {
+...user,
+rate
+};
+
+});
+
+// ===== ランキング順 =====
+users.sort((a,b)=> b.rate - a.rate);
+
+// ===== 表示 =====
 users.forEach((user,index)=>{
 
 // 検索
 if(keyword){
+
 if(!user.username.toLowerCase().includes(keyword) &&
    !user.fullname.toLowerCase().includes(keyword)){
 return;
 }
+
 }
 
-// ランク
+// ===== メダル =====
 let medal = "";
+
 if(index === 0) medal = "🥇";
 else if(index === 1) medal = "🥈";
 else if(index === 2) medal = "🥉";
 
-const div = document.createElement('div');
-div.className = 'card';
+// ===== 色 =====
+let color = "#4caf50";
+
+if(user.rate < 60){
+color = "#f44336";
+}
+else if(user.rate < 80){
+color = "#ff9800";
+}
+
+// ===== カード =====
+const div = document.createElement("div");
+div.className = "card";
 
 div.innerHTML = `
-<p><strong>${index+1}位 ${medal}</strong></p>
-<p>${user.memberId} | ${user.username} | ${user.fullname}</p>
 
-<button onclick="deleteUser('${user.username}')">削除</button>
+<p>
+<strong>${index + 1}位 ${medal}</strong>
+</p>
+
+<p>👤 ${user.fullname}</p>
+
+<p>📛 ${user.username}</p>
+
+<p>🎓 ${user.grade || "未設定"}</p>
+
+<p>🆔 ${user.memberId}</p>
+
+<p style="color:${color}; font-weight:bold;">
+正答率：${user.rate}%
+</p>
+
+<button onclick="deleteUser('${user.username}')">
+削除
+</button>
+
 `;
 
 listDiv.appendChild(div);
+
+});
 
 });
 
@@ -105,21 +195,32 @@ listDiv.appendChild(div);
 // ===== 削除 =====
 function deleteUser(username){
 
-if(confirm("削除しますか？")){
+if(confirm(username + " を削除しますか？")){
 
-db.collection("users").doc(username).delete().then(()=>{
+// users削除
+db.collection("users").doc(username).delete()
+.then(()=>{
+
 alert("削除しました");
+
 renderUsers();
+
+})
+.catch(err=>{
+console.error(err);
+alert("削除失敗");
 });
 
 }
 
 }
 
-// 検索
-document.getElementById("search").addEventListener("input", renderUsers);
+// ===== 検索 =====
+document
+.getElementById("search")
+.addEventListener("input", renderUsers);
 
-// 初期表示
+// ===== 初期表示 =====
 renderUsers();
 
 </script>
