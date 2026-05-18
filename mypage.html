@@ -4,7 +4,7 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>新規登録</title>
+<title>マイページ</title>
 <link rel="stylesheet" href="style.css">
 
 <!-- Firebase -->
@@ -27,85 +27,118 @@ const db = firebase.firestore();
 <body>
 
 <div class="container">
+
+  <!-- ユーザー情報 -->
   <div class="card">
 
-    <h2>新規登録</h2>
+    <h2>マイページ</h2>
 
-    <input type="text" id="fullname" placeholder="本名">
-    <input type="text" id="username" placeholder="ユーザー名">
-    <input type="password" id="password" placeholder="パスワード">
+    <div id="userInfo"></div>
 
-    <!-- 学年 -->
-    <select id="grade">
-      <option value="">学年を選択</option>
-      <option value="1年">1年</option>
-      <option value="2年">2年</option>
-      <option value="3年">3年</option>
-    </select>
+  </div>
 
-    <button onclick="register()">登録</button>
+  <!-- 履歴 -->
+  <div id="history"></div>
 
-    <button style="background:#777;" onclick="location.href='loginOrRegister.html'">
-      戻る
+  <!-- 戻る -->
+  <div class="card">
+
+    <button style="background:#777;"
+      onclick="location.href='home.html'">
+
+      ホーム
+
     </button>
 
   </div>
+
 </div>
 
 <script>
 
-function register(){
+// ===== ログイン確認 =====
+const currentUser = localStorage.getItem("currentUser");
 
-const fullname = document.getElementById("fullname").value.trim();
-const username = document.getElementById("username").value.trim();
-const password = document.getElementById("password").value;
-const grade = document.getElementById("grade").value;
-
-// ===== 入力チェック =====
-if(!fullname || !username || !password || !grade){
-alert("全て入力してください");
-return;
+if(!currentUser){
+location.href = "index.html";
 }
 
-if(password.length < 4){
-alert("パスワードは4文字以上にしてください");
-return;
-}
-
-// ===== 重複チェック =====
-db.collection("users").doc(username).get().then(doc => {
+// ===== ユーザー情報 =====
+db.collection("users").doc(currentUser).get()
+.then(doc => {
 
 if(doc.exists){
-alert("このユーザー名は使われています");
-return;
+
+const u = doc.data();
+
+document.getElementById("userInfo").innerHTML = `
+
+<p>👤 名前：${u.fullname}</p>
+
+<p>📛 ユーザー名：${u.username}</p>
+
+<p>🎓 学年：${u.grade || "未設定"}</p>
+
+<p>🆔 会員番号：${u.memberId}</p>
+
+`;
+
 }
-
-// ===== 保存 =====
-db.collection("users").doc(username).set({
-fullname: fullname,
-username: username,
-password: password,
-grade: grade,
-memberId: Date.now().toString()
-})
-.then(()=>{
-
-alert("登録完了！");
-
-// ログイン状態にする
-localStorage.setItem("currentUser", username);
-
-location.href = "home.html";
-
-})
-.catch(err=>{
-console.error(err);
-alert("登録エラー");
-});
 
 });
 
+// ===== 履歴 =====
+db.collection("quizResults")
+.where("username", "==", currentUser)
+.get()
+.then(snapshot => {
+
+let html = "";
+
+if(snapshot.empty){
+
+html = `
+<div class="card">
+<p>履歴なし</p>
+</div>
+`;
+
+}else{
+
+snapshot.forEach(doc => {
+
+const h = doc.data();
+
+let rate = 0;
+
+if(h.total > 0){
+rate = Math.round((h.score / h.total) * 100);
 }
+
+html += `
+
+<div class="card">
+
+<p>📚 ${h.subject}</p>
+
+<p>
+🎯 ${h.score} / ${h.total}
+（${rate}%）
+</p>
+
+<p>🕒 ${h.date}</p>
+
+</div>
+
+`;
+
+});
+
+}
+
+document.getElementById("history").innerHTML = html;
+
+});
 
 </script>
 

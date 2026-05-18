@@ -31,13 +31,21 @@ const db = firebase.firestore();
 
     <h2>新規登録</h2>
 
+    <input type="text" id="fullname" placeholder="本名">
     <input type="text" id="username" placeholder="ユーザー名">
-    <input type="text" id="fullname" placeholder="名前">
     <input type="password" id="password" placeholder="パスワード">
+
+    <!-- 学年 -->
+    <select id="grade">
+      <option value="">学年を選択</option>
+      <option value="1年">1年</option>
+      <option value="2年">2年</option>
+      <option value="3年">3年</option>
+    </select>
 
     <button onclick="register()">登録</button>
 
-    <button style="background:#777;" onclick="location.href='index.html'">
+    <button style="background:#777;" onclick="location.href='loginOrRegister.html'">
       戻る
     </button>
 
@@ -48,16 +56,23 @@ const db = firebase.firestore();
 
 function register(){
 
-const username = document.getElementById("username").value.trim();
 const fullname = document.getElementById("fullname").value.trim();
+const username = document.getElementById("username").value.trim();
 const password = document.getElementById("password").value;
+const grade = document.getElementById("grade").value;
 
-if(!username || !fullname || !password){
-alert("入力してください");
+// ===== 入力チェック =====
+if(!fullname || !username || !password || !grade){
+alert("全て入力してください");
 return;
 }
 
-// 🔥 重複チェック
+if(password.length < 4){
+alert("パスワードは4文字以上にしてください");
+return;
+}
+
+// ===== 重複チェック =====
 db.collection("users").doc(username).get().then(doc => {
 
 if(doc.exists){
@@ -65,16 +80,23 @@ alert("このユーザー名は使われています");
 return;
 }
 
-// 🔥 保存（ここが重要）
+// ===== 保存 =====
 db.collection("users").doc(username).set({
-username: username,
 fullname: fullname,
+username: username,
 password: password,
+grade: grade,
 memberId: Date.now().toString()
 })
 .then(()=>{
+
 alert("登録完了！");
-location.href = "login.html";
+
+// ログイン状態にする
+localStorage.setItem("currentUser", username);
+
+location.href = "home.html";
+
 })
 .catch(err=>{
 console.error(err);
