@@ -4,61 +4,46 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>復習リスト</title>
 
 <link rel="stylesheet" href="style.css">
 
 <style>
 
-.mask{
-background:#ffeb3b;
-color:transparent;
-padding:6px 12px;
-border-radius:6px;
-cursor:pointer;
-display:inline-block;
-user-select:none;
-transition:0.2s;
+.choiceBtn{
+display:block;
+width:100%;
+margin-top:10px;
 }
 
-.show{
-background:#e3f2fd;
-color:#0288d1;
-font-weight:bold;
+.correct{
+background:#2196f3 !important;
+color:white;
 }
 
-.reviewQuestion{
+.wrong{
+background:#f44336 !important;
+color:white;
+}
+
+.resultBox{
+margin-top:15px;
+padding:15px;
+border-radius:10px;
+background:#f5f5f5;
+}
+
+.chapterBtn{
+margin-top:10px;
+width:100%;
+}
+
+.reviewCard{
 margin-top:15px;
 padding:15px;
 background:#f9f9f9;
 border-radius:10px;
-}
-
-.correct{
-background:#e3f2fd;
-color:#0288d1;
-}
-
-.wrong{
-background:#ffebee;
-color:#f44336;
-}
-
-.resultText{
-margin-top:10px;
-font-weight:bold;
-}
-
-.choiceBtn{
-margin-top:8px;
-}
-
-.chapterTitle{
-margin-top:20px;
-padding:10px;
-background:#e3f2fd;
-border-radius:8px;
-font-weight:bold;
 }
 
 </style>
@@ -71,13 +56,9 @@ font-weight:bold;
 
 <div class="card">
 
-<h2>復習リスト</h2>
+<h1>復習リスト</h1>
 
-<div id="reviewList"></div>
-
-<button onclick="location.href='home.html'">
-ホーム
-</button>
+<div id="review"></div>
 
 </div>
 
@@ -85,28 +66,29 @@ font-weight:bold;
 
 <script>
 
-let html = "";
+// ========================================
+// 科目
+// ========================================
 
-// ===== 全科目 =====
-for(let key in localStorage){
+const subject = localStorage.getItem("selectedSubject");
 
-if(key.startsWith("wrongQuestions_")){
 
-let subject = key.replace("wrongQuestions_","");
-let wrong = JSON.parse(localStorage.getItem(key) || "[]");
+// ========================================
+// 復習データ取得
+// ========================================
 
-if(wrong.length > 0){
+let wrongQuestions = JSON.parse(
+localStorage.getItem("wrongQuestions_"+subject) || "[]"
+);
 
-html += `
-<div class="card">
 
-<h3>📚 ${subject}</h3>
-`;
+// ========================================
+// 章整理
+// ========================================
 
-// ===== 章ごと整理 =====
 let chapterMap = {};
 
-wrong.forEach(w=>{
+wrongQuestions.forEach(w=>{
 
 let chapter = w.questionData.chapter || "未分類";
 
@@ -120,72 +102,190 @@ chapterMap[chapter].push(w);
 
 });
 
-// ===== 章ループ =====
-for(let chapter in chapterMap){
 
-html += `
+// ========================================
+// 初期表示
+// ========================================
 
-<div class="chapterTitle">
+showChapterMenu();
 
-📖 ${chapter}
 
-</div>
+// ========================================
+// 章メニュー
+// ========================================
+
+function showChapterMenu(){
+
+let html = "";
+
+const chapters = Object.keys(chapterMap);
+
+// ===== 空 =====
+
+if(chapters.length === 0){
+
+html = `
+
+<p>
+
+復習問題はありません 👍
+
+</p>
+
+<button onclick="location.href='home.html'">
+
+ホーム
+
+</button>
 
 `;
 
-// ===== 問題 =====
-chapterMap[chapter].forEach(w=>{
+document.getElementById("review").innerHTML = html;
 
-let q = w.questionData;
+return;
 
-if(!q) return;
+}
 
 html += `
 
-<div class="reviewQuestion">
+<h2>
+
+章を選択
+
+</h2>
+
+`;
+
+chapters.forEach(chapter=>{
+
+const count = chapterMap[chapter].length;
+
+html += `
+
+<button
+class="chapterBtn"
+onclick="startReview('${chapter}')"
+>
+
+${chapter}
+（${count}問）
+
+</button>
+
+`;
+
+});
+
+html += `
+
+<button
+style="margin-top:20px;"
+onclick="location.href='home.html'"
+>
+
+ホーム
+
+</button>
+
+`;
+
+document.getElementById("review").innerHTML = html;
+
+}
+
+
+// ========================================
+// 復習開始
+// ========================================
+
+let reviewQuiz = [];
+
+let reviewIndex = 0;
+
+function startReview(chapter){
+
+reviewQuiz = chapterMap[chapter];
+
+reviewIndex = 0;
+
+showReviewQuestion();
+
+}
+
+
+// ========================================
+// 問題表示
+// ========================================
+
+function showReviewQuestion(){
+
+if(reviewIndex >= reviewQuiz.length){
+
+document.getElementById("review").innerHTML = `
+
+<h2>
+
+復習完了！
+
+</h2>
+
+<button onclick="showChapterMenu()">
+
+章一覧へ
+
+</button>
+
+<button onclick="location.href='home.html'">
+
+ホーム
+
+</button>
+
+`;
+
+return;
+
+}
+
+const w = reviewQuiz[reviewIndex];
+
+const q = w.questionData;
+
+let html = `
+
+<div class="reviewCard">
+
+<h2>
+
+${q.chapter}
+
+</h2>
 
 <p>
-<strong>
+
+問題 ${reviewIndex+1}
+
+</p>
+
+<p style="margin-top:20px;">
+
 ${q.question}
-</strong>
-</p>
-
-<p style="
-color:#0288d1;
-font-weight:bold;
-margin-top:10px;
-">
-
-あなたの答え：
-
-${q.choices[w.userAnswer]}
 
 </p>
 
-<p style="margin-top:10px;">
+`;
 
-<strong>正解：</strong>
+q.choices.forEach((choice,i)=>{
 
-<span class="mask"
-onclick="reveal(this)">
+html += `
 
-${q.choices[q.answer]}
-
-</span>
-
-</p>
-
-<div style="margin-top:15px;">
-
-${q.choices.map((choice,i)=>`
-
-<button class="choiceBtn" onclick="
-checkAnswer(
-this,
+<button
+class="choiceBtn"
+onclick="
+answerReview(
 ${i},
 ${q.answer},
-'${subject}',
-'${w.index}'
+'${q.question}'
 )
 ">
 
@@ -193,115 +293,138 @@ ${i+1}．${choice}
 
 </button>
 
-`).join("")}
+`;
 
-</div>
+});
 
-<div class="resultText"></div>
+html += `
 
 </div>
 
 `;
 
-});
+document.getElementById("review").innerHTML = html;
 
 }
 
-html += `</div>`;
 
-}
+// ========================================
+// 回答
+// ========================================
 
-}
+function answerReview(choice,correct,question){
 
-}
+const buttons = document.querySelectorAll(".choiceBtn");
 
-// ===== 空 =====
-if(html === ""){
+buttons.forEach(btn=>{
 
-html = `
-<div class="card">
-<p>復習する問題はありません 👍</p>
-</div>
-`;
-
-}
-
-// ===== 表示 =====
-document.getElementById("reviewList").innerHTML = html;
-
-// ===== 正解表示 =====
-function reveal(el){
-
-el.classList.toggle("show");
-
-}
-
-// ===== 回答 =====
-function checkAnswer(btn,choice,correct,subject,index){
-
-// ===== 問題ブロック =====
-const questionBox = btn.closest(".reviewQuestion");
-
-// ===== 選択肢 =====
-const buttons = questionBox.querySelectorAll(".choiceBtn");
-
-// ===== 結果 =====
-const resultText = questionBox.querySelector(".resultText");
-
-// ===== ボタン停止 =====
-buttons.forEach(b=>{
-
-b.disabled = true;
+btn.disabled = true;
 
 });
 
-// ===== 正解 =====
+let resultHtml = "";
+
+// ========================================
+// 正解
+// ========================================
+
 if(choice === correct){
 
-btn.classList.add("correct");
+buttons[choice].classList.add("correct");
 
-resultText.innerHTML = "⭕ 正解！";
-resultText.style.color = "#2196f3";
+resultHtml += `
+
+<div class="resultBox">
+
+<h3 style="color:#2196f3;">
+
+⭕ 正解！
+
+</h3>
+
+</div>
+
+`;
 
 // ===== 復習から削除 =====
-let wrong = JSON.parse(
-localStorage.getItem("wrongQuestions_"+subject) || "[]"
-);
 
-// ===== index一致で削除 =====
-wrong = wrong.filter(w => 
-w.index != index
+wrongQuestions = wrongQuestions.filter(w =>
+
+w.questionData.question !== question
+
 );
 
 localStorage.setItem(
 "wrongQuestions_"+subject,
-JSON.stringify(wrong)
+JSON.stringify(wrongQuestions)
 );
-
-// ===== 少し後に更新 =====
-setTimeout(()=>{
-
-location.reload();
-
-},800);
 
 }
 
-// ===== 不正解 =====
+// ========================================
+// 不正解
+// ========================================
+
 else{
 
-btn.classList.add("wrong");
+buttons[choice].classList.add("wrong");
 
 buttons[correct].classList.add("correct");
 
-resultText.innerHTML = `
-❌ 不正解<br>
-正解：${buttons[correct].textContent}
+resultHtml += `
+
+<div class="resultBox">
+
+<h3 style="color:#f44336;">
+
+❌ 不正解
+
+</h3>
+
+<p>
+
+正解：
+${buttons[correct].textContent}
+
+</p>
+
+</div>
+
 `;
 
-resultText.style.color = "#f44336";
+}
+
+// ========================================
+// 次へ
+// ========================================
+
+resultHtml += `
+
+<button
+style="margin-top:15px;"
+onclick="nextReviewQuestion()"
+>
+
+次へ
+
+</button>
+
+`;
+
+document.getElementById("review").innerHTML += resultHtml;
 
 }
+
+
+// ========================================
+// 次へ
+// ========================================
+
+function nextReviewQuestion(){
+
+reviewIndex++;
+
+showReviewQuestion();
 
 }
 

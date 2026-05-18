@@ -55,17 +55,16 @@ background:#f5f5f5;
 <script>
 
 // ========================================
-// 科目取得
-// ========================================
-
-const subject = localStorage.getItem("selectedSubject");
-
-
-// ========================================
 // 問題データ
 // ========================================
 
 const allQuiz = {
+
+"衛生学・公衆衛生学":{
+
+// ========================================
+// 健康・疾病予防
+// ========================================
 
 "健康・疾病予防":[
 
@@ -126,6 +125,10 @@ answer:0
 
 ],
 
+// ========================================
+// 感染症
+// ========================================
+
 "感染症":[
 
 {
@@ -184,6 +187,10 @@ answer:2
 }
 
 ],
+
+// ========================================
+// 疫学・統計
+// ========================================
 
 "疫学・統計":[
 
@@ -244,6 +251,10 @@ answer:1
 
 ],
 
+// ========================================
+// 食中毒・栄養
+// ========================================
+
 "食中毒・栄養":[
 
 {
@@ -303,45 +314,128 @@ answer:0
 
 ]
 
+}
+
 };
 
+// ========================================
+// 科目
+// ========================================
+
+const subject = localStorage.getItem("selectedSubject");
 
 // ========================================
-// 問題取得
+// 状態
 // ========================================
 
-let quiz = allQuiz[subject] || [];
+let selectedChapter = "";
 
+let quiz = [];
+
+let quizIndex = 0;
+
+let score = 0;
+
+let results = [];
+
+// ========================================
+// 初期表示
+// ========================================
+
+showChapterMenu();
+
+// ========================================
+// 章選択
+// ========================================
+
+function showChapterMenu(){
+
+const chapters = allQuiz[subject];
+
+let html = `
+
+<h2>
+
+章を選択
+
+</h2>
+
+`;
+
+for(let chapter in chapters){
+
+html += `
+
+<button
+class="choiceBtn"
+onclick="startQuiz('${chapter}')"
+>
+
+${chapter}
+
+</button>
+
+`;
+
+}
+
+html += `
+
+<button
+style="margin-top:20px;"
+onclick="location.href='quizMenu.html'"
+>
+
+科目選択へ
+
+</button>
+
+`;
+
+document.getElementById("quiz").innerHTML = html;
+
+}
+
+// ========================================
+// 開始
+// ========================================
+
+function startQuiz(chapter){
+
+selectedChapter = chapter;
+
+quiz = allQuiz[subject][chapter];
 
 // シャッフル
-quiz = quiz.sort(() => Math.random() - 0.5);
+quiz = quiz.sort(()=>Math.random()-0.5);
 
-
-// 5問制限
+// 5問
 quiz = quiz.slice(0,5);
 
-
-// originalIndex付与
+// index追加
 quiz = quiz.map((q,i)=>({
 
 ...q,
-originalIndex:i
+index:i,
+chapter:chapter
 
 }));
 
+quizIndex = 0;
 
-let quizIndex = 0;
-let score = 0;
-let results = [];
+score = 0;
 
+results = [];
+
+showQuestion();
+
+}
 
 // ========================================
 // 問題表示
 // ========================================
 
-showQuiz();
-
-function showQuiz(){
+function showQuestion(){
 
 if(quizIndex >= quiz.length){
 
@@ -355,11 +449,21 @@ const q = quiz[quizIndex];
 let html = `
 
 <h2>
-問題 ${quizIndex + 1}
+
+${selectedChapter}
+
 </h2>
 
+<p>
+
+問題 ${quizIndex+1}
+
+</p>
+
 <p style="margin-top:20px;">
+
 ${q.question}
+
 </p>
 
 `;
@@ -385,7 +489,6 @@ document.getElementById("quiz").innerHTML = html;
 
 }
 
-
 // ========================================
 // 回答
 // ========================================
@@ -404,17 +507,19 @@ btn.disabled = true;
 
 });
 
+let resultHtml = "";
 
-// ===== 復習取得 =====
+// ========================================
+// 復習取得
+// ========================================
 
 let wrong = JSON.parse(
 localStorage.getItem("wrongQuestions_"+subject) || "[]"
 );
 
-
-// ===== 正解 =====
-
-let resultHtml = "";
+// ========================================
+// 正解
+// ========================================
 
 if(choice === correct){
 
@@ -429,22 +534,28 @@ resultHtml += `
 <div class="resultBox">
 
 <h3 style="color:#2196f3;">
+
 ⭕ 正解！
+
 </h3>
 
 </div>
 
 `;
 
-
 // 復習から削除
 
-wrong = wrong.filter(w => w.question !== q.question);
+wrong = wrong.filter(w =>
+
+w.questionData.question !== q.question
+
+);
 
 }
 
-
-// ===== 不正解 =====
+// ========================================
+// 不正解
+// ========================================
 
 else{
 
@@ -459,7 +570,9 @@ resultHtml += `
 <div class="resultBox">
 
 <h3 style="color:#f44336;">
+
 ❌ 不正解
+
 </h3>
 
 <p>
@@ -473,29 +586,40 @@ ${q.choices[correct]}
 
 `;
 
+const exists = wrong.find(w =>
 
-// 重複防止
+w.questionData.question === q.question
 
-const exists = wrong.find(w => w.question === q.question);
+);
 
 if(!exists){
 
-wrong.push(q);
+wrong.push({
+
+index:q.index,
+
+userAnswer:choice,
+
+questionData:q
+
+});
 
 }
 
 }
 
-
-// ===== 保存 =====
+// ========================================
+// 保存
+// ========================================
 
 localStorage.setItem(
 "wrongQuestions_"+subject,
 JSON.stringify(wrong)
 );
 
-
-// ===== 次へ =====
+// ========================================
+// 次へ
+// ========================================
 
 resultHtml += `
 
@@ -514,7 +638,6 @@ document.getElementById("quiz").innerHTML += resultHtml;
 
 }
 
-
 // ========================================
 // 次へ
 // ========================================
@@ -523,10 +646,9 @@ function nextQuestion(){
 
 quizIndex++;
 
-showQuiz();
+showQuestion();
 
 }
-
 
 // ========================================
 // 結果
@@ -537,8 +659,16 @@ function showResult(){
 let html = `
 
 <h2>
+
 終了！
+
 </h2>
+
+<p>
+
+${selectedChapter}
+
+</p>
 
 <p>
 
@@ -566,21 +696,15 @@ ${r ? "⭕" : "❌"}
 
 html += `
 
-<button onclick="location.reload()">
+<button onclick="showChapterMenu()">
 
-もう一度
+章選択へ
 
 </button>
 
 <button onclick="location.href='review.html'">
 
 復習リスト
-
-</button>
-
-<button onclick="location.href='quizMenu.html'">
-
-科目選択
 
 </button>
 
