@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>復習リスト</title>
+
 <link rel="stylesheet" href="style.css">
 
 <style>
@@ -17,12 +18,30 @@ border-radius:6px;
 cursor:pointer;
 display:inline-block;
 user-select:none;
+transition:0.2s;
 }
 
 .show{
 background:#e3f2fd;
 color:#0288d1;
 font-weight:bold;
+}
+
+.reviewQuestion{
+margin-top:15px;
+padding:15px;
+background:#f9f9f9;
+border-radius:10px;
+}
+
+.correct{
+background:#e3f2fd;
+color:#0288d1;
+}
+
+.wrong{
+background:#ffebee;
+color:#f44336;
 }
 
 </style>
@@ -51,7 +70,7 @@ font-weight:bold;
 
 let html = "";
 
-// ===== 全科目チェック =====
+// ===== 全科目 =====
 for(let key in localStorage){
 
 if(key.startsWith("wrongQuestions_")){
@@ -67,8 +86,8 @@ html += `
 <h3>📚 ${subject}</h3>
 `;
 
-// ===== 問題表示 =====
-wrong.forEach(w=>{
+// ===== 問題 =====
+wrong.forEach((w,index)=>{
 
 let q = w.questionData;
 
@@ -76,12 +95,7 @@ if(!q) return;
 
 html += `
 
-<div style="
-margin-top:10px;
-padding:10px;
-background:#f9f9f9;
-border-radius:8px;
-">
+<div class="reviewQuestion">
 
 <p>
 <strong>${q.question}</strong>
@@ -90,6 +104,7 @@ border-radius:8px;
 <p style="
 color:#0288d1;
 font-weight:bold;
+margin-top:10px;
 ">
 
 あなたの答え：
@@ -97,7 +112,7 @@ ${q.choices[w.userAnswer]}
 
 </p>
 
-<p>
+<p style="margin-top:10px;">
 
 <strong>正解：</strong>
 
@@ -110,22 +125,33 @@ ${q.choices[q.answer]}
 
 </p>
 
+<div style="margin-top:15px;">
+
+${q.choices.map((choice,i)=>`
+
+<button onclick="
+checkAnswer(
+this,
+${i},
+${q.answer},
+'${subject}',
+${w.index}
+)
+">
+
+${i+1}．${choice}
+
+</button>
+
+`).join("")}
+
+</div>
+
 </div>
 
 `;
 
 });
-
-// ===== 復習ボタン =====
-html += `
-
-<button onclick="startReviewQuiz('${subject}')">
-
-この科目を復習
-
-</button>
-
-`;
 
 html += `</div>`;
 
@@ -140,7 +166,7 @@ if(html === ""){
 
 html = `
 <div class="card">
-<p>復習する問題はありません</p>
+<p>復習する問題はありません 👍</p>
 </div>
 `;
 
@@ -156,15 +182,56 @@ el.classList.toggle("show");
 
 }
 
-// ===== 復習開始 =====
-function startReviewQuiz(subject){
+// ===== 回答 =====
+function checkAnswer(btn,choice,correct,subject,index){
 
-localStorage.setItem("selectedSubject", subject);
+const parent = btn.parentElement;
 
-// reviewモード
-localStorage.setItem("reviewMode", "true");
+const buttons = parent.querySelectorAll("button");
 
-location.href = "quiz.html";
+buttons.forEach(b=>{
+
+b.disabled = true;
+
+});
+
+// ===== 正解 =====
+if(choice === correct){
+
+btn.classList.add("correct");
+
+alert("⭕ 正解！");
+
+// ===== 復習から削除 =====
+let wrong = JSON.parse(
+localStorage.getItem("wrongQuestions_"+subject) || "[]"
+);
+
+wrong = wrong.filter(w => w.index !== index);
+
+localStorage.setItem(
+"wrongQuestions_"+subject,
+JSON.stringify(wrong)
+);
+
+setTimeout(()=>{
+
+location.reload();
+
+},500);
+
+}
+
+// ===== 不正解 =====
+else{
+
+btn.classList.add("wrong");
+
+buttons[correct].classList.add("correct");
+
+alert("❌ 不正解");
+
+}
 
 }
 
