@@ -5,9 +5,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>一問一答</title>
+<title>一問一答メニュー</title>
 
 <link rel="stylesheet" href="style.css">
+
+<style>
+
+body{
+padding:10px;
+background:#f5f5f5;
+box-sizing:border-box;
+}
+
+.container{
+width:100%;
+max-width:500px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+button{
+width:100%;
+margin-top:15px;
+padding:14px;
+font-size:16px;
+border:none;
+border-radius:10px;
+background:#2196f3;
+color:white;
+cursor:pointer;
+}
+
+button:active{
+transform:scale(0.98);
+}
+
+.title{
+text-align:center;
+margin-bottom:20px;
+}
+
+</style>
 
 </head>
 
@@ -17,7 +61,7 @@
 
 <div class="card">
 
-<h1>
+<h1 class="title">
 
 🧠 一問一答
 
@@ -46,7 +90,7 @@ style="background:#777;"
 onclick="location.href='home.html'"
 >
 
-ホーム
+ホームへ戻る
 
 </button>
 
@@ -58,13 +102,19 @@ onclick="location.href='home.html'"
 
 function start(category){
 
+// 保存
 localStorage.setItem(
 "oneQuestionCategory",
 category
 );
 
+// スマホ対策
+setTimeout(()=>{
+
 location.href =
 "oneQuestion.html";
+
+},100);
 
 }
 

@@ -14,18 +14,28 @@
 body{
 padding:10px;
 box-sizing:border-box;
+background:#f5f5f5;
+}
+
+.container{
+width:100%;
+max-width:500px;
+margin:auto;
 }
 
 .card{
-width:100%;
+background:white;
+padding:20px;
+border-radius:12px;
 box-sizing:border-box;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
 button{
 width:100%;
 margin-top:15px;
 font-size:16px;
-padding:12px;
+padding:14px;
 box-sizing:border-box;
 border:none;
 border-radius:10px;
@@ -55,7 +65,7 @@ border:2px solid #f44336;
 input{
 width:100%;
 max-width:100%;
-padding:12px;
+padding:14px;
 margin-top:15px;
 font-size:16px;
 box-sizing:border-box;
@@ -69,16 +79,27 @@ padding:20px;
 border-radius:10px;
 line-height:1.8;
 font-size:18px;
-position:relative;
-z-index:1;
 }
 
 .questionBox{
 margin-top:20px;
-padding:15px;
+padding:18px;
 background:#f9f9f9;
 border-radius:10px;
 line-height:1.8;
+font-size:18px;
+}
+
+.title{
+text-align:center;
+margin-bottom:20px;
+}
+
+.progress{
+margin-top:10px;
+color:#666;
+font-size:14px;
+text-align:center;
 }
 
 </style>
@@ -91,7 +112,10 @@ line-height:1.8;
 
 <div class="card">
 
-<h2 id="title"></h2>
+<h2
+id="title"
+class="title"
+></h2>
 
 <div id="quizArea"></div>
 
@@ -121,7 +145,7 @@ localStorage.getItem(
 
 
 // =====================================
-// 問題データ
+// データ
 // =====================================
 
 const data = {
@@ -232,6 +256,29 @@ a:"セロトニン"
 
 
 // =====================================
+// カテゴリ存在チェック
+// =====================================
+
+if(!category || !data[category]){
+
+document.getElementById(
+"quizArea"
+).innerHTML = `
+
+<p>
+
+カテゴリが見つかりません
+
+</p>
+
+`;
+
+throw new Error("カテゴリなし");
+
+}
+
+
+// =====================================
 // 状態
 // =====================================
 
@@ -247,8 +294,9 @@ function showQuiz(){
 
 if(index >= quiz.length){
 
-document.getElementById("quizArea")
-.innerHTML = `
+document.getElementById(
+"quizArea"
+).innerHTML = `
 
 <h2>
 
@@ -276,19 +324,21 @@ return;
 
 const q = quiz[index];
 
-document.getElementById("title")
-.innerText = category;
+document.getElementById(
+"title"
+).innerText = category;
 
-document.getElementById("quizArea")
-.innerHTML = `
+document.getElementById(
+"quizArea"
+).innerHTML = `
+
+<div class="progress">
+
+${index+1} / ${quiz.length}
+
+</div>
 
 <div class="questionBox">
-
-<h3>
-
-問題 ${index+1}
-
-</h3>
 
 <p>
 
@@ -326,11 +376,14 @@ function checkAnswer(){
 const q = quiz[index];
 
 const userAnswer =
-document.getElementById("userAnswer")
-.value.trim();
+document.getElementById(
+"userAnswer"
+).value.trim();
 
 const result =
-document.getElementById("result");
+document.getElementById(
+"result"
+);
 
 
 // ===== 空 =====
@@ -343,9 +396,7 @@ return;
 }
 
 
-// =====================================
-// 判定用
-// =====================================
+// ===== 正規化 =====
 
 const correct =
 q.a
@@ -353,6 +404,7 @@ q.a
 .replace(/・/g,"")
 .replace(/、/g,"")
 .replace(/,/g,"")
+.replace(/~/g,"")
 .toLowerCase();
 
 const input =
@@ -361,12 +413,11 @@ userAnswer
 .replace(/・/g,"")
 .replace(/、/g,"")
 .replace(/,/g,"")
+.replace(/~/g,"")
 .toLowerCase();
 
 
-// =====================================
-// 正解
-// =====================================
+// ===== 判定 =====
 
 if(correct.includes(input)){
 
@@ -397,11 +448,6 @@ ${q.a}
 `;
 
 }
-
-
-// =====================================
-// 不正解
-// =====================================
 
 else{
 
