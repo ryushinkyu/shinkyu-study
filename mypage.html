@@ -9,6 +9,24 @@
 
 <link rel="stylesheet" href="style.css">
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
+  authDomain: "shinkyu-study.firebaseapp.com",
+  projectId: "shinkyu-study"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+</script>
+
 <style>
 
 .profileCard{
@@ -46,7 +64,13 @@ text-align:center;
 
 <h1>マイページ</h1>
 
-<div id="profile"></div>
+<div id="profile">
+
+<p>
+読み込み中...
+</p>
+
+</div>
 
 <button
 style="margin-top:20px;"
@@ -77,18 +101,12 @@ location.href = "index.html";
 
 
 // ========================================
-// Firebase
+// 連続学習日数
 // ========================================
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
-  authDomain: "shinkyu-study.firebaseapp.com",
-  projectId: "shinkyu-study"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const db = firebase.firestore();
+let streak = Number(
+localStorage.getItem("studyStreak") || "0"
+);
 
 
 // ========================================
@@ -96,14 +114,19 @@ const db = firebase.firestore();
 // ========================================
 
 db.collection("users").doc(currentUser).get()
+
 .then(doc => {
 
 if(!doc.exists){
 
 document.getElementById("profile").innerHTML = `
+
 <p>
+
 ユーザー情報が見つかりません
+
 </p>
+
 `;
 
 return;
@@ -111,15 +134,6 @@ return;
 }
 
 const user = doc.data();
-
-
-// ========================================
-// 連続学習日数
-// ========================================
-
-let streak = Number(
-localStorage.getItem("studyStreak") || "0"
-);
 
 
 // ========================================
@@ -193,6 +207,22 @@ ${streak} 日
 `;
 
 document.getElementById("profile").innerHTML = html;
+
+})
+
+.catch(error => {
+
+console.error(error);
+
+document.getElementById("profile").innerHTML = `
+
+<p>
+
+データ取得エラー
+
+</p>
+
+`;
 
 });
 

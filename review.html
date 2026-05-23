@@ -11,39 +11,33 @@
 
 <style>
 
-.choiceBtn{
-display:block;
-width:100%;
-margin-top:10px;
-}
-
-.correct{
-background:#2196f3 !important;
-color:white;
-}
-
-.wrong{
-background:#f44336 !important;
-color:white;
-}
-
-.resultBox{
-margin-top:15px;
-padding:15px;
-border-radius:10px;
-background:#f5f5f5;
-}
-
-.chapterBtn{
-margin-top:10px;
-width:100%;
-}
-
 .reviewCard{
 margin-top:15px;
-padding:15px;
+padding:20px;
 background:#f9f9f9;
-border-radius:10px;
+border-radius:12px;
+}
+
+.chapterTitle{
+font-size:20px;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.count{
+margin-top:10px;
+font-size:16px;
+color:#666;
+}
+
+.empty{
+text-align:center;
+padding:30px;
+font-size:18px;
+}
+
+.startBtn{
+margin-top:15px;
 }
 
 </style>
@@ -56,9 +50,22 @@ border-radius:10px;
 
 <div class="card">
 
-<h1>復習リスト</h1>
+<h1>
 
-<div id="review"></div>
+復習リスト
+
+</h1>
+
+<div id="reviewArea"></div>
+
+<button
+style="margin-top:20px;background:#777;"
+onclick="location.href='home.html'"
+>
+
+ホーム
+
+</button>
 
 </div>
 
@@ -70,323 +77,101 @@ border-radius:10px;
 // 科目
 // ========================================
 
-const subject = localStorage.getItem("selectedSubject");
+const subject =
+"衛生学・公衆衛生学";
 
 
 // ========================================
-// 復習データ取得
+// 復習取得
 // ========================================
 
 let wrongQuestions = JSON.parse(
-localStorage.getItem("wrongQuestions_"+subject) || "[]"
+localStorage.getItem(
+"wrongQuestions_"+subject
+) || "[]"
 );
 
 
 // ========================================
-// 章整理
+// 空
 // ========================================
 
-let chapterMap = {};
+if(wrongQuestions.length === 0){
 
-wrongQuestions.forEach(w=>{
+document.getElementById("reviewArea")
+.innerHTML = `
 
-let chapter = w.questionData.chapter || "未分類";
+<div class="empty">
 
-if(!chapterMap[chapter]){
-
-chapterMap[chapter] = [];
-
-}
-
-chapterMap[chapter].push(w);
-
-});
-
-
-// ========================================
-// 初期表示
-// ========================================
-
-showChapterMenu();
-
-
-// ========================================
-// 章メニュー
-// ========================================
-
-function showChapterMenu(){
-
-let html = "";
-
-const chapters = Object.keys(chapterMap);
-
-// ===== 空 =====
-
-if(chapters.length === 0){
-
-html = `
-
-<p>
-
-復習問題はありません 👍
-
-</p>
-
-<button onclick="location.href='home.html'">
-
-ホーム
-
-</button>
-
-`;
-
-document.getElementById("review").innerHTML = html;
-
-return;
-
-}
-
-html += `
-
-<h2>
-
-章を選択
-
-</h2>
-
-`;
-
-chapters.forEach(chapter=>{
-
-const count = chapterMap[chapter].length;
-
-html += `
-
-<button
-class="chapterBtn"
-onclick="startReview('${chapter}')"
->
-
-${chapter}
-（${count}問）
-
-</button>
-
-`;
-
-});
-
-html += `
-
-<button
-style="margin-top:20px;"
-onclick="location.href='home.html'"
->
-
-ホーム
-
-</button>
-
-`;
-
-document.getElementById("review").innerHTML = html;
-
-}
-
-
-// ========================================
-// 復習開始
-// ========================================
-
-let reviewQuiz = [];
-
-let reviewIndex = 0;
-
-function startReview(chapter){
-
-reviewQuiz = chapterMap[chapter];
-
-reviewIndex = 0;
-
-showReviewQuestion();
-
-}
-
-
-// ========================================
-// 問題表示
-// ========================================
-
-function showReviewQuestion(){
-
-if(reviewIndex >= reviewQuiz.length){
-
-document.getElementById("review").innerHTML = `
-
-<h2>
-
-復習完了！
-
-</h2>
-
-<button onclick="showChapterMenu()">
-
-章一覧へ
-
-</button>
-
-<button onclick="location.href='home.html'">
-
-ホーム
-
-</button>
-
-`;
-
-return;
-
-}
-
-const w = reviewQuiz[reviewIndex];
-
-const q = w.questionData;
-
-let html = `
-
-<div class="reviewCard">
-
-<h2>
-
-${q.chapter}
-
-</h2>
-
-<p>
-
-問題 ${reviewIndex+1}
-
-</p>
-
-<p style="margin-top:20px;">
-
-${q.question}
-
-</p>
-
-`;
-
-q.choices.forEach((choice,i)=>{
-
-html += `
-
-<button
-class="choiceBtn"
-onclick="
-answerReview(
-${i},
-${q.answer},
-'${q.question}'
-)
-">
-
-${i+1}．${choice}
-
-</button>
-
-`;
-
-});
-
-html += `
+復習する問題はありません 👍
 
 </div>
 
 `;
 
-document.getElementById("review").innerHTML = html;
-
 }
 
 
 // ========================================
-// 回答
-// ========================================
-
-function answerReview(choice,correct,question){
-
-const buttons = document.querySelectorAll(".choiceBtn");
-
-buttons.forEach(btn=>{
-
-btn.disabled = true;
-
-});
-
-let resultHtml = "";
-
-// ========================================
-// 正解
-// ========================================
-
-if(choice === correct){
-
-buttons[choice].classList.add("correct");
-
-resultHtml += `
-
-<div class="resultBox">
-
-<h3 style="color:#2196f3;">
-
-⭕ 正解！
-
-</h3>
-
-</div>
-
-`;
-
-// ===== 復習から削除 =====
-
-wrongQuestions = wrongQuestions.filter(w =>
-
-w.questionData.question !== question
-
-);
-
-localStorage.setItem(
-"wrongQuestions_"+subject,
-JSON.stringify(wrongQuestions)
-);
-
-}
-
-// ========================================
-// 不正解
+// 章ごと整理
 // ========================================
 
 else{
 
-buttons[choice].classList.add("wrong");
+let grouped = {};
 
-buttons[correct].classList.add("correct");
+wrongQuestions.forEach(q=>{
 
-resultHtml += `
+const chapter =
+q.chapter || "未分類";
 
-<div class="resultBox">
+if(!grouped[chapter]){
 
-<h3 style="color:#f44336;">
+grouped[chapter] = [];
 
-❌ 不正解
+}
 
-</h3>
+grouped[chapter].push(q);
 
-<p>
+});
 
-正解：
-${buttons[correct].textContent}
 
-</p>
+// ========================================
+// 表示
+// ========================================
+
+let html = "";
+
+for(let chapter in grouped){
+
+const count =
+grouped[chapter].length;
+
+html += `
+
+<div class="reviewCard">
+
+<div class="chapterTitle">
+
+📚 ${chapter}
+
+</div>
+
+<div class="count">
+
+間違えた問題：
+${count}問
+
+</div>
+
+<button
+class="startBtn"
+onclick="startReview('${chapter}')"
+>
+
+復習する
+
+</button>
 
 </div>
 
@@ -394,37 +179,29 @@ ${buttons[correct].textContent}
 
 }
 
-// ========================================
-// 次へ
-// ========================================
-
-resultHtml += `
-
-<button
-style="margin-top:15px;"
-onclick="nextReviewQuestion()"
->
-
-次へ
-
-</button>
-
-`;
-
-document.getElementById("review").innerHTML += resultHtml;
+document.getElementById("reviewArea")
+.innerHTML = html;
 
 }
 
 
 // ========================================
-// 次へ
+// 開始
 // ========================================
 
-function nextReviewQuestion(){
+function startReview(chapter){
 
-reviewIndex++;
+localStorage.setItem(
+"reviewMode",
+"true"
+);
 
-showReviewQuestion();
+localStorage.setItem(
+"reviewChapter",
+chapter
+);
+
+location.href = "quiz.html";
 
 }
 

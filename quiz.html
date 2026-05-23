@@ -38,6 +38,13 @@ background:#fff3cd;
 border-radius:10px;
 }
 
+.resultBox{
+margin-top:15px;
+padding:15px;
+background:#f9f9f9;
+border-radius:10px;
+}
+
 </style>
 
 </head>
@@ -309,6 +316,7 @@ answer:2
 let currentQuiz = [];
 let quizIndex = 0;
 let score = 0;
+let results = [];
 let currentChapter = "";
 
 showMenu();
@@ -321,8 +329,6 @@ showMenu();
 function showMenu(){
 
 document.getElementById("quiz").innerHTML = "";
-
-if(subject === "衛生学・公衆衛生学"){
 
 let html = `
 <div class="card">
@@ -368,8 +374,6 @@ document.getElementById("menu").innerHTML = html;
 
 }
 
-}
-
 
 // =====================================
 // 開始
@@ -386,6 +390,7 @@ allQuiz[subject][chapter]
 
 quizIndex = 0;
 score = 0;
+results = [];
 
 document.getElementById("menu").innerHTML = "";
 
@@ -405,13 +410,32 @@ if(quizIndex >= currentQuiz.length){
 let html = `
 <div class="card">
 
-<h2>終了！</h2>
+<h2>
+
+終了！
+
+</h2>
 
 <p>
 
 ${score} / ${currentQuiz.length}
 
 </p>
+
+<div class="resultBox">
+
+${results.map((r,i)=>`
+
+<p>
+
+問題${i+1}：
+${r ? "⭕" : "❌"}
+
+</p>
+
+`).join("")}
+
+</div>
 
 <button onclick="showMenu()">
 
@@ -511,8 +535,12 @@ buttons[num].classList.add("correct");
 
 score++;
 
+results.push(true);
+
 }
 else{
+
+results.push(false);
 
 buttons[num].classList.add("wrong");
 
