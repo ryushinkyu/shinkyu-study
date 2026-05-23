@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>一問一答</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<h1>
+
+🧠 一問一答
+
+</h1>
+
+<button onclick="start('小児特有の症候')">
+
+小児特有の症候
+
+</button>
+
+<button onclick="start('老年特有の症候')">
+
+老年特有の症候
+
+</button>
+
+<button onclick="start('気分障害')">
+
+気分障害
+
+</button>
+
+<button
+style="background:#777;"
+onclick="location.href='home.html'"
+>
+
+ホーム
+
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+function start(category){
+
+localStorage.setItem(
+"oneQuestionCategory",
+category
+);
+
+location.href =
+"oneQuestion.html";
+
+}
+
+</script>
+
+</body>
+</html>
