@@ -11,6 +11,33 @@
 
 <style>
 
+body{
+padding:10px;
+box-sizing:border-box;
+}
+
+.card{
+width:100%;
+box-sizing:border-box;
+}
+
+button{
+width:100%;
+margin-top:15px;
+font-size:16px;
+padding:12px;
+box-sizing:border-box;
+border:none;
+border-radius:10px;
+background:#2196f3;
+color:white;
+cursor:pointer;
+}
+
+button:active{
+transform:scale(0.98);
+}
+
 .correct{
 background:#e3f2fd;
 color:#01579b;
@@ -27,6 +54,7 @@ border:2px solid #f44336;
 
 input{
 width:100%;
+max-width:100%;
 padding:12px;
 margin-top:15px;
 font-size:16px;
@@ -41,6 +69,8 @@ padding:20px;
 border-radius:10px;
 line-height:1.8;
 font-size:18px;
+position:relative;
+z-index:1;
 }
 
 .questionBox{
@@ -48,6 +78,7 @@ margin-top:20px;
 padding:15px;
 background:#f9f9f9;
 border-radius:10px;
+line-height:1.8;
 }
 
 </style>
@@ -145,31 +176,6 @@ a:"上気道感染・後鼻漏"
 {
 q:"発症から４週間以上続く慢性の咳はどのような疾患があるか答えよ",
 a:"喘息・胃食道逆流症・後鼻漏"
-},
-
-{
-q:"生後6か月から5歳頃に38°ｃ以上の発熱に伴って起こる原因不明の痙攣を答えよ",
-a:"熱性痙攣"
-},
-
-{
-q:"小児はりはどこの国独自の治療方法か答えよ",
-a:"日本"
-},
-
-{
-q:"小児はりに多い疾患を３つ答えよ",
-a:"アトピー性皮膚炎、気管支喘息、夜尿症"
-},
-
-{
-q:"小児はりは保護者に（　　）状態で施術する",
-a:"抱かせた"
-},
-
-{
-q:"小児は（　　）の体と呼ばれている",
-a:"純陽"
 }
 
 ],
@@ -194,11 +200,6 @@ a:"立ち上がりテスト・2ステップテスト"
 {
 q:"サルコペニアとは加齢に伴う何の減少か答えよ",
 a:"筋肉量"
-},
-
-{
-q:"三大認知症疾患を2つ答えよ",
-a:"アルツハイマー型認知症・レビー小体型認知症"
 }
 
 ],
@@ -223,11 +224,6 @@ a:"気分障害"
 {
 q:"うつ病は神経伝達物質の何が不足しているか答えよ",
 a:"セロトニン"
-},
-
-{
-q:"不安障害で全般的で持続的な過剰の不安が特徴的なものを答えよ",
-a:"全般性不安障害"
 }
 
 ]
