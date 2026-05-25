@@ -4,23 +4,61 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>クイズ科目選択</title>
+
+<title>クイズメニュー</title>
+
 <link rel="stylesheet" href="style.css">
 
-<!-- Firebase（compat版だけ使う） -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCP1hLNtyZAsrWg27puxdgOdHz6ZAHt4EM",
-  authDomain: "shinkyu-study.firebaseapp.com",
-  projectId: "shinkyu-study"
-};
+body{
+padding:10px;
+background:#f5f5f5;
+box-sizing:border-box;
+}
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-</script>
+.container{
+width:100%;
+max-width:500px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+button{
+width:100%;
+margin-top:15px;
+padding:14px;
+font-size:16px;
+border:none;
+border-radius:10px;
+background:#2196f3;
+color:white;
+cursor:pointer;
+}
+
+button:active{
+transform:scale(0.98);
+}
+
+.title{
+text-align:center;
+margin-bottom:20px;
+}
+
+.sub{
+margin-top:10px;
+text-align:center;
+color:#666;
+font-size:14px;
+}
+
+</style>
 
 </head>
 
@@ -28,49 +66,51 @@ const db = firebase.firestore();
 
 <div class="container">
 
-  <div class="card">
+<div class="card">
 
-    <h2>科目を選択</h2>
+<h1 class="title">
 
-    <div id="subjectList"></div>
+📚 クイズ
 
-    <button style="background:#777;" onclick="location.href='home.html'">戻る</button>
+</h1>
 
-  </div>
+<p class="sub">
+
+学習する科目を選択してください
+
+</p>
+
+<button onclick="startQuiz('公衆衛生')">
+
+🏥 公衆衛生
+
+</button>
+
+<button
+style="background:#777;"
+onclick="location.href='home.html'"
+>
+
+ホームへ戻る
+
+</button>
+
+</div>
 
 </div>
 
 <script>
 
-// 科目リスト
-const subjects = [
-"医療概論",
-"衛生学・公衆衛生学",
-"関係法規",
-"解剖学",
-"生理学",
-"病理学概論",
-"臨床医学総論",
-"臨床医学各論",
-"リハビリテーション医学",
-"東洋医学概論",
-"経絡経穴概論",
-"東洋医学臨床論"
-];
+function startQuiz(subject){
 
-// ボタン生成
-let html = "";
+localStorage.setItem(
+"quizSubject",
+subject
+);
 
-subjects.forEach(sub=>{
-html += `<button onclick="selectSubject('${sub}')">${sub}</button>`;
-});
+location.href =
+"quiz.html";
 
-document.getElementById("subjectList").innerHTML = html;
-
-// 選択
-function selectSubject(subject){
-localStorage.setItem("selectedSubject", subject);
-location.href = "quiz.html";
 }
 
 </script>
