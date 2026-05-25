@@ -147,7 +147,7 @@ localStorage.getItem(
 
 const data = {
 
-"総合鍼灸学①":[
+"第一回":[
 
 {
 no:"1-1",
@@ -199,7 +199,7 @@ a:"パチニ小体"
 
 ],
 
-"総合鍼灸学②":[
+"第二回":[
 
 {
 no:"2-1",
@@ -251,7 +251,7 @@ a:"立体失認"
 
 ],
 
-"総合鍼灸学③":[
+"第三回":[
 
 {
 no:"3-1",
@@ -301,6 +301,22 @@ q:"位置覚、運動覚、力覚をまとめて何覚というか答えよ",
 a:"固有感覚"
 }
 
+],
+
+"第四回":[
+
+],
+
+"第五回":[
+
+],
+
+"第六回":[
+
+],
+
+"第七回":[
+
 ]
 
 };
@@ -328,6 +344,28 @@ let index = 0;
 let score = 0;
 
 function showQuiz(){
+
+if(quiz.length === 0){
+
+document.getElementById(
+"title"
+).innerText = category;
+
+document.getElementById(
+"quizArea"
+).innerHTML = `
+
+<p style="text-align:center;margin-top:30px;">
+
+まだ問題がありません
+
+</p>
+
+`;
+
+return;
+
+}
 
 if(index >= quiz.length){
 

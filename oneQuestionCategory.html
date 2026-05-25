@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>一問一答カテゴリ</title>
+<title>回選択</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -52,9 +52,10 @@ margin-bottom:20px;
 }
 
 .sub{
+margin-top:10px;
 text-align:center;
 color:#666;
-margin-bottom:20px;
+font-size:14px;
 }
 
 </style>
@@ -69,16 +70,43 @@ margin-bottom:20px;
 
 <h1 class="title">
 
-📚 一問一答カテゴリ
+📘 総合鍼灸学
 
 </h1>
 
-<p
-class="sub"
-id="subjectTitle"
-></p>
+<p class="sub">
 
-<div id="categoryButtons"></div>
+学習したい回を選択してください
+
+</p>
+
+<button onclick="goQuiz('第一回')">
+第一回
+</button>
+
+<button onclick="goQuiz('第二回')">
+第二回
+</button>
+
+<button onclick="goQuiz('第三回')">
+第三回
+</button>
+
+<button onclick="goQuiz('第四回')">
+第四回
+</button>
+
+<button onclick="goQuiz('第五回')">
+第五回
+</button>
+
+<button onclick="goQuiz('第六回')">
+第六回
+</button>
+
+<button onclick="goQuiz('第七回')">
+第七回
+</button>
 
 <button
 style="background:#777;"
@@ -95,94 +123,15 @@ onclick="location.href='oneQuestionMenu.html'"
 
 <script>
 
-// =====================================
-// 教科取得
-// =====================================
-
-const subject =
-localStorage.getItem(
-"oneQuestionSubject"
-);
-
-
-// =====================================
-// 表示タイトル
-// =====================================
-
-document.getElementById(
-"subjectTitle"
-).innerText = subject;
-
-
-// =====================================
-// カテゴリ
-// =====================================
-
-const categories = {
-
-"内科系1":[
-
-"小児特有の症候",
-"老年特有の症候",
-"気分障害"
-
-],
-
-"総合鍼灸学":[
-
-"総合鍼灸学"
-
-]
-
-};
-
-
-// =====================================
-// ボタン表示
-// =====================================
-
-const area =
-document.getElementById(
-"categoryButtons"
-);
-
-if(categories[subject]){
-
-categories[subject].forEach(category=>{
-
-area.innerHTML += `
-
-<button onclick="start('${category}')">
-
-${category}
-
-</button>
-
-`;
-
-});
-
-}
-
-
-// =====================================
-// 開始
-// =====================================
-
-function start(category){
+function goQuiz(category){
 
 localStorage.setItem(
 "oneQuestionCategory",
 category
 );
 
-// スマホ対策
-setTimeout(()=>{
-
 location.href =
 "oneQuestion.html";
-
-},100);
 
 }
 
