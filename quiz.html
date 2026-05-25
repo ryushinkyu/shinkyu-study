@@ -9,6 +9,9 @@
 
 <link rel="stylesheet" href="style.css">
 
+<!-- 問題データ -->
+<script src="publicHealthData.js"></script>
+
 <style>
 
 body{
@@ -100,6 +103,7 @@ font-weight:bold;
 text-align:center;
 margin-bottom:15px;
 color:#666;
+font-size:15px;
 }
 
 .scoreBox{
@@ -120,6 +124,15 @@ border-radius:10px;
 margin-bottom:15px;
 text-align:center;
 font-weight:bold;
+}
+
+.categoryTitle{
+margin-top:10px;
+margin-bottom:20px;
+font-size:20px;
+font-weight:bold;
+text-align:center;
+color:#1565c0;
 }
 
 </style>
@@ -171,87 +184,6 @@ localStorage.getItem(
 
 
 // ========================================
-// 問題データ
-// ========================================
-
-const quizData = {
-
-"WHO":[
-
-{
-question:"WHOのアルマ・アタ宣言で示されたのはどれか",
-choices:[
-"ヘルスプロモーション",
-"インフォームド・コンセント",
-"医学研究倫理",
-"プライマリ・ヘルス・ケア"
-],
-answer:3,
-chapter:"WHO"
-},
-
-{
-question:"WHOの主な活動はどれか",
-choices:[
-"地域紛争の解決",
-"難民の救助援助",
-"労働条件の改善",
-"保健統計の刊行"
-],
-answer:3,
-chapter:"WHO"
-}
-
-],
-
-"プライマリヘルスケア":[
-
-{
-question:"プライマリヘルスケアに含まれないのはどれか",
-choices:[
-"住民参加",
-"包括的保健",
-"高度先進医療",
-"身近な医療"
-],
-answer:2,
-chapter:"プライマリヘルスケア"
-}
-
-],
-
-"疾病予防":[
-
-{
-question:"第一次予防はどれか",
-choices:[
-"健康教育",
-"健康診断",
-"リハビリ",
-"社会復帰"
-],
-answer:0,
-chapter:"疾病予防"
-},
-
-{
-question:"第三次予防はどれか",
-choices:[
-"禁煙",
-"予防接種",
-"リハビリテーション",
-"健康教育"
-],
-answer:2,
-chapter:"疾病予防"
-}
-
-]
-
-};
-
-
-// ========================================
 // 状態
 // ========================================
 
@@ -287,7 +219,11 @@ ${key}
 
 }
 
-html += `</div>`;
+html += `
+
+</div>
+
+`;
 
 document.getElementById(
 "app"
@@ -303,8 +239,11 @@ document.getElementById(
 function startQuiz(category){
 
 currentCategory = category;
+
 currentQuiz = quizData[category];
+
 currentIndex = 0;
+
 score = 0;
 
 showQuestion();
@@ -367,6 +306,12 @@ html += `
 
 html += `
 
+<div class="categoryTitle">
+
+${currentCategory}
+
+</div>
+
 <div class="progress">
 
 ${currentIndex + 1}
@@ -400,7 +345,11 @@ ${index + 1}. ${choice}
 
 });
 
-html += `<div id="result"></div>`;
+html += `
+
+<div id="result"></div>
+
+`;
 
 document.getElementById(
 "app"
@@ -591,6 +540,7 @@ q.chapter === reviewChapter
 );
 
 currentIndex = 0;
+
 score = 0;
 
 showQuestion();
