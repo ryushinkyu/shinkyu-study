@@ -51,6 +51,13 @@ text-align:center;
 margin-bottom:20px;
 }
 
+.sub{
+margin-top:10px;
+text-align:center;
+color:#666;
+font-size:14px;
+}
+
 </style>
 
 </head>
@@ -67,24 +74,27 @@ margin-bottom:20px;
 
 </h1>
 
-<button onclick="start('小児特有の症候')">
+<p class="sub">
 
-小児特有の症候
+学習分野を選択してください
 
-</button>
+</p>
 
-<button onclick="start('老年特有の症候')">
+<!-- 内科系1 -->
+<button onclick="start('内科系1')">
 
-老年特有の症候
-
-</button>
-
-<button onclick="start('気分障害')">
-
-気分障害
+📘 内科系1
 
 </button>
 
+<!-- 総合鍼灸学 -->
+<button onclick="start('総合鍼灸学')">
+
+📙 総合鍼灸学
+
+</button>
+
+<!-- 戻る -->
 <button
 style="background:#777;"
 onclick="location.href='home.html'"
@@ -100,19 +110,22 @@ onclick="location.href='home.html'"
 
 <script>
 
-function start(category){
+// =====================================
+// 分野選択
+// =====================================
 
-// 保存
+function start(subject){
+
 localStorage.setItem(
-"oneQuestionCategory",
-category
+"oneQuestionSubject",
+subject
 );
 
 // スマホ対策
 setTimeout(()=>{
 
 location.href =
-"oneQuestion.html";
+"oneQuestionCategory.html";
 
 },100);
 

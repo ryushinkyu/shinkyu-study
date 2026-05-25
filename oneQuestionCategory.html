@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>一問一答カテゴリ</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+body{
+padding:10px;
+background:#f5f5f5;
+box-sizing:border-box;
+}
+
+.container{
+width:100%;
+max-width:500px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+button{
+width:100%;
+margin-top:15px;
+padding:14px;
+font-size:16px;
+border:none;
+border-radius:10px;
+background:#2196f3;
+color:white;
+cursor:pointer;
+}
+
+button:active{
+transform:scale(0.98);
+}
+
+.title{
+text-align:center;
+margin-bottom:20px;
+}
+
+.sub{
+text-align:center;
+color:#666;
+margin-bottom:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<h1 class="title">
+
+📚 一問一答カテゴリ
+
+</h1>
+
+<p
+class="sub"
+id="subjectTitle"
+></p>
+
+<div id="categoryButtons"></div>
+
+<button
+style="background:#777;"
+onclick="location.href='oneQuestionMenu.html'"
+>
+
+戻る
+
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+// =====================================
+// 教科取得
+// =====================================
+
+const subject =
+localStorage.getItem(
+"oneQuestionSubject"
+);
+
+
+// =====================================
+// 表示タイトル
+// =====================================
+
+document.getElementById(
+"subjectTitle"
+).innerText = subject;
+
+
+// =====================================
+// カテゴリ
+// =====================================
+
+const categories = {
+
+"内科系1":[
+
+"小児特有の症候",
+"老年特有の症候",
+"気分障害"
+
+],
+
+"総合鍼灸学":[
+
+"総合鍼灸学"
+
+]
+
+};
+
+
+// =====================================
+// ボタン表示
+// =====================================
+
+const area =
+document.getElementById(
+"categoryButtons"
+);
+
+if(categories[subject]){
+
+categories[subject].forEach(category=>{
+
+area.innerHTML += `
+
+<button onclick="start('${category}')">
+
+${category}
+
+</button>
+
+`;
+
+});
+
+}
+
+
+// =====================================
+// 開始
+// =====================================
+
+function start(category){
+
+localStorage.setItem(
+"oneQuestionCategory",
+category
+);
+
+// スマホ対策
+setTimeout(()=>{
+
+location.href =
+"oneQuestion.html";
+
+},100);
+
+}
+
+</script>
+
+</body>
+</html>
