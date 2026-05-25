@@ -27,7 +27,6 @@ margin:auto;
 background:white;
 padding:20px;
 border-radius:12px;
-box-sizing:border-box;
 box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
@@ -36,16 +35,11 @@ width:100%;
 margin-top:15px;
 font-size:16px;
 padding:14px;
-box-sizing:border-box;
 border:none;
 border-radius:10px;
 background:#2196f3;
 color:white;
 cursor:pointer;
-}
-
-button:active{
-transform:scale(0.98);
 }
 
 .correct{
@@ -64,7 +58,6 @@ border:2px solid #f44336;
 
 input{
 width:100%;
-max-width:100%;
 padding:14px;
 margin-top:15px;
 font-size:16px;
@@ -112,6 +105,12 @@ font-size:18px;
 font-weight:bold;
 }
 
+.number{
+font-size:14px;
+color:#666;
+margin-bottom:10px;
+}
+
 </style>
 
 </head>
@@ -122,15 +121,12 @@ font-weight:bold;
 
 <div class="card">
 
-<h2
-id="title"
-class="title"
-></h2>
+<h2 id="title" class="title"></h2>
 
 <div id="quizArea"></div>
 
 <button
-style="margin-top:20px;background:#777;"
+style="background:#777;"
 onclick="location.href='oneQuestionCategory.html'"
 >
 
@@ -154,41 +150,49 @@ const data = {
 "総合鍼灸学①":[
 
 {
+no:"1-1",
 q:"感覚性障害では上行性と下行性どちらが起こりやすいか答えよ",
 a:"上行性"
 },
 
 {
+no:"1-2",
 q:"運動性障害では上行性と下行性どちらが起こりやすいか答えよ",
 a:"下行性"
 },
 
 {
+no:"1-3",
 q:"体性感覚は大きく何感覚と何感覚に分けられるか答えよ",
 a:"皮膚感覚・深部感覚"
 },
 
 {
+no:"1-4",
 q:"皮膚感覚の別名を答えよ",
 a:"表在感覚"
 },
 
 {
+no:"1-5",
 q:"触覚、温度覚、痛覚は何感覚に分類されるか答えよ",
 a:"皮膚感覚"
 },
 
 {
+no:"1-6",
 q:"触覚の受容器を全て記せ",
 a:"ルフィニ終末・メルケル盤・マイスネル小体・毛包受容器・パチニ小体・ピンネス小体"
 },
 
 {
+no:"1-7",
 q:"機械的侵害受容器が連結する一次ニューロンの名称を答えよ",
 a:"Aδ線維"
 },
 
 {
+no:"1-8",
 q:"触覚と振動覚の両方の刺激を受容できる受容器の名称を答えよ",
 a:"パチニ小体"
 }
@@ -198,43 +202,51 @@ a:"パチニ小体"
 "総合鍼灸学②":[
 
 {
-q:"振動覚、固有感覚、深部痛覚は何感覚に分類されるか答えよ",
-a:"深部感覚"
+no:"2-1",
+q:"位置覚は体のどの部位の障害で異常がみられるか答えよ",
+a:"脊髄後索"
 },
 
 {
-q:"圧覚を受容する受容器を答えよ",
-a:"メルケル盤"
+no:"2-2",
+q:"振動覚は体のどの部位の障害で異常がみられるか答えよ",
+a:"脊髄後索"
 },
 
 {
-q:"軽い触覚を受容する受容器を答えよ",
-a:"ルフィニ終末"
+no:"2-3",
+q:"複合感覚は体のどの部位の障害で異常がみられるか答えよ",
+a:"頭頂葉"
 },
 
 {
-q:"振動刺激で興奮しやすい受容器を答えよ",
-a:"パチニ小体"
+no:"2-4",
+q:"痛覚検査で使用するものを答えよ",
+a:"安全ピン"
 },
 
 {
-q:"冷覚は何線維で伝導されるか答えよ",
-a:"Aδ線維とC線維"
+no:"2-5",
+q:"温度覚検査では温水は何℃程度か答えよ",
+a:"40〜45℃"
 },
 
 {
-q:"温覚は主に何線維で伝導されるか答えよ",
-a:"C線維"
+no:"2-6",
+q:"冷覚検査では冷水は何℃程度か答えよ",
+a:"5〜10℃"
 },
 
 {
-q:"速い痛みを伝える受容器を答えよ",
-a:"機械的侵害受容器"
+no:"2-7",
+q:"二点識別覚とは何か答えよ",
+a:"2点の刺激を2点として識別する能力"
 },
 
 {
-q:"遅い痛みを伝える受容器を答えよ",
-a:"ポリモーダル受容器"
+no:"2-8",
+q:"立体認知ができない状態を何というか答えよ",
+a:"立体失認"
 }
 
 ],
@@ -242,43 +254,51 @@ a:"ポリモーダル受容器"
 "総合鍼灸学③":[
 
 {
+no:"3-1",
+q:"ブラウンセカール症候群とは何か答えよ",
+a:"脊髄半側障害"
+},
+
+{
+no:"3-2",
+q:"病的反射はどの障害で出現するか答えよ",
+a:"錐体路障害"
+},
+
+{
+no:"3-3",
+q:"折りたたみナイフ現象はどの障害で出現するか答えよ",
+a:"錐体路障害"
+},
+
+{
+no:"3-4",
+q:"歯車様現象はどの障害で出現するか答えよ",
+a:"錐体外路障害"
+},
+
+{
+no:"3-5",
+q:"鉛管現象はどの障害で出現するか答えよ",
+a:"錐体外路障害"
+},
+
+{
+no:"3-6",
+q:"錐体路の別名を答えよ",
+a:"皮質脊髄路"
+},
+
+{
+no:"3-7",
 q:"振動覚の求心性線維を答えよ",
 a:"Aβ線維"
 },
 
 {
+no:"3-8",
 q:"位置覚、運動覚、力覚をまとめて何覚というか答えよ",
 a:"固有感覚"
-},
-
-{
-q:"触圧覚の伝導路が対側に移行する場所はどこか答えよ",
-a:"延髄"
-},
-
-{
-q:"Aβ線維が連絡する上行路の名称を答えよ",
-a:"後索-内側毛帯路"
-},
-
-{
-q:"痛覚は脊髄のどの場所を上行するか答えよ",
-a:"脊髄視床路"
-},
-
-{
-q:"温覚や冷覚の情報を伝える一次ニューロンの名称をそれぞれ答えよ",
-a:"Aδ線維・C線維"
-},
-
-{
-q:"折りたたみナイフ現象はどのような障害で出現するか答えよ",
-a:"錐体路障害"
-},
-
-{
-q:"錐体路の別名を答えよ",
-a:"皮質脊髄路"
 }
 
 ]
@@ -358,6 +378,12 @@ ${index+1} / ${quiz.length}
 
 <div class="questionBox">
 
+<div class="number">
+
+問題 ${q.no}
+
+</div>
+
 <p>
 
 ${q.q}
@@ -384,6 +410,17 @@ placeholder="答えを入力"
 
 }
 
+function normalize(text){
+
+return text
+.replace(/\s/g,"")
+.replace(/・/g,"")
+.replace(/、/g,"")
+.replace(/,/g,"")
+.toLowerCase();
+
+}
+
 function checkAnswer(){
 
 const q = quiz[index];
@@ -406,20 +443,10 @@ return;
 }
 
 const correct =
-q.a
-.replace(/\s/g,"")
-.replace(/・/g,"")
-.replace(/、/g,"")
-.replace(/,/g,"")
-.toLowerCase();
+normalize(q.a);
 
 const input =
-userAnswer
-.replace(/\s/g,"")
-.replace(/・/g,"")
-.replace(/、/g,"")
-.replace(/,/g,"")
-.toLowerCase();
+normalize(userAnswer);
 
 if(correct === input){
 
