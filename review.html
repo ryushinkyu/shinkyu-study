@@ -11,33 +11,101 @@
 
 <style>
 
+body{
+background:#f5f5f5;
+padding:10px;
+box-sizing:border-box;
+}
+
+.container{
+width:100%;
+max-width:600px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+h1{
+text-align:center;
+margin-bottom:20px;
+}
+
 .reviewCard{
 margin-top:15px;
 padding:20px;
-background:#f9f9f9;
-border-radius:12px;
+background:#ffffff;
+border-radius:14px;
+border-left:6px solid #2196f3;
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+.subject{
+font-size:14px;
+color:#666;
+margin-bottom:8px;
 }
 
 .chapterTitle{
-font-size:20px;
+font-size:22px;
 font-weight:bold;
-margin-bottom:10px;
+margin-bottom:12px;
 }
 
 .count{
 margin-top:10px;
 font-size:16px;
-color:#666;
+color:#444;
 }
 
 .empty{
 text-align:center;
-padding:30px;
-font-size:18px;
+padding:40px;
+font-size:20px;
+color:#666;
 }
 
 .startBtn{
 margin-top:15px;
+width:100%;
+padding:14px;
+font-size:16px;
+border:none;
+border-radius:10px;
+background:#2196f3;
+color:white;
+cursor:pointer;
+}
+
+.startBtn:active{
+transform:scale(0.98);
+}
+
+.homeBtn{
+margin-top:20px;
+background:#777;
+width:100%;
+padding:14px;
+font-size:16px;
+border:none;
+border-radius:10px;
+color:white;
+cursor:pointer;
+}
+
+.totalBox{
+margin-bottom:20px;
+padding:15px;
+background:#e3f2fd;
+border-radius:12px;
+text-align:center;
+font-size:18px;
+font-weight:bold;
+color:#0d47a1;
 }
 
 </style>
@@ -52,18 +120,18 @@ margin-top:15px;
 
 <h1>
 
-復習リスト
+📝 復習リスト
 
 </h1>
 
 <div id="reviewArea"></div>
 
 <button
-style="margin-top:20px;background:#777;"
+class="homeBtn"
 onclick="location.href='home.html'"
 >
 
-ホーム
+ホームへ戻る
 
 </button>
 
@@ -74,32 +142,25 @@ onclick="location.href='home.html'"
 <script>
 
 // ========================================
-// 科目
-// ========================================
-
-const subject =
-"衛生学・公衆衛生学";
-
-
-// ========================================
-// 復習取得
+// 復習データ取得
 // ========================================
 
 let wrongQuestions = JSON.parse(
 localStorage.getItem(
-"wrongQuestions_"+subject
+"wrongQuestions_衛生学・公衆衛生学"
 ) || "[]"
 );
 
 
 // ========================================
-// 空
+// 空チェック
 // ========================================
 
 if(wrongQuestions.length === 0){
 
-document.getElementById("reviewArea")
-.innerHTML = `
+document.getElementById(
+"reviewArea"
+).innerHTML = `
 
 <div class="empty">
 
@@ -113,7 +174,7 @@ document.getElementById("reviewArea")
 
 
 // ========================================
-// 章ごと整理
+// グループ化
 // ========================================
 
 else{
@@ -137,10 +198,32 @@ grouped[chapter].push(q);
 
 
 // ========================================
-// 表示
+// 合計
 // ========================================
 
-let html = "";
+let total =
+wrongQuestions.length;
+
+
+// ========================================
+// HTML
+// ========================================
+
+let html = `
+
+<div class="totalBox">
+
+合計：
+${total}問の復習があります
+
+</div>
+
+`;
+
+
+// ========================================
+// カード生成
+// ========================================
 
 for(let chapter in grouped){
 
@@ -151,6 +234,12 @@ html += `
 
 <div class="reviewCard">
 
+<div class="subject">
+
+🏥 衛生学・公衆衛生学
+
+</div>
+
 <div class="chapterTitle">
 
 📚 ${chapter}
@@ -160,7 +249,11 @@ html += `
 <div class="count">
 
 間違えた問題：
+<strong>
+
 ${count}問
+
+</strong>
 
 </div>
 
@@ -169,7 +262,7 @@ class="startBtn"
 onclick="startReview('${chapter}')"
 >
 
-復習する
+このカテゴリを復習する
 
 </button>
 
@@ -179,14 +272,15 @@ onclick="startReview('${chapter}')"
 
 }
 
-document.getElementById("reviewArea")
-.innerHTML = html;
+document.getElementById(
+"reviewArea"
+).innerHTML = html;
 
 }
 
 
 // ========================================
-// 開始
+// 復習開始
 // ========================================
 
 function startReview(chapter){
@@ -201,7 +295,8 @@ localStorage.setItem(
 chapter
 );
 
-location.href = "quiz.html";
+location.href =
+"quiz.html";
 
 }
 

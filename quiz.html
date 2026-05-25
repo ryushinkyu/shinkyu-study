@@ -2,47 +2,124 @@
 <html lang="ja">
 <head>
 
-<link rel="stylesheet" href="style.css">
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>鍼灸Study - クイズ</title>
+<title>公衆衛生クイズ</title>
+
+<link rel="stylesheet" href="style.css">
 
 <style>
 
-.chapterBtn{
+body{
+background:#f5f5f5;
+padding:10px;
+box-sizing:border-box;
+}
+
+.container{
 width:100%;
-margin-top:10px;
+max-width:600px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.title{
+text-align:center;
+margin-bottom:20px;
+}
+
+.selectBox{
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+button{
+width:100%;
+padding:14px;
+font-size:16px;
+border:none;
+border-radius:10px;
+background:#2196f3;
+color:white;
+cursor:pointer;
+}
+
+button:active{
+transform:scale(0.98);
+}
+
+.questionBox{
+margin-top:20px;
+padding:18px;
+background:#f9f9f9;
+border-radius:10px;
+line-height:1.8;
+font-size:18px;
 }
 
 .choiceBtn{
-width:100%;
+background:#ffffff;
+color:#333;
+border:1px solid #ccc;
 margin-top:10px;
 }
 
+.choiceBtn:hover{
+background:#e3f2fd;
+}
+
 .correct{
-background:#2196f3 !important;
-color:white;
+background:#d4edda !important;
+color:#155724 !important;
+border:2px solid #28a745 !important;
 }
 
 .wrong{
-background:#f44336 !important;
-color:white;
+background:#f8d7da !important;
+color:#721c24 !important;
+border:2px solid #dc3545 !important;
 }
 
-.point{
+.result{
 margin-top:15px;
 padding:15px;
+border-radius:10px;
+font-size:18px;
+font-weight:bold;
+}
+
+.progress{
+text-align:center;
+margin-bottom:15px;
+color:#666;
+}
+
+.scoreBox{
+margin-top:20px;
+padding:20px;
+background:#f1f8e9;
+border-radius:10px;
+text-align:center;
+font-size:20px;
+font-weight:bold;
+}
+
+.reviewMode{
 background:#fff3cd;
+color:#856404;
+padding:12px;
 border-radius:10px;
-}
-
-.resultBox{
-margin-top:15px;
-padding:15px;
-background:#f9f9f9;
-border-radius:10px;
+margin-bottom:15px;
+text-align:center;
+font-weight:bold;
 }
 
 </style>
@@ -54,553 +131,475 @@ border-radius:10px;
 <div class="container">
 
 <div class="card">
-<h1>クイズ</h1>
-</div>
 
-<div id="menu"></div>
-<div id="quiz"></div>
+<h1 class="title">
+
+🏥 公衆衛生クイズ
+
+</h1>
+
+<div id="app"></div>
+
+<button
+style="background:#777;margin-top:20px;"
+onclick="goBack()"
+>
+
+戻る
+
+</button>
+
+</div>
 
 </div>
 
 <script>
 
-// =====================================
-// 科目
-// =====================================
+// ========================================
+// 復習モード取得
+// ========================================
 
-const subject =
-localStorage.getItem("selectedSubject");
+const reviewMode =
+localStorage.getItem(
+"reviewMode"
+);
+
+const reviewChapter =
+localStorage.getItem(
+"reviewChapter"
+);
 
 
-// =====================================
-// 問題
-// =====================================
+// ========================================
+// 問題データ
+// ========================================
 
-const allQuiz = {
+const quizData = {
 
-"衛生学・公衆衛生学":{
-
-"第2章 疾病予防":[
+"WHO":[
 
 {
-question:"第一次予防でないのはどれか",
+question:"WHOのアルマ・アタ宣言で示されたのはどれか",
 choices:[
-"健康教育",
-"安全な水の供給",
-"予防接種",
-"健康診査"
+"ヘルスプロモーション",
+"インフォームド・コンセント",
+"医学研究倫理",
+"プライマリ・ヘルス・ケア"
 ],
-answer:3
+answer:3,
+chapter:"WHO"
 },
 
 {
-question:"一次予防はどれか",
+question:"WHOの主な活動はどれか",
 choices:[
-"リハビリテーション",
-"生活環境改善",
-"がん検診",
+"地域紛争の解決",
+"難民の救助援助",
+"労働条件の改善",
+"保健統計の刊行"
+],
+answer:3,
+chapter:"WHO"
+}
+
+],
+
+"プライマリヘルスケア":[
+
+{
+question:"プライマリヘルスケアに含まれないのはどれか",
+choices:[
+"住民参加",
+"包括的保健",
+"高度先進医療",
+"身近な医療"
+],
+answer:2,
+chapter:"プライマリヘルスケア"
+}
+
+],
+
+"疾病予防":[
+
+{
+question:"第一次予防はどれか",
+choices:[
+"健康教育",
+"健康診断",
+"リハビリ",
 "社会復帰"
 ],
-answer:1
-},
-
-{
-question:"二次予防はどれか",
-choices:[
-"健康診断",
-"予防接種",
-"禁煙",
-"機能訓練"
-],
-answer:0
-},
-
-{
-question:"疾病予防のうち二次予防はどれか",
-choices:[
-"健康教育",
-"健康診断",
-"予防接種",
-"作業療法"
-],
-answer:1
-},
-
-{
-question:"二次予防に分類されるのはどれか",
-choices:[
-"遺伝相談",
-"感染経路対策",
-"発がん物質対策",
-"スクリーニング検査"
-],
-answer:3
+answer:0,
+chapter:"疾病予防"
 },
 
 {
 question:"第三次予防はどれか",
 choices:[
-"リハビリテーション",
 "禁煙",
-"がん検診",
-"予防接種"
-],
-answer:0
-},
-
-{
-question:"三次予防はどれか",
-choices:[
-"安全な水の供給",
-"がん検診",
-"事故防止",
-"適正配置"
-],
-answer:3
-},
-
-{
-question:"疾病の三次予防はどれか",
-choices:[
-"健康教育",
 "予防接種",
-"健康診査",
-"リハビリテーション"
-],
-answer:3
-},
-
-{
-question:"予防保健と対策との組合せで正しいのはどれか",
-choices:[
-"健康増進 ― 職業訓練",
-"第一次予防 ― 予防接種",
-"第二次予防 ― 事故防止",
-"第三次予防 ― 職業病対策"
-],
-answer:1
-},
-
-{
-question:"公衆衛生について誤っている組合せはどれか",
-choices:[
-"第一次予防 ─ 健康増進",
-"第二次予防 ─ 予防接種",
-"第三次予防 ─ 社会復帰",
-"包括保健 ─ 総合的保健"
-],
-answer:1
-},
-
-{
-question:"疾患と第一次予防との組合せで効果のないのはどれか",
-choices:[
-"脳梗塞 ─ 動物性脂肪の摂取",
-"心筋梗塞 ─ ストレスの回避",
-"糖尿病 ─ 適度の運動",
-"肺癌 ─ 禁煙"
-],
-answer:0
-},
-
-{
-question:"予防について正しい組合せはどれか",
-choices:[
-"がん検診 ― 第一次予防",
-"予防接種 ― 第二次予防",
-"禁酒 ― 第二次予防",
-"リハビリテーション ― 第三次予防"
-],
-answer:3
-},
-
-{
-question:"健康日本21（第三次）で示された『自然に健康になれる環境づくり』に相当する予防段階はどれか",
-choices:[
-"0次予防",
-"1次予防",
-"2次予防",
-"3次予防"
-],
-answer:0
-},
-
-{
-question:"結核対策で早期発見を目的とするのはどれか",
-choices:[
-"結核登録",
-"定期健康診断",
-"定期予防接種",
-"家庭訪問指導"
-],
-answer:1
-},
-
-{
-question:"ハイリスクアプローチはどれか",
-choices:[
-"受動喫煙を減らす法整備",
-"食習慣改善の広報活動",
-"市民対象のウォーキング大会",
-"喫煙者への禁煙指導"
-],
-answer:3
-},
-
-{
-question:"ハイリスクアプローチでないのはどれか",
-choices:[
-"喫煙者への禁煙指導",
-"市民対象のウォーキング大会",
-"糖尿病予備群への運動指導",
-"塩分摂取量が多い者への食事指導"
-],
-answer:1
-},
-
-{
-question:"一次予防に含まれるのはどれか",
-choices:[
-"健康教育",
-"健康診断",
 "リハビリテーション",
-"機能訓練"
+"健康教育"
 ],
-answer:0
-},
-
-{
-question:"二次予防に含まれるのはどれか",
-choices:[
-"予防接種",
-"健康診断",
-"禁煙指導",
-"運動習慣"
-],
-answer:1
-},
-
-{
-question:"三次予防に含まれるのはどれか",
-choices:[
-"予防接種",
-"健康教育",
-"社会復帰",
-"健康診断"
-],
-answer:2
-},
-
-{
-question:"疾病予防で一次予防に該当するのはどれか",
-choices:[
-"がん検診",
-"リハビリテーション",
-"予防接種",
-"機能回復訓練"
-],
-answer:2
+answer:2,
+chapter:"疾病予防"
 }
 
 ]
 
-}
-
 };
 
 
-// =====================================
+// ========================================
 // 状態
-// =====================================
+// ========================================
 
+let currentCategory = "";
 let currentQuiz = [];
-let quizIndex = 0;
+let currentIndex = 0;
 let score = 0;
-let results = [];
-let currentChapter = "";
-
-showMenu();
 
 
-// =====================================
-// メニュー
-// =====================================
+// ========================================
+// メニュー表示
+// ========================================
 
 function showMenu(){
 
-document.getElementById("quiz").innerHTML = "";
-
 let html = `
-<div class="card">
 
-<h3>
+<div class="selectBox">
 
-章を選択
-
-</h3>
 `;
 
-const chapters = allQuiz[subject];
-
-for(let chapter in chapters){
+for(let key in quizData){
 
 html += `
-<button
-class="chapterBtn"
-onclick="startQuiz('${chapter}')"
->
 
-${chapter}
+<button onclick="startQuiz('${key}')">
+
+${key}
 
 </button>
+
 `;
 
 }
 
-html += `
-<button
-style="background:#777;"
-onclick="location.href='quizMenu.html'"
->
+html += `</div>`;
 
-科目選択へ戻る
-
-</button>
-
-</div>
-`;
-
-document.getElementById("menu").innerHTML = html;
+document.getElementById(
+"app"
+).innerHTML = html;
 
 }
 
 
-// =====================================
-// 開始
-// =====================================
+// ========================================
+// クイズ開始
+// ========================================
 
-function startQuiz(chapter){
+function startQuiz(category){
 
-currentChapter = chapter;
-
-currentQuiz =
-allQuiz[subject][chapter]
-.sort(()=>Math.random()-0.5)
-.slice(0,5);
-
-quizIndex = 0;
+currentCategory = category;
+currentQuiz = quizData[category];
+currentIndex = 0;
 score = 0;
-results = [];
 
-document.getElementById("menu").innerHTML = "";
-
-showQuiz();
+showQuestion();
 
 }
 
 
-// =====================================
-// 表示
-// =====================================
+// ========================================
+// 問題表示
+// ========================================
 
-function showQuiz(){
+function showQuestion(){
 
-if(quizIndex >= currentQuiz.length){
+if(currentIndex >= currentQuiz.length){
 
-let html = `
-<div class="card">
+document.getElementById(
+"app"
+).innerHTML = `
 
-<h2>
+<div class="scoreBox">
 
-終了！
+${currentCategory}
 
-</h2>
+<br><br>
 
-<p>
-
-${score} / ${currentQuiz.length}
-
-</p>
-
-<div class="resultBox">
-
-${results.map((r,i)=>`
-
-<p>
-
-問題${i+1}：
-${r ? "⭕" : "❌"}
-
-</p>
-
-`).join("")}
+${currentQuiz.length}問中
+${score}問正解！
 
 </div>
 
-<button onclick="showMenu()">
+<button onclick="finishReview()">
 
-章選択へ戻る
-
-</button>
-
-<button
-style="background:#777;"
-onclick="location.href='home.html'"
->
-
-ホーム
+カテゴリへ戻る
 
 </button>
 
-</div>
 `;
-
-document.getElementById("quiz").innerHTML = html;
 
 return;
 
 }
 
-const q = currentQuiz[quizIndex];
+const q = currentQuiz[currentIndex];
 
-let html = `
-<div class="card">
+let html = "";
 
-<h3>
+if(reviewMode === "true"){
 
-${currentChapter}
+html += `
 
-</h3>
+<div class="reviewMode">
 
-<h2>
+📝 復習モード
 
-問題 ${quizIndex+1}
+</div>
 
-</h2>
+`;
 
-<p>
+}
+
+html += `
+
+<div class="progress">
+
+${currentIndex + 1}
+/
+${currentQuiz.length}
+
+</div>
+
+<div class="questionBox">
 
 ${q.question}
 
-</p>
+</div>
+
 `;
 
 q.choices.forEach((choice,index)=>{
 
 html += `
+
 <button
 class="choiceBtn"
 onclick="checkAnswer(${index})"
 >
 
-${index+1}．${choice}
+${index + 1}. ${choice}
 
 </button>
+
 `;
 
 });
 
-html += `</div>`;
+html += `<div id="result"></div>`;
 
-document.getElementById("quiz").innerHTML = html;
+document.getElementById(
+"app"
+).innerHTML = html;
 
 }
 
 
-// =====================================
-// 判定
-// =====================================
+// ========================================
+// 回答判定
+// ========================================
 
-function checkAnswer(num){
+function checkAnswer(selected){
 
-let q = currentQuiz[quizIndex];
+const q = currentQuiz[currentIndex];
 
-let buttons =
-document.querySelectorAll(".choiceBtn");
-
-buttons.forEach(btn=>btn.disabled=true);
-
-let wrong = JSON.parse(
-localStorage.getItem(
-"wrongQuestions_"+subject
-) || "[]"
+const buttons =
+document.querySelectorAll(
+".choiceBtn"
 );
 
+buttons.forEach(btn=>{
 
-// ===== 正解 =====
+btn.disabled = true;
 
-if(num === q.answer){
+});
 
-buttons[num].classList.add("correct");
+buttons[q.answer]
+.classList.add("correct");
+
+if(selected === q.answer){
 
 score++;
 
-results.push(true);
+document.getElementById(
+"result"
+).innerHTML = `
 
-}
-else{
+<div class="result correct">
 
-results.push(false);
-
-buttons[num].classList.add("wrong");
-
-buttons[q.answer].classList.add("correct");
-
-wrong.push({
-questionData:q,
-userAnswer:num,
-chapter:currentChapter
-});
-
-localStorage.setItem(
-"wrongQuestions_"+subject,
-JSON.stringify(wrong)
-);
-
-}
-
-
-// ===== 解説 =====
-
-let html = `
-<div class="point">
-
-<strong>
-
-正解：
-
-</strong>
-
-<br><br>
-
-${q.choices[q.answer]}
+⭕ 正解！
 
 </div>
 
-<button
-onclick="nextQuestion()"
->
+`;
+
+}
+
+else{
+
+buttons[selected]
+.classList.add("wrong");
+
+saveWrongQuestion(q);
+
+document.getElementById(
+"result"
+).innerHTML = `
+
+<div class="result wrong">
+
+❌ 不正解
+
+<br><br>
+
+正解：
+${q.answer + 1}
+
+</div>
+
+`;
+
+}
+
+document.getElementById(
+"result"
+).innerHTML += `
+
+<button onclick="nextQuestion()">
 
 次へ
 
 </button>
-`;
 
-document.getElementById("quiz")
-.innerHTML += html;
+`;
 
 }
 
 
-// =====================================
+// ========================================
+// 間違え保存
+// ========================================
+
+function saveWrongQuestion(q){
+
+let wrongQuestions = JSON.parse(
+localStorage.getItem(
+"wrongQuestions_衛生学・公衆衛生学"
+) || "[]"
+);
+
+const exists = wrongQuestions.some(item=>
+item.question === q.question
+);
+
+if(!exists){
+
+wrongQuestions.push(q);
+
+}
+
+localStorage.setItem(
+"wrongQuestions_衛生学・公衆衛生学",
+JSON.stringify(wrongQuestions)
+);
+
+}
+
+
+// ========================================
 // 次へ
-// =====================================
+// ========================================
 
 function nextQuestion(){
 
-quizIndex++;
+currentIndex++;
 
-showQuiz();
+showQuestion();
+
+}
+
+
+// ========================================
+// 復習終了
+// ========================================
+
+function finishReview(){
+
+localStorage.removeItem(
+"reviewMode"
+);
+
+localStorage.removeItem(
+"reviewChapter"
+);
+
+showMenu();
+
+}
+
+
+// ========================================
+// 戻る
+// ========================================
+
+function goBack(){
+
+localStorage.removeItem(
+"reviewMode"
+);
+
+localStorage.removeItem(
+"reviewChapter"
+);
+
+location.href =
+"quizMenu.html";
+
+}
+
+
+// ========================================
+// 起動
+// ========================================
+
+if(reviewMode === "true"){
+
+let wrongQuestions = JSON.parse(
+localStorage.getItem(
+"wrongQuestions_衛生学・公衆衛生学"
+) || "[]"
+);
+
+currentCategory = reviewChapter;
+
+currentQuiz = wrongQuestions.filter(q=>
+q.chapter === reviewChapter
+);
+
+currentIndex = 0;
+score = 0;
+
+showQuestion();
+
+}
+
+else{
+
+showMenu();
 
 }
 
