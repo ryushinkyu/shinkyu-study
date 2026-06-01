@@ -5,67 +5,74 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>第2章 疾病予防</title>
+<title>講義</title>
 
 <link rel="stylesheet" href="style.css">
 
+<script src="lectureData.js"></script>
+
 <style>
 
-.section{
-margin-top:20px;
+body{
+background:#f5f5f5;
+padding:10px;
+box-sizing:border-box;
+}
+
+.container{
+max-width:700px;
+margin:auto;
+}
+
+.card{
+background:white;
 padding:20px;
-background:#f9f9f9;
 border-radius:12px;
-line-height:1.8;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
 .title{
+text-align:center;
+margin-bottom:20px;
+}
+
+.menuButton{
+width:100%;
+padding:14px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+background:#2196f3;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+.backButton{
+width:100%;
+padding:14px;
+margin-top:20px;
+border:none;
+border-radius:10px;
+background:#777;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+.lectureTitle{
 font-size:24px;
 font-weight:bold;
-margin-bottom:10px;
-}
-
-.subTitle{
-font-size:20px;
-font-weight:bold;
-margin-top:20px;
-color:#0288d1;
-}
-
-.point{
-margin-top:10px;
-padding:12px;
-background:#fff3e0;
-border-left:5px solid orange;
-border-radius:8px;
-}
-
-.tableBox{
-overflow-x:auto;
-margin-top:15px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
-}
-
-th,td{
-border:1px solid #ccc;
-padding:10px;
+margin-bottom:20px;
 text-align:center;
 }
 
-th{
-background:#e3f2fd;
-}
-
-.memo{
-margin-top:10px;
-padding:12px;
-background:#e8f5e9;
-border-radius:8px;
+.lectureContent{
+white-space:pre-wrap;
+line-height:1.8;
+background:#f9f9f9;
+padding:20px;
+border-radius:12px;
 }
 
 </style>
@@ -78,407 +85,133 @@ border-radius:8px;
 
 <div class="card">
 
-<h1>
+<h1 class="title">
 
-第2章 疾病予防
+📖 講義
 
 </h1>
 
-<div class="section">
-
-<div class="title">
-
-疾病予防とは
-
-</div>
-
-<p>
-
-病気を防ぎ、
-健康を維持し、
-早期発見・再発防止を行う考え方。
-
-</p>
-
-<div class="point">
-
-国家試験では
-「一次・二次・三次予防」
-が超頻出。
+<div id="app"></div>
 
 </div>
 
 </div>
 
-<!-- 一次予防 -->
+<script>
 
-<div class="section">
+const subject =
+localStorage.getItem(
+"lectureSubject"
+);
 
-<div class="subTitle">
+function showMenu(){
 
-① 一次予防
+let html = "";
 
-</div>
+for(let key in lectureData){
 
-<p>
+if(
+subject === "public"
+&&
+!key.includes("総合鍼灸学")
+){
 
-病気になる前に予防する。
-
-</p>
-
-<div class="memo">
-
-キーワード：
-健康増進・発病予防
-
-</div>
-
-<div class="tableBox">
-
-<table>
-
-<tr>
-<th>内容</th>
-<th>例</th>
-</tr>
-
-<tr>
-<td>生活習慣改善</td>
-<td>禁煙・運動</td>
-</tr>
-
-<tr>
-<td>感染症予防</td>
-<td>予防接種</td>
-</tr>
-
-<tr>
-<td>健康教育</td>
-<td>栄養指導</td>
-</tr>
-
-</table>
-
-</div>
-
-<div class="point">
-
-「予防接種＝一次予防」
-は超頻出。
-
-</div>
-
-</div>
-
-<!-- 二次予防 -->
-
-<div class="section">
-
-<div class="subTitle">
-
-② 二次予防
-
-</div>
-
-<p>
-
-病気を早期発見・早期治療する。
-
-</p>
-
-<div class="memo">
-
-キーワード：
-健康診断・スクリーニング
-
-</div>
-
-<div class="tableBox">
-
-<table>
-
-<tr>
-<th>内容</th>
-<th>例</th>
-</tr>
-
-<tr>
-<td>健康診断</td>
-<td>学校健診</td>
-</tr>
-
-<tr>
-<td>がん検診</td>
-<td>胃がん検診</td>
-</tr>
-
-<tr>
-<td>人間ドック</td>
-<td>企業健診</td>
-</tr>
-
-</table>
-
-</div>
-
-<div class="point">
-
-「健康診断＝二次予防」
-をよく間違える。
-
-</div>
-
-</div>
-
-<!-- 三次予防 -->
-
-<div class="section">
-
-<div class="subTitle">
-
-③ 三次予防
-
-</div>
-
-<p>
-
-病気の悪化防止、
-機能回復、
-社会復帰を目的とする。
-
-</p>
-
-<div class="memo">
-
-キーワード：
-リハビリ・社会復帰
-
-</div>
-
-<div class="tableBox">
-
-<table>
-
-<tr>
-<th>内容</th>
-<th>例</th>
-</tr>
-
-<tr>
-<td>機能回復</td>
-<td>理学療法</td>
-</tr>
-
-<tr>
-<td>社会復帰</td>
-<td>職場復帰支援</td>
-</tr>
-
-<tr>
-<td>再発防止</td>
-<td>継続治療</td>
-</tr>
-
-</table>
-
-</div>
-
-<div class="point">
-
-「リハビリ＝三次予防」
-も頻出。
-
-</div>
-
-</div>
-
-<!-- ゼロ次予防 -->
-
-<div class="section">
-
-<div class="subTitle">
-
-④ ゼロ次予防
-
-</div>
-
-<p>
-
-自然に健康になれる環境づくり。
-
-</p>
-
-<div class="memo">
-
-最近の国家試験で出題。
-
-</div>
-
-<div class="tableBox">
-
-<table>
-
-<tr>
-<th>例</th>
-</tr>
-
-<tr>
-<td>歩きやすい街づくり</td>
-</tr>
-
-<tr>
-<td>健康的な食品配置</td>
-</tr>
-
-<tr>
-<td>受動喫煙防止</td>
-</tr>
-
-</table>
-
-</div>
-
-</div>
-
-<!-- ハイリスク -->
-
-<div class="section">
-
-<div class="subTitle">
-
-⑤ ハイリスクアプローチ
-
-</div>
-
-<p>
-
-危険性の高い人を対象にする。
-
-</p>
-
-<div class="tableBox">
-
-<table>
-
-<tr>
-<th>例</th>
-</tr>
-
-<tr>
-<td>喫煙者への禁煙指導</td>
-</tr>
-
-<tr>
-<td>糖尿病予備群への指導</td>
-</tr>
-
-</table>
-
-</div>
-
-</div>
-
-<!-- ポピュレーション -->
-
-<div class="section">
-
-<div class="subTitle">
-
-⑥ ポピュレーションアプローチ
-
-</div>
-
-<p>
-
-集団全体へ働きかける。
-
-</p>
-
-<div class="tableBox">
-
-<table>
-
-<tr>
-<th>例</th>
-</tr>
-
-<tr>
-<td>減塩キャンペーン</td>
-</tr>
-
-<tr>
-<td>ウォーキング大会</td>
-</tr>
-
-<tr>
-<td>禁煙ポスター</td>
-</tr>
-
-</table>
-
-</div>
-
-</div>
-
-<!-- 国家試験ポイント -->
-
-<div class="section">
-
-<div class="subTitle">
-
-国家試験ポイント
-
-</div>
-
-<div class="point">
-
-一次予防：
-予防接種・禁煙・運動
-
-</div>
-
-<div class="point">
-
-二次予防：
-健康診断・がん検診
-
-</div>
-
-<div class="point">
-
-三次予防：
-リハビリ・社会復帰
-
-</div>
-
-<div class="point">
-
-分類問題は超頻出。
-
-</div>
-
-</div>
+html += `
 
 <button
-style="margin-top:20px;"
+class="menuButton"
+onclick="showLecture('${key}')"
+>
+
+${key}
+
+</button>
+
+`;
+
+}
+
+if(
+subject === "sinkyu"
+&&
+key.includes("総合鍼灸学")
+){
+
+html += `
+
+<button
+class="menuButton"
+onclick="showLecture('${key}')"
+>
+
+${key}
+
+</button>
+
+`;
+
+}
+
+}
+
+html += `
+
+<button
+class="backButton"
 onclick="location.href='lectureMenu.html'"
 >
 
-講義一覧へ
+講義一覧へ戻る
 
 </button>
+
+`;
+
+document.getElementById(
+"app"
+).innerHTML = html;
+
+}
+
+function showLecture(key){
+
+const lecture =
+lectureData[key];
+
+let html = `
+
+<div class="lectureTitle">
+
+${lecture.title}
+
+</div>
+
+<div class="lectureContent">
+
+${lecture.content}
+
+</div>
 
 <button
-onclick="location.href='home.html'"
+class="backButton"
+onclick="showMenu()"
 >
 
-ホーム
+カテゴリへ戻る
 
 </button>
 
-</div>
+`;
 
-</div>
+document.getElementById(
+"app"
+).innerHTML = html;
+
+}
+
+showMenu();
+
+</script>
 
 </body>
 </html>
