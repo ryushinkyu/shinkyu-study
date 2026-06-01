@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>講義選択</title>
+
 <link rel="stylesheet" href="style.css">
 
 </head>
@@ -13,29 +14,49 @@
 
 <div class="container">
 
-  <div class="card">
+<div class="card">
 
-    <h2>講義を選択</h2>
+<h2>📖 講義を選択</h2>
 
-    <!-- 科目ボタン -->
-    <button onclick="selectSubject('衛生学・公衆衛生学')">衛生学・公衆衛生学</button>
-    <button onclick="selectSubject('解剖学')">解剖学</button>
+<button onclick="selectSubject('public')">
 
-    <div style="height:10px;"></div>
+🏥 衛生学・公衆衛生学
 
-    <button style="background:#777;" onclick="location.href='home.html'">
-      ホーム
-    </button>
+</button>
 
-  </div>
+<button onclick="selectSubject('sinkyu')">
+
+🪡 総合鍼灸学
+
+</button>
+
+<div style="height:10px;"></div>
+
+<button
+style="background:#777;"
+onclick="location.href='home.html'"
+>
+
+ホーム
+
+</button>
+
+</div>
 
 </div>
 
 <script>
 
 function selectSubject(subject){
-localStorage.setItem("selectedSubject", subject);
-location.href = "lecture.html";
+
+localStorage.setItem(
+"lectureSubject",
+subject
+);
+
+location.href =
+"lecture.html";
+
 }
 
 </script>
