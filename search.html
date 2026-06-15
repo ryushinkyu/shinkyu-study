@@ -1,7 +1,7 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -17,18 +17,34 @@ padding:15px;
 background:#f9f9f9;
 border-radius:10px;
 line-height:1.8;
+text-align:left;
 }
 
 .keyword{
-font-size:22px;
+font-size:24px;
 font-weight:bold;
 color:#0288d1;
+margin-bottom:10px;
 }
 
 .point{
 margin-top:15px;
 padding:12px;
 background:#fff3cd;
+border-radius:10px;
+}
+
+.memory{
+margin-top:15px;
+padding:12px;
+background:#d1ecf1;
+border-radius:10px;
+}
+
+.related{
+margin-top:15px;
+padding:12px;
+background:#d4edda;
 border-radius:10px;
 }
 
@@ -48,28 +64,19 @@ font-weight:bold;
 
 <div class="card">
 
-<h1>
+<h1>🔍 AI検索</h1>
 
-🔍 AI検索
-
-</h1>
-
-<p>
-
-単語を入力してください
-
-</p>
+<p>単語を入力してください</p>
 
 <input
 type="text"
 id="searchInput"
 placeholder="例：一次予防"
+
 >
 
 <button onclick="searchWord()">
-
 検索
-
 </button>
 
 <div id="result"></div>
@@ -77,11 +84,10 @@ placeholder="例：一次予防"
 <button
 style="margin-top:20px;background:#777;"
 onclick="location.href='home.html'"
+
 >
 
-ホーム
-
-</button>
+ホーム </button>
 
 </div>
 
@@ -89,148 +95,26 @@ onclick="location.href='home.html'"
 
 <script>
 
-// ========================================
-// 辞書
-// ========================================
-
+// 仮データ
 const dictionary = {
 
 "一次予防":{
-
-meaning:
-"病気になる前に予防すること。",
-
-point:
-"予防接種・禁煙・運動習慣改善など。",
-
-chapter:
-"第2章 疾病予防"
-
+meaning:"病気になる前に予防すること。",
+point:"予防接種・禁煙・運動習慣改善。",
+memory:"一次＝病気になる前",
+related:"予防接種",
+chapter:"疾病予防"
 },
 
 "二次予防":{
-
-meaning:
-"病気を早期発見・早期治療すること。",
-
-point:
-"健康診断・がん検診・人間ドック。",
-
-chapter:
-"第2章 疾病予防"
-
-},
-
-"三次予防":{
-
-meaning:
-"病気の再発防止や社会復帰を目的とする。",
-
-point:
-"リハビリテーションが頻出。",
-
-chapter:
-"第2章 疾病予防"
-
-},
-
-"ハイリスクアプローチ":{
-
-meaning:
-"危険性の高い人へ重点的に指導する方法。",
-
-point:
-"喫煙者への禁煙指導など。",
-
-chapter:
-"第2章 疾病予防"
-
-},
-
-"ポピュレーションアプローチ":{
-
-meaning:
-"集団全体へ働きかける方法。",
-
-point:
-"減塩運動・健康キャンペーンなど。",
-
-chapter:
-"第2章 疾病予防"
-
-},
-
-"健康診断":{
-
-meaning:
-"病気の早期発見を目的とする。",
-
-point:
-"二次予防として超頻出。",
-
-chapter:
-"第2章 疾病予防"
-
-},
-
-"予防接種":{
-
-meaning:
-"感染症を予防するために行う。",
-
-point:
-"一次予防として超重要。",
-
-chapter:
-"第2章 疾病予防"
-
-},
-
-"リハビリ":{
-
-meaning:
-"機能回復や社会復帰を目指す。",
-
-point:
-"三次予防に分類される。",
-
-chapter:
-"第2章 疾病予防"
-
-},
-
-"保健所":{
-
-meaning:
-"地域保健を担う行政機関。",
-
-point:
-"感染症対策・食品衛生などを行う。",
-
-chapter:
-"第3章 保健行政"
-
-},
-
-"市町村保健センター":{
-
-meaning:
-"住民に身近な保健サービスを提供する。",
-
-point:
-"乳幼児健診などを行う。",
-
-chapter:
-"第3章 保健行政"
-
+meaning:"病気を早期発見・早期治療すること。",
+point:"健康診断・がん検診。",
+memory:"二次＝早期発見",
+related:"健康診断",
+chapter:"疾病予防"
 }
 
 };
-
-
-// ========================================
-// 検索
-// ========================================
 
 function searchWord(){
 
@@ -241,12 +125,10 @@ document.getElementById("searchInput")
 const result =
 document.getElementById("result");
 
-
-// ===== 空 =====
-
 if(!word){
 
-result.innerHTML = `
+result.innerHTML=
+`
 <div class="notFound">
 
 単語を入力してください
@@ -258,33 +140,42 @@ return;
 
 }
 
+let foundKey=null;
 
-// ===== データ =====
+for(const key in dictionary){
 
-const data = dictionary[word];
+const data=dictionary[key];
 
+if(
+key.includes(word) ||
+word.includes(key) ||
+data.meaning.includes(word) ||
+data.point.includes(word)
+){
+foundKey=key;
+break;
+}
 
-// ===== 見つかった =====
+}
 
-if(data){
+if(foundKey){
 
-result.innerHTML = `
+const data=dictionary[foundKey];
+
+result.innerHTML=
+`
 
 <div class="resultBox">
 
 <div class="keyword">
 
-${word}
+${foundKey}
 
 </div>
 
 <p>
 
-<strong>
-
-意味：
-
-</strong>
+<strong>意味</strong>
 
 <br>
 
@@ -294,11 +185,7 @@ ${data.meaning}
 
 <div class="point">
 
-<strong>
-
-国家試験ポイント：
-
-</strong>
+<strong>国家試験ポイント</strong>
 
 <br>
 
@@ -306,54 +193,49 @@ ${data.point}
 
 </div>
 
+<div class="memory">
+
+<strong>覚え方</strong>
+
+<br>
+
+${data.memory}
+
+</div>
+
+<div class="related">
+
+<strong>関連キーワード</strong>
+
+<br>
+
+${data.related}
+
+</div>
+
 <p style="margin-top:15px;">
 
-<strong>
+<strong>関連章</strong>
 
-関連章：
-
-</strong>
+<br>
 
 ${data.chapter}
 
 </p>
 
-<button
-style="margin-top:15px;"
-onclick="location.href='lecture.html'"
->
-
-講義を見る
-
-</button>
-
-<button
-onclick="location.href='quiz.html'"
->
-
-クイズへ
-
-</button>
-
 </div>
 
 `;
 
-}
+}else{
 
-
-// ===== 見つからない =====
-
-else{
-
-result.innerHTML = `
-
+result.innerHTML=
+`
 <div class="notFound">
 
 該当する単語がありません
 
 </div>
-
 `;
 
 }
