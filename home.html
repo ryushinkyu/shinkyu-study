@@ -4,29 +4,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>ホーム</title>
+  <title>鍼灸Study - ホーム</title>
 
   <link rel="stylesheet" href="style.css">
 
   <style>
-    button {
+    .menuTitle {
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    /* ボタンを2列に配置 */
+    .menuGrid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .menuGrid button {
       width: 100%;
-      margin-top: 12px;
-      padding: 14px;
-      font-size: 16px;
+      min-height: 64px;
+      margin: 0;
+      padding: 12px 6px;
+      font-size: 15px;
       border: none;
       border-radius: 10px;
       background: #2196f3;
       color: white;
+      cursor: pointer;
+      overflow-wrap: anywhere;
     }
 
-    button:active {
+    .menuGrid button:active {
       transform: scale(0.98);
     }
 
-    .menuTitle {
-      margin-bottom: 20px;
+    .menuGrid .logoutBtn {
+      background: #777;
     }
   </style>
 </head>
@@ -36,77 +50,70 @@
     <div class="card">
 
       <h2 class="menuTitle">ホーム画面</h2>
-
       <p id="welcomeMsg"></p>
 
-      <!-- マイページ -->
-      <button onclick="location.href='mypage.html'">
-        👤 マイページ
-      </button>
+      <div class="menuGrid">
 
-      <!-- 講義 -->
-      <button onclick="location.href='lectureMenu.html'">
-        📝 講義
-      </button>
+        <button onclick="location.href='mypage.html'">
+          👤 マイページ
+        </button>
 
-      <!-- クイズ -->
-      <button onclick="location.href='quizMenu.html'">
-        📚 クイズ
-      </button>
+        <button onclick="location.href='lectureMenu.html'">
+          📝 講義
+        </button>
 
-      <!-- 復習リスト -->
-      <button onclick="location.href='review.html'">
-        🔁 復習リスト
-      </button>
+        <button onclick="location.href='quizMenu.html'">
+          📚 クイズ
+        </button>
 
-      <!-- 一問一答 -->
-      <button onclick="location.href='oneQuestionMenu.html'">
-        🧠 一問一答
-      </button>
+        <button onclick="location.href='review.html'">
+          🔁 復習リスト
+        </button>
 
-      <!-- AI検索 -->
-      <button onclick="location.href='search.html'">
-        🔍 AI検索
-      </button>
+        <button onclick="location.href='oneQuestionMenu.html'">
+          🧠 一問一答
+        </button>
 
-      <!-- ランキング -->
-      <button
-        id="rankBtn"
-        style="display: none;"
-        onclick="location.href='ranking.html'"
-      >
-        🏆 ランキング
-      </button>
+        <button onclick="location.href='search.html'">
+          🔍 AI検索
+        </button>
 
-      <!-- 管理 -->
-      <button
-        id="adminBtn"
-        style="display: none;"
-        onclick="location.href='admin.html'"
-      >
-        ⚙️ 管理
-      </button>
+        <button
+          id="rankBtn"
+          style="display: none;"
+          onclick="location.href='ranking.html'"
+        >
+          🏆 ランキング
+        </button>
 
-      <!-- ログアウト -->
-      <button
-        style="background: #777;"
-        onclick="logout()"
-      >
-        ログアウト
-      </button>
+        <button
+          id="adminBtn"
+          style="display: none;"
+          onclick="location.href='admin.html'"
+        >
+          ⚙️ 管理
+        </button>
 
+        <button class="logoutBtn" onclick="logout()">
+          ログアウト
+        </button>
+
+      </div>
     </div>
   </div>
 
   <script>
     const currentUser = localStorage.getItem("currentUser");
 
-    // ===== ログインチェック =====
+    // ログインチェック
     if (!currentUser) {
       location.href = "index.html";
+    } else {
+      document.getElementById("welcomeMsg").textContent =
+        "ようこそ、" + currentUser + " さん！";
     }
 
-    // ===== 日付リセット =====
+    // 日付リセット
     const today = new Date().toDateString();
     const last = localStorage.getItem("lastDate");
 
@@ -115,22 +122,18 @@
       localStorage.setItem("lastDate", today);
     }
 
-    // ===== ユーザー名表示 =====
-    document.getElementById("welcomeMsg").textContent =
-      "ようこそ、" + currentUser + " さん！";
-
-    // ===== 管理者の設定 =====
+    // 管理者の設定
     if (currentUser === "admin") {
       document.getElementById("adminBtn").style.display = "block";
       document.getElementById("rankBtn").style.display = "block";
     }
 
-    // ===== ランキング表示 =====
+    // ランキング表示
     if (localStorage.getItem("dailyCleared") === "true") {
       document.getElementById("rankBtn").style.display = "block";
     }
 
-    // ===== ログアウト =====
+    // ログアウト
     function logout() {
       localStorage.removeItem("currentUser");
       location.href = "index.html";
