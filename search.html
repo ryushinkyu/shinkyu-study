@@ -1,246 +1,527 @@
-<!DOCTYPE html>
 
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>AI検索</title>
-
 <link rel="stylesheet" href="style.css">
 
 <style>
-
-.resultBox{
-margin-top:20px;
-padding:15px;
-background:#f9f9f9;
-border-radius:10px;
-line-height:1.8;
-text-align:left;
+.resultBox {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    line-height: 1.8;
+    text-align: left;
+    overflow-wrap: anywhere;
 }
 
-.keyword{
-font-size:24px;
-font-weight:bold;
-color:#0288d1;
-margin-bottom:10px;
+.keyword {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0288d1;
+    margin-bottom: 10px;
 }
 
-.point{
-margin-top:15px;
-padding:12px;
-background:#fff3cd;
-border-radius:10px;
+.point {
+    margin-top: 15px;
+    padding: 12px;
+    background: #fff3cd;
+    border-radius: 10px;
 }
 
-.memory{
-margin-top:15px;
-padding:12px;
-background:#d1ecf1;
-border-radius:10px;
+.memory {
+    margin-top: 15px;
+    padding: 12px;
+    background: #d1ecf1;
+    border-radius: 10px;
 }
 
-.related{
-margin-top:15px;
-padding:12px;
-background:#d4edda;
-border-radius:10px;
+.related {
+    margin-top: 15px;
+    padding: 12px;
+    background: #d4edda;
+    border-radius: 10px;
 }
 
-.notFound{
-margin-top:20px;
-color:#f44336;
-font-weight:bold;
+.notFound {
+    margin-top: 20px;
+    padding: 15px;
+    color: #c62828;
+    background: #ffebee;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.resultCount {
+    margin-top: 18px;
+    font-weight: bold;
+    color: #444;
+}
+
+.searchHelp {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.7;
+}
+
+.resultBox button {
+    margin-top: 10px;
+    margin-right: 5px;
+}
+
+#searchInput {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+.searchButton {
+    width: 100%;
+    margin-top: 5px;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
+    <div class="card">
 
-<div class="card">
+        <h1>🔍 AI検索</h1>
 
-<h1>🔍 AI検索</h1>
+        <p>知りたい用語や言葉を入力してください。</p>
 
-<p>単語を入力してください</p>
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="例：プライマリ、PHC、ブラウンセカール症候群"
+            autocomplete="off"
+        >
 
-<input
-type="text"
-id="searchInput"
-placeholder="例：一次予防"
+        <button class="searchButton" onclick="searchWord()">
+            検索
+        </button>
 
->
+        <p class="searchHelp">
+            用語の一部分でも検索できます。関連する言葉も検索対象になります。
+        </p>
 
-<button onclick="searchWord()">
-検索
-</button>
+        <div id="result" aria-live="polite"></div>
 
-<div id="result"></div>
+        <button
+            style="margin-top:20px;background:#777;"
+            onclick="location.href='home.html'"
+        >
+            ホームへ戻る
+        </button>
 
-<button
-style="margin-top:20px;background:#777;"
-onclick="location.href='home.html'"
-
->
-
-ホーム </button>
-
+    </div>
 </div>
 
-</div>
+<!-- 既存の知識データを読み込む -->
+<script src="searchData.js"></script>
 
 <script>
+/*
+==================================================
+1. 関連語・同義語の設定
+==================================================
+必要に応じて、ここに関連語のグループを追加できます。
+*/
 
-// 仮データ
-const dictionary = {
+const synonymGroups = [
+    [
+        "プライマリ",
+        "PHC",
+        "プライマリヘルスケア",
+        "プライマリ・ヘルス・ケア",
+        "アルマアタ",
+        "アルマ・アタ",
+        "アルマアタ宣言",
+        "住民参加",
+        "地域保健"
+    ],
+    [
+        "WHO",
+        "世界保健機関"
+    ],
+    [
+        "JICA",
+        "国際協力機構",
+        "国際協力",
+        "政府開発援助",
+        "ODA"
+    ],
+    [
+        "SDGs",
+        "持続可能な開発目標"
+    ],
+    [
+        "リプロダクティブヘルス",
+        "リプロダクティブライツ",
+        "性と生殖に関する健康",
+        "性と生殖に関する権利",
+        "リプロダクティブ・ヘルス",
+        "リプロダクティブ・ライツ",
+        "カイロ会議"
+    ],
+    [
+        "新興感染症",
+        "新興感染症対策",
+        "新しく出現した感染症"
+    ],
+    [
+        "再興感染症",
+        "再び増加した感染症",
+        "再び流行する感染症"
+    ],
+    [
+        "一次予防",
+        "第一次予防",
+        "健康増進",
+        "疾病予防"
+    ],
+    [
+        "二次予防",
+        "第二次予防",
+        "早期発見",
+        "早期治療"
+    ],
+    [
+        "三次予防",
+        "第三次予防",
+        "リハビリテーション",
+        "社会復帰"
+    ]
+];
 
-"一次予防":{
-meaning:"病気になる前に予防すること。",
-point:"予防接種・禁煙・運動習慣改善。",
-memory:"一次＝病気になる前",
-related:"予防接種",
-chapter:"疾病予防"
-},
 
-"二次予防":{
-meaning:"病気を早期発見・早期治療すること。",
-point:"健康診断・がん検診。",
-memory:"二次＝早期発見",
-related:"健康診断",
-chapter:"疾病予防"
+/*
+==================================================
+2. 検索用の文字列を整える
+==================================================
+全角・半角や空白、記号の違いをできるだけ吸収します。
+*/
+
+function normalizeText(value) {
+    return String(value ?? "")
+        .normalize("NFKC")
+        .toLowerCase()
+        .replace(/[\s　・･\-‐‑‒–—―_.,，。:：;；/／\\()（）［］\[\]「」『』【】]/g, "");
 }
 
-};
 
-function searchWord(){
+/*
+==================================================
+3. 関連語を展開する
+==================================================
+「プライマリ」と検索した場合、
+PHCやアルマ・アタなども検索候補に加えます。
+*/
 
-const word =
-document.getElementById("searchInput")
-.value.trim();
+function expandSearchWords(input) {
+    const words = [input];
+    const normalizedInput = normalizeText(input);
 
-const result =
-document.getElementById("result");
+    for (const group of synonymGroups) {
+        const normalizedGroup = group.map(normalizeText);
 
-if(!word){
+        const matchesGroup = group.some(term => {
+            const normalizedTerm = normalizeText(term);
 
-result.innerHTML=
-`
-<div class="notFound">
+            return normalizedInput.includes(normalizedTerm) ||
+                   normalizedTerm.includes(normalizedInput);
+        });
 
-単語を入力してください
+        if (matchesGroup) {
+            words.push(...group);
+        }
+    }
 
-</div>
-`;
-
-return;
-
+    return [...new Set(words.map(normalizeText).filter(Boolean))];
 }
 
-let foundKey=null;
 
-for(const key in dictionary){
+/*
+==================================================
+4. 辞書データの検索対象を集める
+==================================================
+searchData.js 内の項目のうち、
+検索できるフィールドをまとめて扱います。
+*/
 
-const data=dictionary[key];
+function getSearchFields(key, data) {
+    if (typeof data === "string") {
+        return [
+            { label: "用語", value: key },
+            { label: "説明", value: data }
+        ];
+    }
 
-if(
-key.includes(word) ||
-word.includes(key) ||
-data.meaning.includes(word) ||
-data.point.includes(word)
-){
-foundKey=key;
-break;
+    if (!data || typeof data !== "object") {
+        return [
+            { label: "用語", value: key }
+        ];
+    }
+
+    const fields = [
+        { label: "用語", value: key },
+        { label: "意味", value: data.meaning },
+        { label: "国家試験ポイント", value: data.point },
+        { label: "覚え方", value: data.memory },
+        { label: "関連キーワード", value: data.related },
+        { label: "関連章", value: data.chapter },
+        { label: "問題", value: data.question },
+        { label: "問題", value: data.questions },
+        { label: "選択肢", value: data.choices },
+        { label: "解説", value: data.explanation },
+        { label: "キーワード", value: data.keywords },
+        { label: "別名", value: data.aliases }
+    ];
+
+    return fields.filter(field => {
+        return field.value !== undefined &&
+               field.value !== null &&
+               String(field.value).length > 0;
+    });
 }
 
+
+/*
+==================================================
+5. 検索結果を安全に表示するための処理
+==================================================
+*/
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
-if(foundKey){
 
-const data=dictionary[foundKey];
+/*
+==================================================
+6. 検索結果の表示
+==================================================
+*/
 
-result.innerHTML=
-`
+function renderResult(key, data) {
+    const resultBox = document.createElement("div");
+    resultBox.className = "resultBox";
 
-<div class="resultBox">
+    const title = document.createElement("div");
+    title.className = "keyword";
+    title.textContent = key;
+    resultBox.appendChild(title);
 
-<div class="keyword">
+    if (typeof data === "string") {
+        const description = document.createElement("p");
+        description.textContent = data;
+        resultBox.appendChild(description);
+    } else {
+        const meaning = document.createElement("p");
+        meaning.innerHTML =
+            "<strong>意味</strong><br>" +
+            escapeHTML(data.meaning || "未登録");
+        resultBox.appendChild(meaning);
 
-${foundKey}
+        const point = document.createElement("div");
+        point.className = "point";
+        point.innerHTML =
+            "<strong>国家試験ポイント</strong><br>" +
+            escapeHTML(data.point || "未登録");
+        resultBox.appendChild(point);
 
-</div>
+        const memory = document.createElement("div");
+        memory.className = "memory";
+        memory.innerHTML =
+            "<strong>覚え方</strong><br>" +
+            escapeHTML(data.memory || "未登録");
+        resultBox.appendChild(memory);
 
-<p>
+        const related = document.createElement("div");
+        related.className = "related";
+        related.innerHTML =
+            "<strong>関連キーワード</strong><br>" +
+            escapeHTML(data.related || "なし");
+        resultBox.appendChild(related);
 
-<strong>意味</strong>
+        const chapter = document.createElement("p");
+        chapter.style.marginTop = "15px";
+        chapter.innerHTML =
+            "<strong>関連章</strong><br>" +
+            escapeHTML(data.chapter || "未登録");
+        resultBox.appendChild(chapter);
+    }
 
-<br>
+    const lectureButton = document.createElement("button");
+    lectureButton.textContent = "講義を見る";
+    lectureButton.onclick = function () {
+        location.href = "lecture.html";
+    };
+    resultBox.appendChild(lectureButton);
 
-${data.meaning}
+    const quizButton = document.createElement("button");
+    quizButton.textContent = "クイズへ";
+    quizButton.onclick = function () {
+        location.href = "quiz.html";
+    };
+    resultBox.appendChild(quizButton);
 
-</p>
-
-<div class="point">
-
-<strong>国家試験ポイント</strong>
-
-<br>
-
-${data.point}
-
-</div>
-
-<div class="memory">
-
-<strong>覚え方</strong>
-
-<br>
-
-${data.memory}
-
-</div>
-
-<div class="related">
-
-<strong>関連キーワード</strong>
-
-<br>
-
-${data.related}
-
-</div>
-
-<p style="margin-top:15px;">
-
-<strong>関連章</strong>
-
-<br>
-
-${data.chapter}
-
-</p>
-
-</div>
-
-`;
-
-}else{
-
-result.innerHTML=
-`
-<div class="notFound">
-
-該当する単語がありません
-
-</div>
-`;
-
+    return resultBox;
 }
 
+
+/*
+==================================================
+7. メイン検索処理
+==================================================
+・部分一致
+・関連語への展開
+・複数件の表示
+・一致度の高い順に表示
+*/
+
+function searchWord() {
+    const input = document.getElementById("searchInput").value.trim();
+    const result = document.getElementById("result");
+
+    result.replaceChildren();
+
+    if (!input) {
+        const message = document.createElement("div");
+        message.className = "notFound";
+        message.textContent = "検索する言葉を入力してください。";
+        result.appendChild(message);
+        return;
+    }
+
+    if (typeof dictionary === "undefined" ||
+        !dictionary ||
+        typeof dictionary !== "object") {
+        const message = document.createElement("div");
+        message.className = "notFound";
+        message.textContent =
+            "知識データを読み込めませんでした。searchData.js が同じフォルダにあるか確認してください。";
+        result.appendChild(message);
+        return;
+    }
+
+    const searchTerms = expandSearchWords(input);
+    const normalizedInput = normalizeText(input);
+    const matches = [];
+
+    for (const key of Object.keys(dictionary)) {
+        const data = dictionary[key];
+        const fields = getSearchFields(key, data);
+
+        let score = 0;
+        let matched = false;
+
+        for (const field of fields) {
+            const normalizedValue = normalizeText(field.value);
+
+            if (!normalizedValue) {
+                continue;
+            }
+
+            // 入力された用語そのものを優先
+            if (normalizedValue === normalizedInput) {
+                score = Math.max(score, 100);
+                matched = true;
+                continue;
+            }
+
+            // 用語名に入力語が含まれている場合
+            if (normalizeText(key).includes(normalizedInput)) {
+                score = Math.max(score, 80);
+                matched = true;
+            }
+
+            // 入力語に用語名が含まれている場合
+            if (normalizedInput.includes(normalizeText(key))) {
+                score = Math.max(score, 70);
+                matched = true;
+            }
+
+            // 入力語や関連語が各フィールドに含まれるか
+            for (const term of searchTerms) {
+                if (term.length < 2) {
+                    continue;
+                }
+
+                if (normalizedValue.includes(term)) {
+                    matched = true;
+
+                    if (normalizeText(key).includes(term)) {
+                        score = Math.max(score, 60);
+                    } else if (field.label === "意味" ||
+                               field.label === "国家試験ポイント") {
+                        score = Math.max(score, 40);
+                    } else {
+                        score = Math.max(score, 25);
+                    }
+                }
+            }
+        }
+
+        if (matched) {
+            matches.push({
+                key,
+                data,
+                score
+            });
+        }
+    }
+
+    matches.sort((a, b) => b.score - a.score);
+
+    if (matches.length === 0) {
+        const message = document.createElement("div");
+        message.className = "notFound";
+        message.textContent =
+            "該当する単語が見つかりませんでした。別の言い方や関連する言葉でも検索してみてください。";
+        result.appendChild(message);
+        return;
+    }
+
+    const count = document.createElement("div");
+    count.className = "resultCount";
+    count.textContent = "検索結果：" + matches.length + "件";
+    result.appendChild(count);
+
+    for (const item of matches) {
+        result.appendChild(renderResult(item.key, item.data));
+    }
 }
+
+
+/*
+==================================================
+8. Enterキーでも検索
+==================================================
+*/
+
+document
+    .getElementById("searchInput")
+    .addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            searchWord();
+        }
+    });
 
 </script>
 
