@@ -37,7 +37,6 @@ padding:14px;
 font-size:16px;
 border:none;
 border-radius:10px;
-background:#2196f3;
 color:white;
 cursor:pointer;
 }
@@ -56,6 +55,32 @@ margin-top:10px;
 text-align:center;
 color:#666;
 font-size:14px;
+}
+
+.subjectBox{
+margin-top:25px;
+padding:15px;
+border-radius:12px;
+background:#f9f9f9;
+}
+
+.subjectTitle{
+font-size:20px;
+font-weight:bold;
+margin-bottom:10px;
+text-align:center;
+}
+
+.publicBtn{
+background:#2196f3;
+}
+
+.sinkyuBtn{
+background:#4caf50;
+}
+
+.homeBtn{
+background:#777;
 }
 
 </style>
@@ -80,14 +105,49 @@ font-size:14px;
 
 </p>
 
-<button onclick="startQuiz('公衆衛生')">
+
+<div class="subjectBox">
+
+<div class="subjectTitle">
 
 🏥 公衆衛生
 
-</button>
+</div>
 
 <button
-style="background:#777;"
+class="publicBtn"
+onclick="startQuiz('public')"
+>
+
+公衆衛生クイズを始める
+
+</button>
+
+</div>
+
+
+<div class="subjectBox">
+
+<div class="subjectTitle">
+
+🪡 総合鍼灸学
+
+</div>
+
+<button
+class="sinkyuBtn"
+onclick="startQuiz('sinkyu')"
+>
+
+総合鍼灸学クイズを始める
+
+</button>
+
+</div>
+
+
+<button
+class="homeBtn"
 onclick="location.href='home.html'"
 >
 
@@ -101,11 +161,11 @@ onclick="location.href='home.html'"
 
 <script>
 
-function startQuiz(subject){
+function startQuiz(type){
 
 localStorage.setItem(
-"quizSubject",
-subject
+"quizType",
+type
 );
 
 location.href =

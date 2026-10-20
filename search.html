@@ -4,213 +4,201 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>AI検索</title>
+<title>鍼灸Study - AI検索</title>
 <link rel="stylesheet" href="style.css">
 
 <style>
-.resultBox {
-    margin-top: 20px;
-    padding: 15px;
-    background: #f9f9f9;
-    border-radius: 10px;
+body {
+    background: #f4f7fb;
+}
+
+.search-card {
+    max-width: 760px;
+    margin: 24px auto;
+    padding: 22px;
+}
+
+.search-description {
+    color: #64748b;
     line-height: 1.8;
-    text-align: left;
-    overflow-wrap: anywhere;
 }
 
-.keyword {
-    font-size: 24px;
-    font-weight: bold;
-    color: #0288d1;
-    margin-bottom: 10px;
-}
-
-.point {
-    margin-top: 15px;
-    padding: 12px;
-    background: #fff3cd;
-    border-radius: 10px;
-}
-
-.memory {
-    margin-top: 15px;
-    padding: 12px;
-    background: #d1ecf1;
-    border-radius: 10px;
-}
-
-.related {
-    margin-top: 15px;
-    padding: 12px;
-    background: #d4edda;
-    border-radius: 10px;
-}
-
-.notFound {
+.search-form {
+    display: flex;
+    gap: 8px;
     margin-top: 20px;
-    padding: 15px;
-    color: #c62828;
-    background: #ffebee;
-    border-radius: 10px;
-    font-weight: bold;
-}
-
-.resultCount {
-    margin-top: 18px;
-    font-weight: bold;
-    color: #444;
-}
-
-.searchHelp {
-    margin-top: 10px;
-    font-size: 13px;
-    color: #666;
-    line-height: 1.7;
-}
-
-.resultBox button {
-    margin-top: 10px;
-    margin-right: 5px;
 }
 
 #searchInput {
-    box-sizing: border-box;
-    width: 100%;
-    max-width: 100%;
-    padding: 12px;
-    margin: 8px 0;
+    flex: 1;
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
     font-size: 16px;
+    box-sizing: border-box;
 }
 
-.searchButton {
-    width: 100%;
-    margin-top: 5px;
+button {
+    cursor: pointer;
 }
 
+.search-button {
+    width: auto;
+    min-width: 90px;
+    padding: 12px 18px;
+    background: #087f8c;
+}
+
+.search-button:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+.status {
+    margin-top: 18px;
+    color: #64748b;
+    line-height: 1.7;
+}
+
+.answer-card,
+.local-card {
+    margin-top: 18px;
+    padding: 18px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+}
+
+.answer-card h2,
+.local-card h3 {
+    margin-top: 0;
+}
+
+.answer-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.95;
+}
+
+.ai-label {
+    color: #087f8c;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.local-label {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.error-message {
+    margin-top: 15px;
+    padding: 14px;
+    color: #9f1239;
+    background: #fff1f2;
+    border-radius: 8px;
+    line-height: 1.8;
+}
+
+.local-item {
+    padding: 12px 0;
+    border-top: 1px solid #e2e8f0;
+}
+
+.local-item:first-of-type {
+    border-top: none;
+}
+
+.local-item h4 {
+    margin: 0 0 8px;
+}
+
+.local-item p {
+    margin: 6px 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.secondary-button {
+    margin-top: 20px;
+    background: #64748b;
+}
+
+@media (max-width: 480px) {
+    .search-card {
+        margin: 10px;
+        padding: 16px;
+    }
+
+    .search-form {
+        flex-direction: column;
+    }
+
+    .search-button {
+        width: 100%;
+    }
+}
 </style>
 </head>
 
 <body>
-
 <div class="container">
-    <div class="card">
+    <div class="card search-card">
+        <h1>🔍 鍼灸Study AI検索</h1>
 
-        <h1>🔍 AI検索</h1>
-
-        <p>知りたい用語や言葉を入力してください。</p>
-
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="例：プライマリ、PHC、ブラウンセカール症候群"
-            autocomplete="off"
-        >
-
-        <button class="searchButton" onclick="searchWord()">
-            検索
-        </button>
-
-        <p class="searchHelp">
-            用語の一部分でも検索できます。関連する言葉も検索対象になります。
+        <p class="search-description">
+            鍼灸・医学・国家試験の用語を検索できます。<br>
+            辞書に登録されていない言葉もAIに質問できます。
         </p>
 
-        <div id="result" aria-live="polite"></div>
+        <form id="searchForm" class="search-form">
+            <input
+                id="searchInput"
+                type="text"
+                maxlength="500"
+                placeholder="例：プライマリ・ヘルス・ケア"
+                autocomplete="off"
+                required
+            >
+            <button id="searchButton" class="search-button" type="submit">
+                AI検索
+            </button>
+        </form>
+
+        <p class="search-description">
+            例：ブラウン・セカール症候群、肝兪の取穴、交感神経、
+            アルマ・アタ宣言
+        </p>
+
+        <div id="status" class="status" aria-live="polite"></div>
+        <div id="aiResult"></div>
+        <div id="localResult"></div>
 
         <button
-            style="margin-top:20px;background:#777;"
+            type="button"
+            class="secondary-button"
             onclick="location.href='home.html'"
         >
             ホームへ戻る
         </button>
-
     </div>
 </div>
 
-<!-- 既存の知識データを読み込む -->
+<!-- 既存の辞書データ。ファイルがなくてもAI検索は利用可能 -->
 <script src="searchData.js"></script>
 
 <script>
-/*
-==================================================
-1. 関連語・同義語の設定
-==================================================
-必要に応じて、ここに関連語のグループを追加できます。
-*/
-
-const synonymGroups = [
-    [
-        "プライマリ",
-        "PHC",
-        "プライマリヘルスケア",
-        "プライマリ・ヘルス・ケア",
-        "アルマアタ",
-        "アルマ・アタ",
-        "アルマアタ宣言",
-        "住民参加",
-        "地域保健"
-    ],
-    [
-        "WHO",
-        "世界保健機関"
-    ],
-    [
-        "JICA",
-        "国際協力機構",
-        "国際協力",
-        "政府開発援助",
-        "ODA"
-    ],
-    [
-        "SDGs",
-        "持続可能な開発目標"
-    ],
-    [
-        "リプロダクティブヘルス",
-        "リプロダクティブライツ",
-        "性と生殖に関する健康",
-        "性と生殖に関する権利",
-        "リプロダクティブ・ヘルス",
-        "リプロダクティブ・ライツ",
-        "カイロ会議"
-    ],
-    [
-        "新興感染症",
-        "新興感染症対策",
-        "新しく出現した感染症"
-    ],
-    [
-        "再興感染症",
-        "再び増加した感染症",
-        "再び流行する感染症"
-    ],
-    [
-        "一次予防",
-        "第一次予防",
-        "健康増進",
-        "疾病予防"
-    ],
-    [
-        "二次予防",
-        "第二次予防",
-        "早期発見",
-        "早期治療"
-    ],
-    [
-        "三次予防",
-        "第三次予防",
-        "リハビリテーション",
-        "社会復帰"
-    ]
-];
-
-
-/*
-==================================================
-2. 検索用の文字列を整える
-==================================================
-全角・半角や空白、記号の違いをできるだけ吸収します。
-*/
+const form = document.getElementById("searchForm");
+const input = document.getElementById("searchInput");
+const searchButton = document.getElementById("searchButton");
+const statusBox = document.getElementById("status");
+const aiResult = document.getElementById("aiResult");
+const localResult = document.getElementById("localResult");
 
 function normalizeText(value) {
     return String(value ?? "")
@@ -219,311 +207,238 @@ function normalizeText(value) {
         .replace(/[\s　・･\-‐‑‒–—―_.,，。:：;；/／\\()（）［］\[\]「」『』【】]/g, "");
 }
 
-
-/*
-==================================================
-3. 関連語を展開する
-==================================================
-「プライマリ」と検索した場合、
-PHCやアルマ・アタなども検索候補に加えます。
-*/
-
-function expandSearchWords(input) {
-    const words = [input];
-    const normalizedInput = normalizeText(input);
-
-    for (const group of synonymGroups) {
-        const normalizedGroup = group.map(normalizeText);
-
-        const matchesGroup = group.some(term => {
-            const normalizedTerm = normalizeText(term);
-
-            return normalizedInput.includes(normalizedTerm) ||
-                   normalizedTerm.includes(normalizedInput);
-        });
-
-        if (matchesGroup) {
-            words.push(...group);
+function getDictionary() {
+    try {
+        if (
+            typeof dictionary !== "undefined" &&
+            dictionary &&
+            typeof dictionary === "object"
+        ) {
+            return dictionary;
         }
+    } catch (error) {
+        console.warn("辞書の読み込みを確認してください。", error);
     }
 
-    return [...new Set(words.map(normalizeText).filter(Boolean))];
+    return {};
 }
 
+function getLocalMatches(query) {
+    const data = getDictionary();
+    const normalizedQuery = normalizeText(query);
 
-/*
-==================================================
-4. 辞書データの検索対象を集める
-==================================================
-searchData.js 内の項目のうち、
-検索できるフィールドをまとめて扱います。
-*/
+    if (!normalizedQuery) return [];
 
-function getSearchFields(key, data) {
-    if (typeof data === "string") {
-        return [
-            { label: "用語", value: key },
-            { label: "説明", value: data }
-        ];
-    }
-
-    if (!data || typeof data !== "object") {
-        return [
-            { label: "用語", value: key }
-        ];
-    }
-
-    const fields = [
-        { label: "用語", value: key },
-        { label: "意味", value: data.meaning },
-        { label: "国家試験ポイント", value: data.point },
-        { label: "覚え方", value: data.memory },
-        { label: "関連キーワード", value: data.related },
-        { label: "関連章", value: data.chapter },
-        { label: "問題", value: data.question },
-        { label: "問題", value: data.questions },
-        { label: "選択肢", value: data.choices },
-        { label: "解説", value: data.explanation },
-        { label: "キーワード", value: data.keywords },
-        { label: "別名", value: data.aliases }
-    ];
-
-    return fields.filter(field => {
-        return field.value !== undefined &&
-               field.value !== null &&
-               String(field.value).length > 0;
-    });
-}
-
-
-/*
-==================================================
-5. 検索結果を安全に表示するための処理
-==================================================
-*/
-
-function escapeHTML(value) {
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-/*
-==================================================
-6. 検索結果の表示
-==================================================
-*/
-
-function renderResult(key, data) {
-    const resultBox = document.createElement("div");
-    resultBox.className = "resultBox";
-
-    const title = document.createElement("div");
-    title.className = "keyword";
-    title.textContent = key;
-    resultBox.appendChild(title);
-
-    if (typeof data === "string") {
-        const description = document.createElement("p");
-        description.textContent = data;
-        resultBox.appendChild(description);
-    } else {
-        const meaning = document.createElement("p");
-        meaning.innerHTML =
-            "<strong>意味</strong><br>" +
-            escapeHTML(data.meaning || "未登録");
-        resultBox.appendChild(meaning);
-
-        const point = document.createElement("div");
-        point.className = "point";
-        point.innerHTML =
-            "<strong>国家試験ポイント</strong><br>" +
-            escapeHTML(data.point || "未登録");
-        resultBox.appendChild(point);
-
-        const memory = document.createElement("div");
-        memory.className = "memory";
-        memory.innerHTML =
-            "<strong>覚え方</strong><br>" +
-            escapeHTML(data.memory || "未登録");
-        resultBox.appendChild(memory);
-
-        const related = document.createElement("div");
-        related.className = "related";
-        related.innerHTML =
-            "<strong>関連キーワード</strong><br>" +
-            escapeHTML(data.related || "なし");
-        resultBox.appendChild(related);
-
-        const chapter = document.createElement("p");
-        chapter.style.marginTop = "15px";
-        chapter.innerHTML =
-            "<strong>関連章</strong><br>" +
-            escapeHTML(data.chapter || "未登録");
-        resultBox.appendChild(chapter);
-    }
-
-    const lectureButton = document.createElement("button");
-    lectureButton.textContent = "講義を見る";
-    lectureButton.onclick = function () {
-        location.href = "lecture.html";
-    };
-    resultBox.appendChild(lectureButton);
-
-    const quizButton = document.createElement("button");
-    quizButton.textContent = "クイズへ";
-    quizButton.onclick = function () {
-        location.href = "quiz.html";
-    };
-    resultBox.appendChild(quizButton);
-
-    return resultBox;
-}
-
-
-/*
-==================================================
-7. メイン検索処理
-==================================================
-・部分一致
-・関連語への展開
-・複数件の表示
-・一致度の高い順に表示
-*/
-
-function searchWord() {
-    const input = document.getElementById("searchInput").value.trim();
-    const result = document.getElementById("result");
-
-    result.replaceChildren();
-
-    if (!input) {
-        const message = document.createElement("div");
-        message.className = "notFound";
-        message.textContent = "検索する言葉を入力してください。";
-        result.appendChild(message);
-        return;
-    }
-
-    if (typeof dictionary === "undefined" ||
-        !dictionary ||
-        typeof dictionary !== "object") {
-        const message = document.createElement("div");
-        message.className = "notFound";
-        message.textContent =
-            "知識データを読み込めませんでした。searchData.js が同じフォルダにあるか確認してください。";
-        result.appendChild(message);
-        return;
-    }
-
-    const searchTerms = expandSearchWords(input);
-    const normalizedInput = normalizeText(input);
     const matches = [];
 
-    for (const key of Object.keys(dictionary)) {
-        const data = dictionary[key];
-        const fields = getSearchFields(key, data);
+    for (const [key, value] of Object.entries(data)) {
+        let searchableText = "";
 
-        let score = 0;
-        let matched = false;
-
-        for (const field of fields) {
-            const normalizedValue = normalizeText(field.value);
-
-            if (!normalizedValue) {
-                continue;
-            }
-
-            // 入力された用語そのものを優先
-            if (normalizedValue === normalizedInput) {
-                score = Math.max(score, 100);
-                matched = true;
-                continue;
-            }
-
-            // 用語名に入力語が含まれている場合
-            if (normalizeText(key).includes(normalizedInput)) {
-                score = Math.max(score, 80);
-                matched = true;
-            }
-
-            // 入力語に用語名が含まれている場合
-            if (normalizedInput.includes(normalizeText(key))) {
-                score = Math.max(score, 70);
-                matched = true;
-            }
-
-            // 入力語や関連語が各フィールドに含まれるか
-            for (const term of searchTerms) {
-                if (term.length < 2) {
-                    continue;
-                }
-
-                if (normalizedValue.includes(term)) {
-                    matched = true;
-
-                    if (normalizeText(key).includes(term)) {
-                        score = Math.max(score, 60);
-                    } else if (field.label === "意味" ||
-                               field.label === "国家試験ポイント") {
-                        score = Math.max(score, 40);
-                    } else {
-                        score = Math.max(score, 25);
-                    }
-                }
-            }
+        try {
+            searchableText = normalizeText(
+                key + " " + JSON.stringify(value)
+            );
+        } catch (error) {
+            searchableText = normalizeText(key);
         }
 
-        if (matched) {
-            matches.push({
-                key,
-                data,
-                score
-            });
+        if (
+            searchableText.includes(normalizedQuery) ||
+            normalizedQuery.includes(normalizeText(key))
+        ) {
+            matches.push({ key, value });
         }
     }
 
-    matches.sort((a, b) => b.score - a.score);
+    return matches.slice(0, 5);
+}
 
-    if (matches.length === 0) {
-        const message = document.createElement("div");
-        message.className = "notFound";
-        message.textContent =
-            "該当する単語が見つかりませんでした。別の言い方や関連する言葉でも検索してみてください。";
-        result.appendChild(message);
+function addText(parent, tag, text, className) {
+    const element = document.createElement(tag);
+    element.textContent = text ?? "";
+
+    if (className) element.className = className;
+
+    parent.appendChild(element);
+    return element;
+}
+
+function showLocalMatches(matches) {
+    localResult.replaceChildren();
+
+    if (matches.length === 0) return;
+
+    const card = document.createElement("section");
+    card.className = "local-card";
+
+    addText(card, "h3", "📚 登録済み辞書の一致");
+    addText(
+        card,
+        "p",
+        matches.length + "件の辞書項目が見つかりました。",
+        "local-label"
+    );
+
+    for (const item of matches) {
+        const section = document.createElement("div");
+        section.className = "local-item";
+
+        addText(section, "h4", item.key);
+
+        if (typeof item.value === "string") {
+            addText(section, "p", item.value);
+        } else if (
+            item.value &&
+            typeof item.value === "object"
+        ) {
+            const fields = [
+                ["meaning", "意味"],
+                ["point", "国家試験ポイント"],
+                ["memory", "覚え方"],
+                ["related", "関連キーワード"],
+                ["chapter", "関連章"]
+            ];
+
+            let displayed = false;
+
+            for (const [field, label] of fields) {
+                if (item.value[field]) {
+                    addText(
+                        section,
+                        "p",
+                        label + "：" + item.value[field]
+                    );
+                    displayed = true;
+                }
+            }
+
+            if (!displayed) {
+                addText(
+                    section,
+                    "p",
+                    JSON.stringify(item.value, null, 2)
+                );
+            }
+        }
+
+        card.appendChild(section);
+    }
+
+    localResult.appendChild(card);
+}
+
+function showAIAnswer(answer) {
+    aiResult.replaceChildren();
+
+    const card = document.createElement("section");
+    card.className = "answer-card";
+
+    addText(card, "div", "AIによる解説", "ai-label");
+    addText(card, "h2", "検索結果");
+
+    const answerText = addText(
+        card,
+        "div",
+        answer,
+        "answer-text"
+    );
+
+    aiResult.appendChild(card);
+}
+
+function showError(message) {
+    const box = document.createElement("div");
+    box.className = "error-message";
+    box.textContent = message;
+    aiResult.appendChild(box);
+}
+
+form.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const query = input.value.trim();
+
+    if (!query) {
+        statusBox.textContent = "検索する言葉を入力してください。";
         return;
     }
 
-    const count = document.createElement("div");
-    count.className = "resultCount";
-    count.textContent = "検索結果：" + matches.length + "件";
-    result.appendChild(count);
-
-    for (const item of matches) {
-        result.appendChild(renderResult(item.key, item.data));
+    if (query.length > 500) {
+        statusBox.textContent = "検索語は500文字以内にしてください。";
+        return;
     }
-}
 
+    aiResult.replaceChildren();
+    localResult.replaceChildren();
 
-/*
-==================================================
-8. Enterキーでも検索
-==================================================
-*/
+    const localMatches = getLocalMatches(query);
+    showLocalMatches(localMatches);
 
-document
-    .getElementById("searchInput")
-    .addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-            searchWord();
+    // AIに渡す辞書情報は、見つかった項目だけに限定
+    const dictionaryContext = localMatches
+        .map(item => {
+            return item.key + "\n" +
+                JSON.stringify(item.value, null, 2);
+        })
+        .join("\n\n")
+        .slice(0, 5000);
+
+    searchButton.disabled = true;
+    searchButton.textContent = "検索中...";
+    statusBox.textContent = "AIが解説を作成しています。少し待ってね。";
+
+    try {
+        const response = await fetch("/api/ask", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                question: query,
+                dictionaryContext: dictionaryContext
+            })
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(
+                result.error ||
+                "AIへの接続に失敗しました。サーバーの設定を確認してください。"
+            );
         }
-    });
 
+        if (!result.answer) {
+            throw new Error("AIから回答を取得できませんでした。");
+        }
+
+        showAIAnswer(result.answer);
+        statusBox.textContent = "検索が完了しました。";
+
+    } catch (error) {
+        console.error(error);
+
+        statusBox.textContent = "AI検索を完了できませんでした。";
+
+        showError(
+            error.message ||
+            "接続に失敗しました。server.py が起動しているか確認してください。"
+        );
+
+    } finally {
+        searchButton.disabled = false;
+        searchButton.textContent = "AI検索";
+    }
+});
+
+input.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        input.value = "";
+        aiResult.replaceChildren();
+        localResult.replaceChildren();
+        statusBox.textContent = "";
+    }
+});
 </script>
-
 </body>
 </html>

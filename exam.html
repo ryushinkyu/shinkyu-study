@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>総合鍼灸学 試験</title>
+
+<style>
+body{
+font-family:sans-serif;
+max-width:800px;
+margin:auto;
+padding:20px;
+}
+
+input{
+width:100%;
+padding:10px;
+font-size:18px;
+}
+
+button{
+margin-top:10px;
+padding:10px 20px;
+font-size:18px;
+}
+
+.correct{
+color:green;
+font-weight:bold;
+}
+
+.wrong{
+color:red;
+font-weight:bold;
+}
+</style>
+
+</head>
+<body>
+
+<h1>総合鍼灸学 Exam</h1>
+
+<h2 id="question"></h2>
+
+<input id="answer">
+
+<br>
+
+<button onclick="check()">回答</button>
+
+<p id="result"></p>
+
+<p id="score"></p>
+
+<script src="examData.js"></script>
+
+<script>
+
+let index=0;
+let correct=0;
+
+showQuestion();
+
+function showQuestion(){
+
+if(index>=questions.length){
+
+document.body.innerHTML=
+`<h1>終了</h1>
+<h2>${correct}/${questions.length}点</h2>
+<h2>${Math.round(correct/questions.length*100)}%</h2>`;
+
+return;
+}
+
+document.getElementById("question").innerText=
+`第${index+1}問 ${questions[index].question}`;
+
+document.getElementById("answer").value="";
+document.getElementById("result").innerHTML="";
+}
+
+function check(){
+
+const user=
+document.getElementById("answer").value.trim();
+
+const ans=
+questions[index].answers;
+
+const ok=
+ans.some(a=>user===a);
+
+if(ok){
+
+correct++;
+
+document.getElementById("result").innerHTML=
+`<span class="correct">⭕ 正解</span>`;
+
+}else{
+
+document.getElementById("result").innerHTML=
+`<span class="wrong">❌ 正解：${ans[0]}</span>`;
+}
+
+index++;
+
+setTimeout(showQuestion,1000);
+}
+
+</script>
+
+</body>
+</html>

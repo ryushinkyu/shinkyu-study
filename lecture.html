@@ -1,216 +1,554 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鍼灸Study - 講義</title>
+  <link rel="stylesheet" href="style.css">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .chapter-title {
+      font-size: 27px;
+      line-height: 1.5;
+      margin-bottom: 8px;
+      color: #222;
+    }
 
-<title>講義</title>
+    .chapter-subtitle {
+      font-size: 20px;
+      line-height: 1.6;
+      margin: 24px 0 12px;
+      padding-left: 10px;
+      border-left: 5px solid #0288d1;
+      color: #222;
+    }
 
-<link rel="stylesheet" href="style.css">
+    .chapter-text {
+      font-size: 16px;
+      line-height: 2;
+      color: #222;
+      margin: 12px 0;
+    }
 
-<script src="lectureData.js"></script>
+    .red {
+      color: #dc2626;
+      font-weight: bold;
+    }
 
-<style>
+    .blue {
+      color: #2563eb;
+      font-weight: bold;
+    }
 
-body{
-background:#f5f5f5;
-padding:10px;
-box-sizing:border-box;
-}
+    .chapter-label {
+      display: inline-block;
+      background: #fff0f0;
+      color: #dc2626;
+      font-size: 13px;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 5px;
+      margin: 12px 0;
+    }
 
-.container{
-max-width:700px;
-margin:auto;
-}
+    .chapter-card {
+      border: 1px solid #e2e2e2;
+      border-radius: 10px;
+      padding: 16px;
+      margin: 16px 0;
+      background: #fff;
+    }
 
-.card{
-background:white;
-padding:20px;
-border-radius:12px;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
-}
+    .red-point {
+      background: #fff5f5;
+      border-left: 5px solid #dc2626;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      line-height: 1.9;
+      color: #222;
+      font-size: 15px;
+    }
 
-.title{
-text-align:center;
-margin-bottom:20px;
-}
+    .blue-point {
+      background: #f0f6ff;
+      border-left: 5px solid #2563eb;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      line-height: 1.9;
+      color: #222;
+      font-size: 15px;
+    }
 
-.menuButton{
-width:100%;
-padding:14px;
-margin-top:10px;
-border:none;
-border-radius:10px;
-background:#2196f3;
-color:white;
-font-size:16px;
-cursor:pointer;
-}
+    .chapter-menu {
+      padding: 17px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      margin: 12px 0;
+      cursor: pointer;
+      background: #fff;
+    }
 
-.backButton{
-width:100%;
-padding:14px;
-margin-top:20px;
-border:none;
-border-radius:10px;
-background:#777;
-color:white;
-font-size:16px;
-cursor:pointer;
-}
+    .chapter-menu:hover {
+      background: #eef7ff;
+    }
 
-.lectureTitle{
-font-size:24px;
-font-weight:bold;
-margin-bottom:20px;
-text-align:center;
-}
+    .chapter-menu-title {
+      font-size: 17px;
+      font-weight: bold;
+      line-height: 1.6;
+      color: #222;
+    }
 
-.lectureContent{
-white-space:pre-wrap;
-line-height:1.8;
-background:#f9f9f9;
-padding:20px;
-border-radius:12px;
-}
+    .chapter-menu-description {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.7;
+      margin-top: 6px;
+    }
 
-</style>
+    .chapter-nav {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
 
+    .chapter-nav button {
+      flex: 1;
+    }
+
+    .gray-button {
+      background: #777;
+    }
+
+    .chapter-progress {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .chapter-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .chapter-table th,
+    .chapter-table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .chapter-table th {
+      background: #f2f6fa;
+    }
+
+    .chapter-list {
+      padding-left: 22px;
+      line-height: 2;
+      font-size: 15px;
+      color: #222;
+    }
+
+    @media (max-width: 480px) {
+      .chapter-title {
+        font-size: 24px;
+      }
+
+      .chapter-text {
+        font-size: 15px;
+      }
+
+      .chapter-table {
+        font-size: 13px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
 <div class="container">
+  <div class="card" style="margin-bottom:120px;">
 
-<div class="card">
+    <h1 id="title" class="chapter-title">講義</h1>
 
-<h1 class="title">
+    <p class="chapter-text">
+      <span class="red">赤色：最重要</span><br>
+      <span class="blue">青色：次に重要</span><br>
+      黒色：説明・理解のための文章
+    </p>
 
-📖 講義
+    <div id="content"></div>
 
-</h1>
+    <div id="navigation" class="chapter-nav" style="display:none;">
+      <button id="mainButton" onclick="mainAction()">講義を読む</button>
+      <button class="gray-button" onclick="showChapterMenu()">章一覧</button>
+    </div>
 
-<div id="app"></div>
-
+  </div>
 </div>
 
+<div class="fixed-bottom">
+  <button onclick="location.href='lectureMenu.html'">科目選択</button>
+  <button onclick="location.href='home.html'">ホーム</button>
 </div>
 
 <script>
+"use strict";
 
 const subject =
-localStorage.getItem(
-"lectureSubject"
-);
+  localStorage.getItem("selectedSubject") || "衛生学・公衆衛生学";
 
-function showMenu(){
+document.getElementById("title").textContent = subject + " 講義";
 
-let html = "";
+const content = document.getElementById("content");
+const navigation = document.getElementById("navigation");
+const mainButton = document.getElementById("mainButton");
 
-for(let key in lectureData){
+let currentPage = "menu";
+let hasCounted = false;
 
-if(
-subject === "public"
-&&
-!key.includes("総合鍼灸学")
-){
+/*
+  第1章は、複数の問題を1つの講義にまとめる。
+  今後は章単位で追加していく。
+*/
 
-html += `
+const chapters = {
+  "衛生学・公衆衛生学": [
+    {
+      title: "第1章　WHOと国際保健",
+      description:
+        "WHOの役割、国際機関の違い、アルマ・アタ宣言、PHCを学ぶ",
+      body: `
+        <div class="chapter-label">第1章　講義本文</div>
 
-<button
-class="menuButton"
-onclick="showLecture('${key}')"
->
+        <p class="chapter-text">
+          国際保健とは、国境を越えた人々の健康問題について考え、
+          国際機関や各国が協力して健康を守るための取り組みです。
+          感染症対策、保健医療の整備、健康に関する情報の共有など、
+          幅広い活動が含まれます。
+        </p>
 
-${key}
+        <h2 class="chapter-subtitle">1. WHOとは何か</h2>
 
-</button>
+        <p class="chapter-text">
+          <span class="red">WHO</span>は
+          World Health Organizationの略称で、日本語では
+          <span class="red">世界保健機関</span>といいます。
+          国際連合の専門機関の一つで、世界の人々の健康を守り、
+          増進するために国際的な活動を行っています。
+        </p>
 
-`;
+        <div class="chapter-card">
+          <h3 class="chapter-subtitle" style="margin-top:0;">
+            WHOの主な活動
+          </h3>
 
+          <p class="chapter-text">
+            ・感染症などの国際的な健康問題への対応
+          </p>
+          <p class="chapter-text">
+            ・保健医療に関する国際的な協力や調整
+          </p>
+          <p class="chapter-text">
+            ・健康に関する情報や保健統計の収集・刊行
+          </p>
+          <p class="chapter-text">
+            ・各国の保健医療の向上に向けた支援
+          </p>
+        </div>
+
+        <p class="chapter-text">
+          WHOは、世界の健康に関する課題に国際的に取り組む機関です。
+          国家試験では、WHOの役割と、ほかの国際機関の役割を
+          区別できることが大切です。
+        </p>
+
+        <div class="red-point">
+          <strong>最重要ポイント</strong><br>
+          <span class="red">WHO ＝ 世界保健機関</span><br>
+          保健医療、感染症対策、保健統計などの国際的な活動を行う。
+        </div>
+
+        <h2 class="chapter-subtitle">2. ほかの国際機関との違い</h2>
+
+        <p class="chapter-text">
+          国際機関には、それぞれ中心となる役割があります。
+          名前だけでなく、何を担当する機関なのかを整理しましょう。
+        </p>
+
+        <table class="chapter-table">
+          <thead>
+            <tr>
+              <th>機関</th>
+              <th>主な役割</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="red">WHO</span></td>
+              <td>世界の保健医療・公衆衛生</td>
+            </tr>
+            <tr>
+              <td><span class="blue">ILO</span></td>
+              <td>労働条件、労働者の権利など</td>
+            </tr>
+            <tr>
+              <td><span class="blue">UNHCR</span></td>
+              <td>難民の保護・援助</td>
+            </tr>
+            <tr>
+              <td><span class="blue">UNICEF</span></td>
+              <td>子どもの権利や福祉への支援</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="chapter-text">
+          例えば、世界の保健統計や感染症などの保健医療に関する活動ならWHO、
+          労働条件の改善ならILOが関係します。
+          問題文に出てくるキーワードから、機関の役割を判断しましょう。
+        </p>
+
+        <div class="blue-point">
+          <strong>次に重要なポイント</strong><br>
+          <span class="blue">ILO ＝ 労働</span><br>
+          <span class="blue">UNHCR ＝ 難民</span><br>
+          <span class="blue">UNICEF ＝ 子ども</span><br>
+          それぞれの役割をWHOと混同しないようにしましょう。
+        </div>
+
+        <h2 class="chapter-subtitle">3. アルマ・アタ宣言</h2>
+
+        <p class="chapter-text">
+          <span class="red">1978年</span>に採択された
+          <span class="red">アルマ・アタ宣言</span>は、
+          プライマリ・ヘルス・ケア（PHC）を理解するうえで重要です。
+        </p>
+
+        <p class="chapter-text">
+          この宣言では、すべての人々が健康を享受できることを目指し、
+          身近な保健医療を充実させる考え方が示されました。
+        </p>
+
+        <h2 class="chapter-subtitle">4. プライマリ・ヘルス・ケア（PHC）</h2>
+
+        <p class="chapter-text">
+          <span class="red">プライマリ・ヘルス・ケア（PHC）</span>とは、
+          人々が身近な場所で必要な保健医療を受けられるようにする考え方です。
+          専門的な治療だけではなく、健康教育、疾病予防、
+          地域での基本的な保健医療などを幅広く考えます。
+        </p>
+
+        <h3 class="chapter-subtitle">PHCの重要な特徴</h3>
+
+        <p class="chapter-text">
+          <span class="red">住民参加</span><br>
+          地域の人々が、自分たちの健康づくりに参加することです。
+        </p>
+
+        <p class="chapter-text">
+          <span class="red">包括性</span><br>
+          病気の治療だけに限定せず、健康教育や疾病予防なども含めて
+          幅広く健康を支えることです。
+        </p>
+
+        <p class="chapter-text">
+          <span class="blue">全人的な把握</span><br>
+          病気や症状だけでなく、身体面・心理面・社会的背景なども含めて
+          その人を総合的に理解することです。
+        </p>
+
+        <p class="chapter-text">
+          <span class="blue">継続的な管理</span><br>
+          一度の対応だけで終わらせず、必要に応じて健康状態を確認し、
+          継続して支援することです。
+        </p>
+
+        <p class="chapter-text">
+          PHCは高度医療を否定するものではありません。
+          地域での身近な保健医療を基盤とし、必要なときには
+          専門的な医療につなげることも大切です。
+        </p>
+
+        <div class="red-point">
+          <strong>最重要ポイント</strong><br>
+          <span class="red">1978年 ＝ アルマ・アタ宣言</span><br>
+          <span class="red">アルマ・アタ宣言 ＝ PHCが重要</span><br>
+          PHCは住民参加や身近な保健医療を重視する。
+        </div>
+
+        <h2 class="chapter-subtitle">5. 試験問題ではどう問われる？</h2>
+
+        <p class="chapter-text">
+          この範囲では、文章を丸暗記するだけではなく、
+          用語と役割を結びつけて考えることが大切です。
+        </p>
+
+        <ul class="chapter-list">
+          <li>WHOの主な活動は何か。</li>
+          <li>WHOとILOの役割はどう違うか。</li>
+          <li>アルマ・アタ宣言は何年か。</li>
+          <li>アルマ・アタ宣言とPHCはどう関係するか。</li>
+          <li>PHCで重視される住民参加や包括性とは何か。</li>
+          <li>PHCと高度医療は同じ意味なのか。</li>
+        </ul>
+
+        <p class="chapter-text">
+          これらの問いに、自分の言葉で答えられることを目標にしましょう。
+        </p>
+      `,
+      points: `
+        <div class="red-point">
+          <strong>最重要：必ず覚える</strong><br><br>
+          <span class="red">WHO ＝ 世界保健機関</span><br>
+          <span class="red">1978年 ＝ アルマ・アタ宣言</span><br>
+          <span class="red">アルマ・アタ宣言 ＝ PHCが重要</span><br>
+          <span class="red">PHC ＝ 身近な保健医療・住民参加・包括性</span>
+        </div>
+
+        <div class="blue-point">
+          <strong>次に重要：関連知識</strong><br><br>
+          <span class="blue">ILO ＝ 労働条件</span><br>
+          <span class="blue">UNHCR ＝ 難民の保護・援助</span><br>
+          <span class="blue">UNICEF ＝ 子どもの権利・福祉</span><br>
+          <span class="blue">全人的な把握 ＝ 身体面・心理面・社会的背景を含めた理解</span><br>
+          <span class="blue">継続的な管理 ＝ 継続して健康を支援すること</span>
+        </div>
+
+        <p class="chapter-text">
+          <strong>学習できたか確認しよう</strong><br>
+          ① WHOの役割を説明できる。<br>
+          ② アルマ・アタ宣言の年号を答えられる。<br>
+          ③ PHCの特徴を説明できる。<br>
+          ④ WHOとほかの国際機関の違いを説明できる。
+        </p>
+      `
+    }
+  ]
+};
+
+const chapterList = chapters[subject] || [];
+
+function showChapterMenu() {
+  currentPage = "menu";
+  navigation.style.display = "none";
+  content.innerHTML = "";
+
+  if (chapterList.length === 0) {
+    content.innerHTML = `
+      <h2 class="chapter-subtitle">講義を準備中です</h2>
+      <p class="chapter-text">
+        この科目の講義は、順番に作成していきます。
+      </p>
+      <p class="chapter-text">
+        現在は「衛生学・公衆衛生学」の第1章を公開しています。
+      </p>
+      <button onclick="location.href='lectureMenu.html'">
+        科目選択へ戻る
+      </button>
+    `;
+    return;
+  }
+
+  let html = `
+    <h2 class="chapter-subtitle">講義目次</h2>
+    <p class="chapter-text">
+      関連する内容を1つの章にまとめています。
+      章を選択して講義を始めてください。
+    </p>
+  `;
+
+  chapterList.forEach(function(chapter, i) {
+    const key = "lecture_" + subject + "_" + i;
+    const count = Number(localStorage.getItem(key) || 0);
+
+    html += `
+      <div class="chapter-menu"
+           role="button"
+           tabindex="0"
+           onclick="openChapter(${i})"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openChapter(${i});}">
+        <div class="chapter-menu-title">${chapter.title}</div>
+        <div class="chapter-menu-description">${chapter.description}</div>
+        <div class="chapter-menu-description">学習回数：${count}回</div>
+      </div>
+    `;
+  });
+
+  content.innerHTML = html;
 }
 
-if(
-subject === "sinkyu"
-&&
-key.includes("総合鍼灸学")
-){
+function openChapter(i) {
+  window.currentChapterIndex = i;
+  currentPage = "body";
 
-html += `
+  if (!hasCounted) {
+    const key = "lecture_" + subject + "_" + i;
+    const count = Number(localStorage.getItem(key) || 0);
+    localStorage.setItem(key, String(count + 1));
+    hasCounted = true;
+  }
 
-<button
-class="menuButton"
-onclick="showLecture('${key}')"
->
-
-${key}
-
-</button>
-
-`;
-
+  renderChapter();
 }
 
+function renderChapter() {
+  const chapter = chapterList[window.currentChapterIndex];
+
+  if (!chapter) {
+    showChapterMenu();
+    return;
+  }
+
+  navigation.style.display = "flex";
+  mainButton.textContent = "試験ポイントを見る";
+
+  content.innerHTML = `
+    <p class="chapter-progress">講義本文</p>
+    <h2 class="chapter-title">${chapter.title}</h2>
+    ${chapter.body}
+  `;
 }
 
-html += `
+function mainAction() {
+  const chapter = chapterList[window.currentChapterIndex];
 
-<button
-class="backButton"
-onclick="location.href='lectureMenu.html'"
->
+  if (!chapter) return;
 
-講義一覧へ戻る
+  if (currentPage === "body") {
+    currentPage = "points";
+    navigation.style.display = "flex";
+    mainButton.textContent = "講義本文に戻る";
 
-</button>
+    content.innerHTML = `
+      <p class="chapter-progress">国家試験対策</p>
+      <h2 class="chapter-title">${chapter.title}</h2>
+      ${chapter.points}
+      <button onclick="openQuiz()">この科目のクイズへ</button>
+    `;
+    return;
+  }
 
-`;
-
-document.getElementById(
-"app"
-).innerHTML = html;
-
+  if (currentPage === "points") {
+    currentPage = "body";
+    renderChapter();
+  }
 }
 
-function showLecture(key){
-
-const lecture =
-lectureData[key];
-
-let html = `
-
-<div class="lectureTitle">
-
-${lecture.title}
-
-</div>
-
-<div class="lectureContent">
-
-${lecture.content}
-
-</div>
-
-<button
-class="backButton"
-onclick="showMenu()"
->
-
-カテゴリへ戻る
-
-</button>
-
-`;
-
-document.getElementById(
-"app"
-).innerHTML = html;
-
+function openQuiz() {
+  localStorage.setItem("selectedSubject", subject);
+  location.href = "quiz.html";
 }
 
-showMenu();
-
+showChapterMenu();
 </script>
 
 </body>

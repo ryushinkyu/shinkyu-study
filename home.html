@@ -1,220 +1,140 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ホーム</title>
 
-<title>ホーム</title>
+  <link rel="stylesheet" href="style.css">
 
-<link rel="stylesheet" href="style.css">
+  <style>
+    button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 14px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background: #2196f3;
+      color: white;
+    }
 
-<style>
+    button:active {
+      transform: scale(0.98);
+    }
 
-button{
-width:100%;
-margin-top:12px;
-padding:14px;
-font-size:16px;
-border:none;
-border-radius:10px;
-background:#2196f3;
-color:white;
-}
-
-button:active{
-transform:scale(0.98);
-}
-
-.menuTitle{
-margin-bottom:20px;
-}
-
-</style>
-
+    .menuTitle {
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 
 <body>
-
-<div class="container">
-
-<div class="card">
-
-<h2 class="menuTitle">
-
-ホーム画面
-
-</h2>
-
-<p id="welcomeMsg"></p>
-
-<button onclick="location.href='mypage.html'">
-
-👤 マイページ
-
-</button>
-
-<button onclick="location.href='lectureMenu.html'">
-
-📝 講義
-
-</button>
-
-<button onclick="location.href='studyMenu.html'">
-
-📖 学習
-
-</button>
-
-<button onclick="location.href='quizMenu.html'">
-
-📚 クイズ
-
-</button>
-
-<button onclick="location.href='review.html'">
-
-🔁 復習リスト
-
-</button>
-
-<button onclick="location.href='oneQuestionMenu.html'">
-
-🧠 一問一答
-
-</button>
-
-<button onclick="location.href='search.html'">
-
-🔍 AI検索
-
-</button>
-
-<button
-id="rankBtn"
-style="display:none;"
-onclick="location.href='ranking.html'"
->
-
-🏆 ランキング
-
-</button>
-
-<button
-id="adminBtn"
-style="display:none;"
-onclick="location.href='admin.html'"
->
-
-⚙️ 管理
-
-</button>
-
-<button
-style="background:#777;"
-onclick="logout()"
->
-
-ログアウト
-
-</button>
-
-</div>
-
-</div>
-
-<script>
-
-const currentUser =
-localStorage.getItem("currentUser");
-
-
-// ===== ログインチェック =====
-
-if(!currentUser){
-
-location.href = "index.html";
-
-}
-
-
-// ===== 日付リセット =====
-
-let today =
-new Date().toDateString();
-
-let last =
-localStorage.getItem("lastDate");
-
-if(today !== last){
-
-localStorage.setItem(
-"dailyCleared",
-"false"
-);
-
-localStorage.setItem(
-"lastDate",
-today
-);
-
-}
-
-
-// ===== 表示 =====
-
-document.getElementById(
-"welcomeMsg"
-).textContent =
-
-"ようこそ、" +
-currentUser +
-" さん！";
-
-
-// ===== 管理者 =====
-
-if(currentUser === "admin"){
-
-document.getElementById(
-"adminBtn"
-).style.display = "block";
-
-document.getElementById(
-"rankBtn"
-).style.display = "block";
-
-}
-
-
-// ===== 一般ユーザー =====
-
-if(
-localStorage.getItem(
-"dailyCleared"
-) === "true"
-){
-
-document.getElementById(
-"rankBtn"
-).style.display = "block";
-
-}
-
-
-// ===== ログアウト =====
-
-function logout(){
-
-localStorage.removeItem(
-"currentUser"
-);
-
-location.href = "index.html";
-
-}
-
-</script>
-
+  <div class="container">
+    <div class="card">
+
+      <h2 class="menuTitle">ホーム画面</h2>
+
+      <p id="welcomeMsg"></p>
+
+      <!-- マイページ -->
+      <button onclick="location.href='mypage.html'">
+        👤 マイページ
+      </button>
+
+      <!-- 講義 -->
+      <button onclick="location.href='lectureMenu.html'">
+        📝 講義
+      </button>
+
+      <!-- クイズ -->
+      <button onclick="location.href='quizMenu.html'">
+        📚 クイズ
+      </button>
+
+      <!-- 復習リスト -->
+      <button onclick="location.href='review.html'">
+        🔁 復習リスト
+      </button>
+
+      <!-- 一問一答 -->
+      <button onclick="location.href='oneQuestionMenu.html'">
+        🧠 一問一答
+      </button>
+
+      <!-- AI検索 -->
+      <button onclick="location.href='search.html'">
+        🔍 AI検索
+      </button>
+
+      <!-- ランキング -->
+      <button
+        id="rankBtn"
+        style="display: none;"
+        onclick="location.href='ranking.html'"
+      >
+        🏆 ランキング
+      </button>
+
+      <!-- 管理 -->
+      <button
+        id="adminBtn"
+        style="display: none;"
+        onclick="location.href='admin.html'"
+      >
+        ⚙️ 管理
+      </button>
+
+      <!-- ログアウト -->
+      <button
+        style="background: #777;"
+        onclick="logout()"
+      >
+        ログアウト
+      </button>
+
+    </div>
+  </div>
+
+  <script>
+    const currentUser = localStorage.getItem("currentUser");
+
+    // ===== ログインチェック =====
+    if (!currentUser) {
+      location.href = "index.html";
+    }
+
+    // ===== 日付リセット =====
+    const today = new Date().toDateString();
+    const last = localStorage.getItem("lastDate");
+
+    if (today !== last) {
+      localStorage.setItem("dailyCleared", "false");
+      localStorage.setItem("lastDate", today);
+    }
+
+    // ===== ユーザー名表示 =====
+    document.getElementById("welcomeMsg").textContent =
+      "ようこそ、" + currentUser + " さん！";
+
+    // ===== 管理者の設定 =====
+    if (currentUser === "admin") {
+      document.getElementById("adminBtn").style.display = "block";
+      document.getElementById("rankBtn").style.display = "block";
+    }
+
+    // ===== ランキング表示 =====
+    if (localStorage.getItem("dailyCleared") === "true") {
+      document.getElementById("rankBtn").style.display = "block";
+    }
+
+    // ===== ログアウト =====
+    function logout() {
+      localStorage.removeItem("currentUser");
+      location.href = "index.html";
+    }
+  </script>
 </body>
 </html>
