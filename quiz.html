@@ -1,559 +1,909 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>公衆衛生クイズ</title>
-
-<link rel="stylesheet" href="style.css">
-
-<!-- 問題データ -->
-<script src="publicHealthData.js"></script>
-
-<style>
-
-body{
-background:#f5f5f5;
-padding:10px;
-box-sizing:border-box;
-}
-
-.container{
-width:100%;
-max-width:600px;
-margin:auto;
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:12px;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
-}
-
-.title{
-text-align:center;
-margin-bottom:20px;
-}
-
-.selectBox{
-display:flex;
-flex-direction:column;
-gap:12px;
-}
-
-button{
-width:100%;
-padding:14px;
-font-size:16px;
-border:none;
-border-radius:10px;
-background:#2196f3;
-color:white;
-cursor:pointer;
-}
-
-button:active{
-transform:scale(0.98);
-}
-
-.questionBox{
-margin-top:20px;
-padding:18px;
-background:#f9f9f9;
-border-radius:10px;
-line-height:1.8;
-font-size:18px;
-}
-
-.choiceBtn{
-background:#ffffff;
-color:#333;
-border:1px solid #ccc;
-margin-top:10px;
-}
-
-.choiceBtn:hover{
-background:#e3f2fd;
-}
-
-.correct{
-background:#d4edda !important;
-color:#155724 !important;
-border:2px solid #28a745 !important;
-}
-
-.wrong{
-background:#f8d7da !important;
-color:#721c24 !important;
-border:2px solid #dc3545 !important;
-}
-
-.result{
-margin-top:15px;
-padding:15px;
-border-radius:10px;
-font-size:18px;
-font-weight:bold;
-}
-
-.progress{
-text-align:center;
-margin-bottom:15px;
-color:#666;
-font-size:15px;
-}
-
-.scoreBox{
-margin-top:20px;
-padding:20px;
-background:#f1f8e9;
-border-radius:10px;
-text-align:center;
-font-size:20px;
-font-weight:bold;
-}
-
-.reviewMode{
-background:#fff3cd;
-color:#856404;
-padding:12px;
-border-radius:10px;
-margin-bottom:15px;
-text-align:center;
-font-weight:bold;
-}
-
-.categoryTitle{
-margin-top:10px;
-margin-bottom:20px;
-font-size:20px;
-font-weight:bold;
-text-align:center;
-color:#1565c0;
-}
-
-</style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鍼灸Study - 公衆衛生学 第1章クイズ</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .hidden { display: none !important; }
+    body { padding-bottom: 88px; }
+    .choiceBtn.correct { background: #2e8b57; color: #fff; }
+    .choiceBtn.wrong { background: #d64545; color: #fff; }
+    .choiceBtn:disabled { opacity: .9; cursor: default; }
+    .point { margin-top: 12px; line-height: 1.8; }
+    .feedback { font-weight: bold; margin-top: 12px; }
+    .progress { color: #666; font-size: 14px; }
+    .level-label {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #e3f2fd;
+      color: #075985;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .quiz-home-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 16px;
+      background: #fff;
+      border-top: 1px solid #ddd;
+      z-index: 1000;
+    }
+    .quiz-home-bar button {
+      display: block;
+      width: 100%;
+      max-width: 568px;
+      margin: 0 auto;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #777;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .button-accent { background: #087f8c; }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <div class="card">
+      <h1>クイズ</h1>
+      <p>衛生学・公衆衛生学　第1章：衛生学・公衆衛生学の意義</p>
+    </div>
 
-<div class="container">
+    <div id="menu" class="card">
+      <h3>クイズを選択</h3>
+      <button id="startButton">通常クイズ（10問）</button>
+      <button id="reviewButton">間違えた問題だけ</button>
+      <button id="subjectButton" style="background:#777;">科目選択に戻る</button>
+    </div>
 
-<div class="card">
+    <div id="quiz"></div>
+  </div>
 
-<h1 class="title">
-
-🏥 公衆衛生クイズ
-
-</h1>
-
-<div id="app"></div>
-
-<button
-style="background:#777;margin-top:20px;"
-onclick="goBack()"
->
-
-戻る
-
-</button>
-
-</div>
-
-</div>
+  <div class="quiz-home-bar">
+    <button type="button" onclick="goHome()">ホームに戻る</button>
+  </div>
 
 <script>
-
-// ========================================
-// 復習モード取得
-// ========================================
-
-const reviewMode =
-localStorage.getItem(
-"reviewMode"
-);
-
-const reviewChapter =
-localStorage.getItem(
-"reviewChapter"
-);
-
-
-// ========================================
-// 状態
-// ========================================
-
-let currentCategory = "";
-let currentQuiz = [];
-let currentIndex = 0;
-let score = 0;
-
-
-// ========================================
-// メニュー表示
-// ========================================
-
-function showMenu(){
-
-let html = `
-
-<div class="selectBox">
-
-`;
-
-for(let key in quizData){
-
-html += `
-
-<button onclick="startQuiz('${key}')">
-
-${key}
-
-</button>
-
-`;
-
-}
-
-html += `
-
-</div>
-
-`;
-
-document.getElementById(
-"app"
-).innerHTML = html;
-
-}
-
-
-// ========================================
-// クイズ開始
-// ========================================
-
-function startQuiz(category){
-
-currentCategory = category;
-
-currentQuiz = quizData[category];
-
-currentIndex = 0;
-
-score = 0;
-
-showQuestion();
-
-}
-
-
-// ========================================
-// 問題表示
-// ========================================
-
-function showQuestion(){
-
-if(currentIndex >= currentQuiz.length){
-
-document.getElementById(
-"app"
-).innerHTML = `
-
-<div class="scoreBox">
-
-${currentCategory}
-
-<br><br>
-
-${currentQuiz.length}問中
-${score}問正解！
-
-</div>
-
-<button onclick="finishReview()">
-
-カテゴリへ戻る
-
-</button>
-
-`;
-
-return;
-
-}
-
-const q = currentQuiz[currentIndex];
-
-let html = "";
-
-if(reviewMode === "true"){
-
-html += `
-
-<div class="reviewMode">
-
-📝 復習モード
-
-</div>
-
-`;
-
-}
-
-html += `
-
-<div class="categoryTitle">
-
-${currentCategory}
-
-</div>
-
-<div class="progress">
-
-${currentIndex + 1}
-/
-${currentQuiz.length}
-
-</div>
-
-<div class="questionBox">
-
-${q.question}
-
-</div>
-
-`;
-
-q.choices.forEach((choice,index)=>{
-
-html += `
-
-<button
-class="choiceBtn"
-onclick="checkAnswer(${index})"
->
-
-${index + 1}. ${choice}
-
-</button>
-
-`;
-
+document.addEventListener("DOMContentLoaded", function () {
+  const CATEGORY = "衛生学・公衆衛生学";
+  const HISTORY_CATEGORY =
+    "衛生学・公衆衛生学 第1章：衛生学・公衆衛生学の意義";
+
+  /*
+    学習の流れ
+    ・元の問題に正解 → 必ずレベル3の類似問題へ
+    ・元の問題に不正解 → 次の問題へ進むか、レベル1から復習
+    ・レベル1 → レベル2 → レベル3
+    ・レベル1～3は正誤にかかわらず次のレベルへ
+    ・レベル3は正解時の類似問題と不正解時の復習で共通
+  */
+
+  const questions = [
+    {
+      source: "第10回問題03",
+      question: "公衆衛生的活動でないのはどれか。",
+      choices: [
+        "健康増進",
+        "疾病予防",
+        "疾病の早期発見",
+        "治療薬の開発"
+      ],
+      answer: 3,
+      explanation:
+        "公衆衛生では、健康増進・疾病予防・疾病の早期発見など、集団の健康を守る活動が行われます。治療薬の開発は、一般に研究開発活動に分類されます。",
+      level1: {
+        question: "公衆衛生が主に目指すものはどれか。",
+        choices: [
+          "集団の健康を守ること",
+          "薬の販売数を増やすこと",
+          "病院の建物を増やすこと",
+          "医療機器を製造すること"
+        ],
+        answer: 0,
+        explanation:
+          "公衆衛生は、社会や集団を対象に健康の保持・増進や疾病予防を目指します。"
+      },
+      level2: {
+        question: "公衆衛生的活動として最も適切なのはどれか。",
+        choices: [
+          "個人の手術だけを行う",
+          "地域住民への感染症予防の啓発",
+          "新薬の販売促進",
+          "医療機器の輸出"
+        ],
+        answer: 1,
+        explanation:
+          "地域住民への予防啓発は、集団の健康を守る公衆衛生活動の一つです。"
+      },
+      level3: {
+        question: "公衆衛生活動に該当しないのはどれか。",
+        choices: [
+          "地域住民を対象とした健康教育",
+          "地域における感染症発生動向の把握",
+          "乳幼児を対象とした集団健診",
+          "特定の患者に対する新薬の処方内容の決定"
+        ],
+        answer: 3,
+        explanation:
+          "健康教育、感染症サーベイランス、集団健診は、集団や地域を対象とした公衆衛生活動です。個々の患者に対する薬物治療の選択は、主に個別の臨床診療にあたります。"
+      }
+    },
+    {
+      source: "第23回問題05",
+      question: "WHOのアルマ・アタ宣言で示されたのはどれか。",
+      choices: [
+        "ヘルスプロモーション",
+        "インフォームド・コンセント",
+        "ヒトを対象とする医学研究の倫理的原則",
+        "プライマリ・ヘルス・ケア"
+      ],
+      answer: 3,
+      explanation:
+        "アルマ・アタ宣言では、プライマリ・ヘルス・ケア（PHC）が重要な考え方として示されました。",
+      level1: {
+        question: "アルマ・アタ宣言と特に関係が深い用語はどれか。",
+        choices: [
+          "プライマリ・ヘルス・ケア",
+          "救急救命処置",
+          "臓器移植",
+          "治療薬の承認"
+        ],
+        answer: 0,
+        explanation:
+          "アルマ・アタ宣言は、プライマリ・ヘルス・ケア（PHC）の重要性を示した宣言です。"
+      },
+      level2: {
+        question: "プライマリ・ヘルス・ケアの考え方として適切なのはどれか。",
+        choices: [
+          "一部の人だけが医療を受けられるようにする",
+          "地域の人々が身近な保健医療に参加できるようにする",
+          "高度医療だけを優先する",
+          "予防活動を行わず治療だけを行う"
+        ],
+        answer: 1,
+        explanation:
+          "PHCは、地域の人々が参加し、身近で必要な保健医療を受けられることを重視します。"
+      },
+      level3: {
+        question: "アルマ・アタ宣言で重視されたのはどれか。",
+        choices: [
+          "高度専門医療を大都市の病院に集約すること",
+          "プライマリ・ヘルス・ケアを通じてすべての人の健康を目指すこと",
+          "疾病の治療を優先し、予防活動を縮小すること",
+          "保健医療の計画を専門職のみで決定すること"
+        ],
+        answer: 1,
+        explanation:
+          "アルマ・アタ宣言（1978年）は、プライマリ・ヘルス・ケア（PHC）を重視し、住民参加や適切な技術などを通じて、すべての人の健康を目指す考え方を示しました。"
+      }
+    },
+    {
+      source: "第25回問題11",
+      question: "WHOの主な活動はどれか。",
+      choices: [
+        "地域紛争の解決",
+        "難民の救助援助",
+        "労働条件の改善",
+        "保健統計の刊行"
+      ],
+      answer: 3,
+      explanation:
+        "WHO（世界保健機関）は国際的な保健衛生を担当する国連の専門機関で、保健統計の刊行や疾病対策などを行います。",
+      level1: {
+        question: "WHOは主に何に関する国際機関か。",
+        choices: [
+          "保健・健康",
+          "国際貿易",
+          "宇宙開発",
+          "軍事同盟"
+        ],
+        answer: 0,
+        explanation:
+          "WHOは世界保健機関であり、国際的な保健・健康に関する活動を担います。"
+      },
+      level2: {
+        question: "WHOの活動として適切なのはどれか。",
+        choices: [
+          "国際的な疾病対策を支援する",
+          "各国の軍隊を指揮する",
+          "国際通貨を発行する",
+          "世界の裁判をすべて担当する"
+        ],
+        answer: 0,
+        explanation:
+          "WHOは感染症対策や健康に関する情報提供など、国際的な保健活動を行います。"
+      },
+      level3: {
+        question: "世界保健機関（WHO）の活動として適切なのはどれか。",
+        choices: [
+          "国際的な保健統計の収集・公表",
+          "国際労働基準の採択",
+          "世界の食料・農業政策の主導",
+          "国際通貨制度の管理"
+        ],
+        answer: 0,
+        explanation:
+          "WHOは国際的な保健衛生を担当し、保健統計の収集・公表、疾病対策、国際的な保健基準の策定などを行います。国際労働基準はILO、食料・農業はFAO、国際通貨制度はIMFなどが主に担当します。"
+      }
+    },
+    {
+      source: "第13回問題03",
+      question: "プライマリヘルスケアの要素に含まれないのはどれか。",
+      choices: [
+        "身近な医療",
+        "全人的把握",
+        "継続的な管理",
+        "専門的な医療"
+      ],
+      answer: 3,
+      explanation:
+        "プライマリ・ヘルス・ケアでは、身近で継続的かつ包括的な保健医療が重視されます。",
+      level1: {
+        question: "プライマリ・ヘルス・ケアで大切にされるのはどれか。",
+        choices: [
+          "住民にとって身近な保健医療",
+          "遠方の専門病院だけを利用すること",
+          "治療を受ける人を限定すること",
+          "予防を行わないこと"
+        ],
+        answer: 0,
+        explanation:
+          "PHCは、地域の人々が身近に利用できる保健医療を重視します。"
+      },
+      level2: {
+        question: "PHCにおける「継続的な管理」の説明として適切なのはどれか。",
+        choices: [
+          "一度診察したら、その後の支援は行わない",
+          "健康状態に応じて継続して支援する",
+          "専門医療だけを提供する",
+          "病気の予防は対象外とする"
+        ],
+        answer: 1,
+        explanation:
+          "PHCでは、一時的な対応だけでなく、健康状態に応じた継続的な支援が大切です。"
+      },
+      level3: {
+        question: "プライマリ・ヘルス・ケア（PHC）の基本的な考え方に含まれないのはどれか。",
+        choices: [
+          "住民の参加",
+          "地域の実情に応じた適切な技術の活用",
+          "保健医療と他分野との連携",
+          "高度な専門医療のみを提供する体制の整備"
+        ],
+        answer: 3,
+        explanation:
+          "PHCでは住民参加、適切な技術、部門間の協調などが重視されます。高度な専門医療だけに限定せず、地域で利用しやすい包括的な保健医療を目指します。"
+      }
+    },
+    {
+      source: "第18回問題03",
+      question: "プライマリヘルスケアに関して誤っているのはどれか。",
+      choices: [
+        "住民参加",
+        "高度医療",
+        "包括的保健システム",
+        "アルマ・アタ宣言"
+      ],
+      answer: 1,
+      explanation:
+        "プライマリ・ヘルス・ケアでは、住民参加や包括的な保健医療が重視されます。高度医療そのものを中心的な理念とするものではありません。",
+      level1: {
+        question: "PHCで重視されるのはどれか。",
+        choices: [
+          "住民参加",
+          "軍事参加",
+          "企業の利益だけ",
+          "医療へのアクセス制限"
+        ],
+        answer: 0,
+        explanation:
+          "PHCでは、地域住民が保健医療活動に参加することが重視されます。"
+      },
+      level2: {
+        question: "PHCの考え方に最も近いのはどれか。",
+        choices: [
+          "高度医療だけを整備する",
+          "地域に根ざした包括的な保健医療を進める",
+          "住民の意見を取り入れない",
+          "予防よりも専門治療だけを重視する"
+        ],
+        answer: 1,
+        explanation:
+          "PHCは、地域住民の参加を含め、予防から治療までを視野に入れた包括的な保健医療を重視します。"
+      },
+      level3: {
+        question: "プライマリ・ヘルス・ケア（PHC）について誤っているのはどれか。",
+        choices: [
+          "住民の主体的な参加を重視する",
+          "予防から治療までを含む包括的な活動である",
+          "地域の実情に応じた適切な技術を用いる",
+          "高度な専門医療を中心とし、地域住民の参加を必要としない"
+        ],
+        answer: 3,
+        explanation:
+          "PHCは住民参加を重視し、予防から治療までを含む包括的な保健医療を目指します。高度な専門医療だけを中心とする考え方ではありません。"
+      }
+    },
+    {
+      source: "第28回問題09",
+      question: "1994年の国際人口開発会議（カイロ会議）で提唱された性と生殖に関する概念はどれか。",
+      choices: [
+        "リプロダクティブ・ヘルス／ライツ",
+        "プライマリ・ヘルス・ケア",
+        "ヘルスプロモーション",
+        "ファミリー・プランニング"
+      ],
+      answer: 0,
+      explanation:
+        "リプロダクティブ・ヘルス／ライツは、性と生殖に関する健康と権利を意味します。1994年のカイロ会議と関連づけて覚えましょう。",
+      level1: {
+        question: "「性と生殖に関する健康と権利」を表す用語はどれか。",
+        choices: [
+          "リプロダクティブ・ヘルス／ライツ",
+          "プライマリ・ヘルス・ケア",
+          "保健統計",
+          "感染症サーベイランス"
+        ],
+        answer: 0,
+        explanation:
+          "リプロダクティブ・ヘルス／ライツは、性と生殖に関する健康と権利を表します。"
+      },
+      level2: {
+        question: "リプロダクティブ・ライツの考え方として適切なのはどれか。",
+        choices: [
+          "生殖に関する選択や権利を尊重する",
+          "すべての人に同じ家族計画を強制する",
+          "性に関する健康情報を一切提供しない",
+          "本人の意思を考慮しない"
+        ],
+        answer: 0,
+        explanation:
+          "リプロダクティブ・ライツでは、性と生殖に関する自己決定や権利の尊重が重要です。"
+      },
+      level3: {
+        question: "リプロダクティブ・ヘルス／ライツの考え方として最も適切なのはどれか。",
+        choices: [
+          "性と生殖に関する健康を守り、その選択に関する権利を尊重する",
+          "人口増加を防ぐため、出産数を行政が一律に制限する",
+          "性に関する保健教育を行わず、個人の判断に任せる",
+          "母子保健は妊娠中のみを対象とし、妊娠前後の健康は扱わない"
+        ],
+        answer: 0,
+        explanation:
+          "リプロダクティブ・ヘルス／ライツは、性と生殖に関する健康と権利を指します。本人の意思や選択を尊重し、必要な情報や保健サービスを利用できることが重要です。"
+      }
+    },
+    {
+      source: "第10回問題09",
+      question: "新興感染症はどれか。",
+      choices: [
+        "結核",
+        "エイズ",
+        "コレラ",
+        "マラリア"
+      ],
+      answer: 1,
+      explanation:
+        "この問題ではエイズが正答です。新興感染症は、近年新たに認識された、または新たに公衆衛生上の問題となった感染症を指します。",
+      level1: {
+        question: "新興感染症とは、どのような感染症か。",
+        choices: [
+          "新たに認識された、または新たな問題となった感染症",
+          "必ず昔から存在し続ける感染症",
+          "感染しない病気",
+          "けがによって起こる病気"
+        ],
+        answer: 0,
+        explanation:
+          "新興感染症は、新たに認識された、または新たに公衆衛生上の問題となった感染症です。"
+      },
+      level2: {
+        question: "この教材で新興感染症の例として扱われているのはどれか。",
+        choices: [
+          "骨粗鬆症",
+          "エイズ",
+          "高血圧",
+          "糖尿病"
+        ],
+        answer: 1,
+        explanation:
+          "この問題セットでは、エイズを新興感染症の例として扱っています。感染症の分類は、出題時期や教材の整理に沿って確認しましょう。"
+      },
+      level3: {
+        question: "新興感染症の例として適切なのはどれか。",
+        choices: [
+          "結核",
+          "後天性免疫不全症候群（AIDS）",
+          "糖尿病",
+          "骨粗鬆症"
+        ],
+        answer: 1,
+        explanation:
+          "AIDSの原因となるHIV感染症は、新興感染症の例として国家試験などで扱われてきました。結核は、再興感染症の代表例として整理されます。感染症の分類は、出題時期や教材の定義にも注意しましょう。"
+      }
+    },
+    {
+      source: "第27回問題10",
+      question: "再興感染症はどれか。",
+      choices: [
+        "SARS",
+        "エボラ出血熱",
+        "ウエストナイル熱",
+        "結核"
+      ],
+      answer: 3,
+      explanation:
+        "結核は、再び公衆衛生上の問題となった感染症の例として、再興感染症に分類されます。",
+      level1: {
+        question: "再興感染症の説明として適切なのはどれか。",
+        choices: [
+          "以前から知られていたが、再び問題となった感染症",
+          "感染性のない病気",
+          "必ず新しく発見された感染症",
+          "外傷によって起こる病気"
+        ],
+        answer: 0,
+        explanation:
+          "再興感染症は、以前から知られていた感染症が再び増加したり、公衆衛生上の問題になったりするものです。"
+      },
+      level2: {
+        question: "この問題セットで再興感染症の例として挙げられているのはどれか。",
+        choices: [
+          "SARS",
+          "エボラ出血熱",
+          "結核",
+          "花粉症"
+        ],
+        answer: 2,
+        explanation:
+          "この問題セットでは結核を再興感染症の例として扱っています。"
+      },
+      level3: {
+        question: "再興感染症の例として適切なのはどれか。",
+        choices: [
+          "結核",
+          "重症急性呼吸器症候群（SARS）",
+          "エボラ出血熱",
+          "新たに出現した未知のウイルス感染症"
+        ],
+        answer: 0,
+        explanation:
+          "結核は、以前から知られている感染症が再び増加したり、公衆衛生上の問題となったりする再興感染症の代表例です。SARSやエボラ出血熱は一般に新興感染症の例として扱われます。"
+      }
+    },
+    {
+      source: "第32回問題10",
+      question: "SDGsの17のゴールに含まれるのはどれか。",
+      choices: [
+        "再生医療の促進",
+        "ジェンダー平等",
+        "救急医療の充実",
+        "少子高齢化対策"
+      ],
+      answer: 1,
+      explanation:
+        "ジェンダー平等はSDGsの目標5です。目標3は「すべての人に健康と福祉を」です。",
+      level1: {
+        question: "SDGsは全部でいくつのゴールからなるか。",
+        choices: ["5", "10", "17", "30"],
+        answer: 2,
+        explanation:
+          "SDGsは、持続可能な開発のための17のゴールから構成されています。"
+      },
+      level2: {
+        question: "SDGsの目標5はどれか。",
+        choices: [
+          "質の高い教育をみんなに",
+          "ジェンダー平等を実現しよう",
+          "海の豊かさを守ろう",
+          "気候変動に具体的な対策を"
+        ],
+        answer: 1,
+        explanation:
+          "目標5は「ジェンダー平等を実現しよう」です。目標3は「すべての人に健康と福祉を」です。"
+      },
+      level3: {
+        question: "SDGsの目標5として正しいのはどれか。",
+        choices: [
+          "すべての人に健康と福祉を",
+          "ジェンダー平等を実現しよう",
+          "質の高い教育をみんなに",
+          "安全な水とトイレを世界中に"
+        ],
+        answer: 1,
+        explanation:
+          "SDGsの目標5は「ジェンダー平等を実現しよう」です。目標3は「すべての人に健康と福祉を」、目標4は「質の高い教育をみんなに」、目標6は「安全な水とトイレを世界中に」です。"
+      }
+    },
+    {
+      source: "第24回問題11",
+      question: "我が国の保健医療分野の国際協力について正しいのはどれか。",
+      choices: [
+        "ODAは無償資金協力を行っていない",
+        "日本はWHOの東南アジア事務局に属している",
+        "二国間協力の実施機関はJICA",
+        "NGOによる医療協力は実施していない"
+      ],
+      answer: 2,
+      explanation:
+        "JICA（国際協力機構）は日本の二国間協力を担う主要な実施機関です。日本が属するWHOの地域事務局は西太平洋地域事務局です。ODAには無償資金協力があり、NGOも医療協力を実施しています。",
+      level1: {
+        question: "JICAは主に何に関係する機関か。",
+        choices: [
+          "日本の国際協力",
+          "国内の裁判",
+          "国際スポーツ大会の審判",
+          "軍事作戦の指揮"
+        ],
+        answer: 0,
+        explanation:
+          "JICA（国際協力機構）は、日本の国際協力を担う機関です。"
+      },
+      level2: {
+        question: "日本の二国間協力を担う主要な実施機関はどれか。",
+        choices: ["WHO", "JICA", "IOC", "WTO"],
+        answer: 1,
+        explanation:
+          "JICAは日本の二国間協力を担う主要な実施機関です。WHOは世界保健機関です。"
+      },
+      level3: {
+        question: "我が国の保健医療分野の国際協力について正しいのはどれか。",
+        choices: [
+          "日本はWHOの東南アジア地域に属する",
+          "JICAは日本の二国間援助を担う主要な実施機関である",
+          "政府開発援助（ODA）では無償資金協力を行わない",
+          "NGOは保健医療分野の国際協力に参加していない"
+        ],
+        answer: 1,
+        explanation:
+          "JICA（国際協力機構）は日本の二国間協力を担う主要な実施機関です。日本はWHOの西太平洋地域に属します。ODAには無償資金協力があり、NGOも保健医療分野の国際協力に参加しています。"
+      }
+    }
+  ];
+
+  let quiz = questions.slice();
+  let quizIndex = 0;
+  let score = 0;
+  let results = [];
+  let reviewMode = false;
+  let currentFlow = null;
+
+  const menu = document.getElementById("menu");
+  const quizArea = document.getElementById("quiz");
+
+  document.getElementById("startButton").addEventListener("click", function () {
+    reviewMode = false;
+    quiz = questions.slice();
+    startQuiz();
+  });
+
+  document.getElementById("reviewButton").addEventListener("click", function () {
+    const wrongIndexes = readWrongIndexes()
+      .filter(i => Number.isInteger(i) && i >= 0 && i < questions.length);
+
+    if (wrongIndexes.length === 0) {
+      alert("間違えた問題はまだありません。");
+      return;
+    }
+
+    reviewMode = true;
+    quiz = wrongIndexes.map(i => questions[i]);
+    startQuiz();
+  });
+
+  document.getElementById("subjectButton").addEventListener("click", function () {
+    location.href = "quizMenu.html";
+  });
+
+  function readWrongIndexes() {
+    try {
+      const data = JSON.parse(
+        localStorage.getItem("wrongQuestions_" + CATEGORY) || "[]"
+      );
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function saveWrongIndexes(indexes) {
+    localStorage.setItem(
+      "wrongQuestions_" + CATEGORY,
+      JSON.stringify([...new Set(indexes)].sort((a, b) => a - b))
+    );
+  }
+
+  function startQuiz() {
+    quizIndex = 0;
+    score = 0;
+    results = [];
+    currentFlow = null;
+    menu.classList.add("hidden");
+    quizArea.innerHTML = "";
+    showQuiz();
+  }
+
+  function showQuiz() {
+    currentFlow = null;
+
+    if (quizIndex >= quiz.length) {
+      showResult();
+      return;
+    }
+
+    renderQuestion(quiz[quizIndex], "original");
+  }
+
+  function renderQuestion(q, mode) {
+    const isOriginal = mode === "original";
+    const heading = isOriginal
+      ? `問題 ${quizIndex + 1} / ${quiz.length}`
+      : `復習レベル ${currentFlow.level} / 3`;
+
+    const levelText = isOriginal
+      ? ""
+      : `<div class="level-label">レベル${currentFlow.level}</div>`;
+
+    const sourceText = isOriginal
+      ? `<p class="progress">${reviewMode ? "復習クイズ" : "通常クイズ"}　${quizIndex + 1} / ${quiz.length}問　（${q.source}）</p>`
+      : "";
+
+    quizArea.innerHTML = `
+      <div class="card">
+        ${sourceText}
+        ${levelText}
+        <h2>${heading}</h2>
+        <p>${q.question}</p>
+        <div id="choices"></div>
+        <div id="feedback" class="feedback" aria-live="polite"></div>
+        <div id="explanation" class="point hidden"></div>
+        <div id="actionButtons"></div>
+      </div>
+    `;
+
+    const choices = document.getElementById("choices");
+
+    q.choices.forEach(function (choice, index) {
+      const button = document.createElement("button");
+      button.className = "choiceBtn";
+      button.textContent = `${index + 1}．${choice}`;
+      button.addEventListener("click", function () {
+        checkAnswer(index, q, mode);
+      });
+      choices.appendChild(button);
+    });
+  }
+
+  function checkAnswer(selectedIndex, q, mode) {
+    const buttons = document.querySelectorAll(".choiceBtn");
+
+    if (buttons.length === 0 || buttons[0].disabled) {
+      return;
+    }
+
+    buttons.forEach(button => button.disabled = true);
+
+    const correct = selectedIndex === q.answer;
+
+    buttons[q.answer].classList.add("correct");
+
+    if (!correct) {
+      buttons[selectedIndex].classList.add("wrong");
+    }
+
+    const feedback = document.getElementById("feedback");
+    feedback.textContent = correct
+      ? "⭕ 正解！"
+      : `❌ 不正解。正解は「${q.choices[q.answer]}」です。`;
+    feedback.style.color = correct ? "#218838" : "#d32f2f";
+
+    const explanation = document.getElementById("explanation");
+    explanation.textContent = "解説：" + q.explanation;
+    explanation.classList.remove("hidden");
+
+    const actions = document.getElementById("actionButtons");
+
+    if (mode === "original") {
+      const originalIndex = questions.indexOf(q);
+
+      // 採点対象は元の問題だけ。類似問題の結果は元問題の得点に加えません。
+      results.push(correct);
+      if (correct) {
+        score++;
+      }
+
+      // 元問題の正誤を保存します。
+      let wrong = readWrongIndexes();
+
+      if (correct) {
+        wrong = wrong.filter(i => i !== originalIndex);
+      } else if (originalIndex >= 0 && !wrong.includes(originalIndex)) {
+        wrong.push(originalIndex);
+      }
+
+      saveWrongIndexes(wrong);
+
+      if (correct) {
+        /*
+          重要：
+          元の問題に正解した場合は、次の元問題へ進むボタンを出さず、
+          必ずその問題のレベル3類似問題へ進ませます。
+        */
+        actions.innerHTML = `
+          <p class="point">
+            正解！続けて、同じテーマの国家試験レベル類似問題に挑戦しましょう。
+          </p>
+          <button id="similarButton" class="button-accent">
+            類似問題へ進む
+          </button>
+        `;
+
+        document.getElementById("similarButton").addEventListener("click", function () {
+          currentFlow = {
+            level: 3,
+            originalIndex: originalIndex
+          };
+
+          // 不正解からの復習と同じlevel3問題を使用します。
+          renderQuestion(questions[originalIndex].level3, "level");
+        });
+
+      } else {
+        // 不正解なら、次の問題へ進むかレベル1から復習するかを選べます。
+        actions.innerHTML = `
+          <button id="nextOriginalButton">次の問題へ</button>
+          <button id="level1Button" class="button-accent">
+            レベル1から復習
+          </button>
+        `;
+
+        document.getElementById("nextOriginalButton").addEventListener("click", function () {
+          quizIndex++;
+          showQuiz();
+        });
+
+        document.getElementById("level1Button").addEventListener("click", function () {
+          currentFlow = {
+            level: 1,
+            originalIndex: originalIndex
+          };
+
+          renderQuestion(questions[originalIndex].level1, "level");
+        });
+      }
+
+    } else {
+      // 復習問題は、正解・不正解にかかわらず次のレベルへ進みます。
+      if (currentFlow.level < 3) {
+        const nextLevel = currentFlow.level + 1;
+
+        actions.innerHTML = `
+          <button id="nextLevelButton">
+            レベル${nextLevel}へ進む
+          </button>
+        `;
+
+        document.getElementById("nextLevelButton").addEventListener("click", function () {
+          currentFlow.level = nextLevel;
+
+          const nextQuestion =
+            questions[currentFlow.originalIndex][`level${nextLevel}`];
+
+          renderQuestion(nextQuestion, "level");
+        });
+
+      } else {
+        // レベル3終了後は次の元問題へ進みます。
+        actions.innerHTML = `
+          <button id="nextOriginalButton">次の問題へ</button>
+        `;
+
+        document.getElementById("nextOriginalButton").addEventListener("click", function () {
+          quizIndex++;
+          showQuiz();
+        });
+      }
+    }
+  }
+
+  function showResult() {
+    const percent = quiz.length
+      ? Math.round(score / quiz.length * 100)
+      : 0;
+
+    quizArea.innerHTML = `
+      <div class="card">
+        <h2>クイズ終了！</h2>
+        <p><strong>スコア：${score} / ${quiz.length}</strong></p>
+        <p><strong>正答率：${percent}%</strong></p>
+        <div id="answerDetails"></div>
+        <button id="retryButton">もう一度挑戦</button>
+        <button id="menuButton" style="background:#777;">
+          クイズ選択に戻る
+        </button>
+      </div>
+    `;
+
+    const details = document.getElementById("answerDetails");
+
+    results.forEach(function (correct, i) {
+      const p = document.createElement("p");
+      p.textContent = `問題${i + 1}：${correct ? "⭕ 正解" : "❌ 不正解"}`;
+      details.appendChild(p);
+    });
+
+    saveHistory(percent);
+
+    document.getElementById("retryButton").addEventListener("click", function () {
+      quiz = reviewMode
+        ? readWrongIndexes()
+            .filter(i => Number.isInteger(i) && i >= 0 && i < questions.length)
+            .map(i => questions[i])
+        : questions.slice();
+
+      if (quiz.length === 0) {
+        alert("復習できる問題がありません。");
+        returnToMenu();
+        return;
+      }
+
+      startQuiz();
+    });
+
+    document.getElementById("menuButton").addEventListener("click", returnToMenu);
+  }
+
+  function returnToMenu() {
+    quizArea.innerHTML = "";
+    menu.classList.remove("hidden");
+  }
+
+  function saveHistory(percent) {
+    try {
+      const currentUser = localStorage.getItem("currentUser");
+
+      if (!currentUser) {
+        return;
+      }
+
+      const history = JSON.parse(
+        localStorage.getItem("quizHistory") || "{}"
+      );
+
+      if (!history[currentUser] || !Array.isArray(history[currentUser])) {
+        history[currentUser] = [];
+      }
+
+      history[currentUser].push({
+        subject: HISTORY_CATEGORY,
+        score: score,
+        total: quiz.length,
+        percentage: percent,
+        date: new Date().toLocaleString("ja-JP"),
+        detail: results.slice()
+      });
+
+      localStorage.setItem("quizHistory", JSON.stringify(history));
+
+    } catch (error) {
+      console.error("クイズ履歴の保存に失敗しました。", error);
+    }
+  }
+
+  window.goHome = function () {
+    location.href = "home.html";
+  };
 });
-
-html += `
-
-<div id="result"></div>
-
-`;
-
-document.getElementById(
-"app"
-).innerHTML = html;
-
-}
-
-
-// ========================================
-// 回答判定
-// ========================================
-
-function checkAnswer(selected){
-
-const q = currentQuiz[currentIndex];
-
-const buttons =
-document.querySelectorAll(
-".choiceBtn"
-);
-
-buttons.forEach(btn=>{
-
-btn.disabled = true;
-
-});
-
-buttons[q.answer]
-.classList.add("correct");
-
-if(selected === q.answer){
-
-score++;
-
-document.getElementById(
-"result"
-).innerHTML = `
-
-<div class="result correct">
-
-⭕ 正解！
-
-</div>
-
-`;
-
-}
-
-else{
-
-buttons[selected]
-.classList.add("wrong");
-
-saveWrongQuestion(q);
-
-document.getElementById(
-"result"
-).innerHTML = `
-
-<div class="result wrong">
-
-❌ 不正解
-
-<br><br>
-
-正解：
-${q.answer + 1}
-
-</div>
-
-`;
-
-}
-
-document.getElementById(
-"result"
-).innerHTML += `
-
-<button onclick="nextQuestion()">
-
-次へ
-
-</button>
-
-`;
-
-}
-
-
-// ========================================
-// 間違え保存
-// ========================================
-
-function saveWrongQuestion(q){
-
-let wrongQuestions = JSON.parse(
-localStorage.getItem(
-"wrongQuestions_衛生学・公衆衛生学"
-) || "[]"
-);
-
-const exists = wrongQuestions.some(item=>
-item.question === q.question
-);
-
-if(!exists){
-
-wrongQuestions.push(q);
-
-}
-
-localStorage.setItem(
-"wrongQuestions_衛生学・公衆衛生学",
-JSON.stringify(wrongQuestions)
-);
-
-}
-
-
-// ========================================
-// 次へ
-// ========================================
-
-function nextQuestion(){
-
-currentIndex++;
-
-showQuestion();
-
-}
-
-
-// ========================================
-// 復習終了
-// ========================================
-
-function finishReview(){
-
-localStorage.removeItem(
-"reviewMode"
-);
-
-localStorage.removeItem(
-"reviewChapter"
-);
-
-showMenu();
-
-}
-
-
-// ========================================
-// 戻る
-// ========================================
-
-function goBack(){
-
-localStorage.removeItem(
-"reviewMode"
-);
-
-localStorage.removeItem(
-"reviewChapter"
-);
-
-location.href =
-"quizMenu.html";
-
-}
-
-
-// ========================================
-// 起動
-// ========================================
-
-if(reviewMode === "true"){
-
-let wrongQuestions = JSON.parse(
-localStorage.getItem(
-"wrongQuestions_衛生学・公衆衛生学"
-) || "[]"
-);
-
-currentCategory = reviewChapter;
-
-currentQuiz = wrongQuestions.filter(q=>
-q.chapter === reviewChapter
-);
-
-currentIndex = 0;
-
-score = 0;
-
-showQuestion();
-
-}
-
-else{
-
-showMenu();
-
-}
-
 </script>
-
 </body>
 </html>
