@@ -26,7 +26,7 @@ body {
 }
 button {
   width: 100%;
-  margin-top: 15px;
+  margin-top: 12px;
   padding: 14px;
   font-size: 16px;
   border: none;
@@ -34,6 +34,13 @@ button {
   background: #2196f3;
   color: white;
   cursor: pointer;
+}
+button:active {
+  transform: scale(.98);
+}
+button:disabled {
+  opacity: .6;
+  cursor: default;
 }
 input {
   width: 100%;
@@ -44,24 +51,45 @@ input {
   border-radius: 8px;
   border: 1px solid #ccc;
 }
+.answerButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.answerButtons button {
+  margin-top: 12px;
+}
+.dontKnow {
+  background: #777;
+}
 .result {
   margin-top: 15px;
-  padding: 20px;
+  padding: 16px;
   border-radius: 10px;
   line-height: 1.8;
-  font-size: 17px;
+  font-size: 16px;
 }
 .correct {
-  background: #e3f2fd;
-  color: #01579b;
-  font-weight: bold;
-  border: 2px solid #2196f3;
+  background: #e8f5e9;
+  color: #1b5e20;
+  border: 2px solid #4caf50;
 }
 .wrong {
   background: #ffebee;
   color: #b71c1c;
-  font-weight: bold;
   border: 2px solid #f44336;
+}
+.unknown {
+  background: #fff8e1;
+  color: #795548;
+  border: 2px solid #ffca28;
+}
+.explanation {
+  margin-top: 12px;
+  padding: 14px;
+  background: #f3f6fa;
+  border-radius: 10px;
+  line-height: 1.8;
 }
 .questionBox {
   margin-top: 20px;
@@ -89,6 +117,7 @@ input {
   text-align: center;
   font-size: 18px;
   font-weight: bold;
+  line-height: 1.8;
 }
 .number {
   font-size: 14px;
@@ -96,7 +125,7 @@ input {
   margin-bottom: 10px;
 }
 .small {
-  font-size: 14px;
+  font-size: 13px;
   color: #666;
   line-height: 1.7;
 }
@@ -106,13 +135,14 @@ input {
 <body>
 <div class="container">
   <div class="card">
-    <h2 id="title" class="title">🏥 公衆衛生学 一問一答</h2>
+    <h2 class="title">🏥 公衆衛生学 一問一答</h2>
     <div id="quizArea"></div>
 
     <button
+      type="button"
       style="background:#777"
       onclick="location.href='oneQuestionMenu.html'">
-      科目選択に戻る
+      一問一答メニューに戻る
     </button>
   </div>
 </div>
@@ -122,86 +152,99 @@ const questions = [
   {
     no: "1",
     q: "公衆衛生の主な目的は何か。",
-    a: ["集団の健康の保持・増進と疾病の予防"]
+    a: ["集団の健康の保持・増進と疾病の予防"],
+    explanation: "公衆衛生は、個人だけでなく集団や地域社会を対象に、健康の保持・増進や疾病の予防を目指します。"
   },
   {
     no: "2",
     q: "公衆衛生は主に個人と集団のどちらを対象とするか。",
-    a: ["集団"]
+    a: ["集団"],
+    explanation: "公衆衛生は、地域や社会などの集団を対象として、健康に影響する要因への対策を行います。"
   },
   {
     no: "3",
     q: "世界保健機関をアルファベット3文字で何というか。",
-    a: ["WHO"]
+    a: ["WHO"],
+    explanation: "WHOはWorld Health Organizationの略で、日本語では世界保健機関といいます。"
   },
   {
     no: "4",
     q: "WHOの日本語名称を答えよ。",
-    a: ["世界保健機関"]
+    a: ["世界保健機関"],
+    explanation: "WHO（World Health Organization）は、国際的な保健衛生の向上を目的とする国連の専門機関です。"
   },
   {
     no: "5",
     q: "1978年のアルマ・アタ宣言で重視された考え方は何か。",
-    a: ["プライマリ・ヘルス・ケア", "PHC"]
+    a: ["プライマリ・ヘルス・ケア", "プライマリヘルスケア", "PHC"],
+    explanation: "アルマ・アタ宣言では、プライマリ・ヘルス・ケア（PHC）が重視されました。住民参加や、身近で利用しやすい保健医療などが重要な考え方です。"
   },
   {
     no: "6",
     q: "健康増進や疾病予防を通して、集団の健康を支える活動を何というか。",
-    a: ["公衆衛生活動"]
+    a: ["公衆衛生活動"],
+    explanation: "公衆衛生活動には、健康教育、疾病予防、健康診査、感染症対策など、集団の健康を守るための取り組みが含まれます。"
   },
   {
     no: "7",
     q: "SDGsのゴールは全部でいくつあるか。",
-    a: ["17", "17個", "17のゴール"]
+    a: ["17", "17個", "17のゴール"],
+    explanation: "SDGs（持続可能な開発目標）は、2030年までに達成を目指す17のゴールから構成されています。"
   },
   {
     no: "8",
     q: "SDGsの目標3は何を目指しているか。",
-    a: ["すべての人に健康と福祉を"]
+    a: ["すべての人に健康と福祉を"],
+    explanation: "目標3は「すべての人に健康と福祉を」です。あらゆる年齢の人々の健康的な生活を確保し、福祉を促進することを目指します。"
   },
   {
     no: "9",
     q: "SDGsの目標5は何を目指しているか。",
-    a: ["ジェンダー平等を実現しよう", "ジェンダー平等"]
+    a: ["ジェンダー平等を実現しよう", "ジェンダー平等"],
+    explanation: "目標5は「ジェンダー平等を実現しよう」です。ジェンダー平等の達成と、すべての女性・女児のエンパワーメントを目指します。"
   },
   {
     no: "10",
     q: "性と生殖に関する健康と権利を何というか。",
-    a: [
-      "リプロダクティブ・ヘルス／ライツ",
-      "リプロダクティブヘルスライツ"
-    ]
+    a: ["リプロダクティブ・ヘルス／ライツ", "リプロダクティブヘルスライツ"],
+    explanation: "リプロダクティブ・ヘルス／ライツは、性と生殖に関する健康と権利を意味します。本人の意思や選択が尊重されることが重要です。"
   },
   {
     no: "11",
     q: "以前から知られていた感染症が再び公衆衛生上の問題となるものを何というか。",
-    a: ["再興感染症"]
+    a: ["再興感染症"],
+    explanation: "再興感染症は、過去に存在が知られていた感染症が、再び増加するなどして公衆衛生上の問題となったものです。結核などが代表例です。"
   },
   {
     no: "12",
     q: "新たに認識された、または新たな公衆衛生上の問題となった感染症を何というか。",
-    a: ["新興感染症"]
+    a: ["新興感染症"],
+    explanation: "新興感染症は、新たに出現したり、新たに公衆衛生上の問題として認識されたりした感染症を指します。分類は教材や出題年代にも注意して確認しましょう。"
   },
   {
     no: "13",
     q: "JICAの日本語名称を答えよ。",
-    a: ["国際協力機構"]
+    a: ["国際協力機構"],
+    explanation: "JICAは国際協力機構の略称です。日本の政府開発援助（ODA）に関わる技術協力や資金協力などを担います。"
   },
   {
     no: "14",
     q: "保健所を設置する主体の例を1つ答えよ。",
-    a: ["都道府県", "保健所政令市", "特別区"]
+    a: ["都道府県", "保健所政令市", "特別区"],
+    explanation: "保健所は、都道府県、保健所政令市、特別区などが設置します。地域保健、感染症対策、食品衛生など幅広い公衆衛生業務を担います。"
   },
   {
     no: "15",
     q: "地域住民に健康相談や保健指導などを行う市町村の施設を何というか。",
-    a: ["市町村保健センター", "保健センター"]
+    a: ["市町村保健センター", "保健センター"],
+    explanation: "市町村保健センターは、住民に身近な健康相談、保健指導、健康診査などの地域保健サービスを行う施設です。"
   }
 ];
 
 let index = 0;
 let score = 0;
 let answered = false;
+let unknownCount = 0;
 
 const quizArea = document.getElementById("quizArea");
 
@@ -237,19 +280,24 @@ function showQuiz() {
       placeholder="答えを入力"
       autocomplete="off">
 
-    <button id="answerButton">回答する</button>
+    <div class="answerButtons">
+      <button type="button" id="answerButton">回答する</button>
+      <button type="button" id="dontKnowButton" class="dontKnow">わからない</button>
+    </div>
+
     <div id="result"></div>
   `;
 
   document.getElementById("answerButton")
     .addEventListener("click", checkAnswer);
 
+  document.getElementById("dontKnowButton")
+    .addEventListener("click", showUnknown);
+
   document.getElementById("userAnswer")
     .addEventListener("keydown", function(event) {
       if (event.key === "Enter") checkAnswer();
     });
-
-  document.getElementById("userAnswer").focus();
 }
 
 function checkAnswer() {
@@ -260,7 +308,7 @@ function checkAnswer() {
   const userAnswer = inputEl.value.trim();
 
   if (!userAnswer) {
-    alert("答えを入力してください");
+    alert("答えを入力するか、「わからない」を押してください。");
     return;
   }
 
@@ -272,24 +320,57 @@ function checkAnswer() {
 
   if (correct) score++;
 
+  showFeedback(
+    correct ? "correct" : "wrong",
+    correct ? "⭕ 正解！" : "❌ 不正解",
+    q,
+    userAnswer
+  );
+}
+
+function showUnknown() {
+  if (answered) return;
+
+  answered = true;
+  unknownCount++;
+
+  showFeedback(
+    "unknown",
+    "💡 正解を確認しましょう",
+    questions[index],
+    ""
+  );
+}
+
+function showFeedback(className, heading, q, userAnswer) {
   const result = document.getElementById("result");
 
   result.innerHTML = `
-    <div class="result ${correct ? "correct" : "wrong"}">
-      ${correct ? "⭕ 正解！" : "❌ 不正解"}
+    <div class="result ${className}">
+      <strong>${heading}</strong>
       <br><br>
-      正解例：${q.a[0]}
-      ${correct ? "" : "<br><br>入力した答え：" + escapeHtml(userAnswer)}
+      <strong>正解：</strong>${escapeHtml(q.a[0])}
+      ${
+        userAnswer && className === "wrong"
+          ? "<br><br><strong>あなたの答え：</strong>" + escapeHtml(userAnswer)
+          : ""
+      }
     </div>
 
-    <p class="small">
-      ※答えの表記によっては、意味が合っていても不正解になる場合があります。
-    </p>
+    <div class="explanation">
+      <strong>📖 解説</strong>
+      <br>
+      ${escapeHtml(q.explanation)}
+    </div>
 
-    <button id="nextButton">
-      ${index + 1 === questions.length ? "結果を見る" : "次へ"}
+    <button type="button" id="nextButton">
+      ${index + 1 === questions.length ? "結果を見る" : "次の問題へ"}
     </button>
   `;
+
+  document.getElementById("answerButton").disabled = true;
+  document.getElementById("dontKnowButton").disabled = true;
+  document.getElementById("userAnswer").disabled = true;
 
   document.getElementById("nextButton")
     .addEventListener("click", function() {
@@ -320,15 +401,18 @@ function showResult() {
       ${questions.length}問中 ${score}問正解！
       <br>
       正答率：${percent}%
+      <br>
+      わからない：${unknownCount}問
     </div>
 
-    <button id="retryButton">もう一度挑戦</button>
+    <button type="button" id="retryButton">もう一度挑戦</button>
   `;
 
   document.getElementById("retryButton")
     .addEventListener("click", function() {
       index = 0;
       score = 0;
+      unknownCount = 0;
       showQuiz();
     });
 }
