@@ -1,137 +1,79 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>一問一答メニュー</title>
-
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="styli.css">
 
 <style>
-
-body{
-padding:10px;
-background:#f5f5f5;
-box-sizing:border-box;
+body {
+  padding: 10px;
+  background: #f5f5f5;
+  box-sizing: border-box;
 }
-
-.container{
-width:100%;
-max-width:500px;
-margin:auto;
+.container {
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
 }
-
-.card{
-background:white;
-padding:20px;
-border-radius:12px;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
 }
-
-button{
-width:100%;
-margin-top:15px;
-padding:14px;
-font-size:16px;
-border:none;
-border-radius:10px;
-background:#2196f3;
-color:white;
-cursor:pointer;
+button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 14px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  background: #2196f3;
+  color: white;
+  cursor: pointer;
 }
-
-button:active{
-transform:scale(0.98);
+button:active {
+  transform: scale(.98);
 }
-
-.title{
-text-align:center;
-margin-bottom:20px;
+.title {
+  text-align: center;
+  margin-bottom: 20px;
 }
-
-.sub{
-margin-top:10px;
-text-align:center;
-color:#666;
-font-size:14px;
+.sub {
+  margin-top: 10px;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
 }
-
 </style>
-
 </head>
 
 <body>
-
 <div class="container">
+  <div class="card">
+    <h1 class="title">🧠 一問一答</h1>
+    <p class="sub">学習分野を選択してください</p>
 
-<div class="card">
+    <button onclick="startPublicHealth()">
+      🏥 公衆衛生学
+    </button>
 
-<h1 class="title">
-
-🧠 一問一答
-
-</h1>
-
-<p class="sub">
-
-学習分野を選択してください
-
-</p>
-
-<!-- 内科系1 -->
-<button onclick="start('内科系1')">
-
-📘 内科系1
-
-</button>
-
-<!-- 総合鍼灸学 -->
-<button onclick="start('総合鍼灸学')">
-
-📙 総合鍼灸学
-
-</button>
-
-<!-- 戻る -->
-<button
-style="background:#777;"
-onclick="location.href='home.html'"
->
-
-ホームへ戻る
-
-</button>
-
-</div>
-
+    <button
+      style="background:#777"
+      onclick="location.href='home.html'">
+      ホームへ戻る
+    </button>
+  </div>
 </div>
 
 <script>
-
-// =====================================
-// 分野選択
-// =====================================
-
-function start(subject){
-
-localStorage.setItem(
-"oneQuestionSubject",
-subject
-);
-
-// スマホ対策
-setTimeout(()=>{
-
-location.href =
-"oneQuestionCategory.html";
-
-},100);
-
+function startPublicHealth() {
+  localStorage.setItem("oneQuestionSubject", "公衆衛生学");
+  location.href = "oneQuestion.html";
 }
-
 </script>
-
 </body>
 </html>

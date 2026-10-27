@@ -1,570 +1,339 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>一問一答</title>
-
-<link rel="stylesheet" href="style.css">
+<title>鍼灸Study - 公衆衛生学 一問一答</title>
+<link rel="stylesheet" href="styli.css">
 
 <style>
-
-body{
-padding:10px;
-box-sizing:border-box;
-background:#f5f5f5;
+body {
+  padding: 10px;
+  background: #f5f5f5;
+  box-sizing: border-box;
 }
-
-.container{
-width:100%;
-max-width:500px;
-margin:auto;
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
 }
-
-.card{
-background:white;
-padding:20px;
-border-radius:12px;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
 }
-
-button{
-width:100%;
-margin-top:15px;
-font-size:16px;
-padding:14px;
-border:none;
-border-radius:10px;
-background:#2196f3;
-color:white;
-cursor:pointer;
+button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 14px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  background: #2196f3;
+  color: white;
+  cursor: pointer;
 }
-
-.correct{
-background:#e3f2fd;
-color:#01579b;
-font-weight:bold;
-border:2px solid #2196f3;
+input {
+  width: 100%;
+  padding: 14px;
+  margin-top: 15px;
+  font-size: 16px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
-
-.wrong{
-background:#ffebee;
-color:#b71c1c;
-font-weight:bold;
-border:2px solid #f44336;
+.result {
+  margin-top: 15px;
+  padding: 20px;
+  border-radius: 10px;
+  line-height: 1.8;
+  font-size: 17px;
 }
-
-input{
-width:100%;
-padding:14px;
-margin-top:15px;
-font-size:16px;
-box-sizing:border-box;
-border-radius:8px;
-border:1px solid #ccc;
+.correct {
+  background: #e3f2fd;
+  color: #01579b;
+  font-weight: bold;
+  border: 2px solid #2196f3;
 }
-
-.result{
-margin-top:15px;
-padding:20px;
-border-radius:10px;
-line-height:1.8;
-font-size:18px;
+.wrong {
+  background: #ffebee;
+  color: #b71c1c;
+  font-weight: bold;
+  border: 2px solid #f44336;
 }
-
-.questionBox{
-margin-top:20px;
-padding:18px;
-background:#f9f9f9;
-border-radius:10px;
-line-height:1.8;
-font-size:18px;
+.questionBox {
+  margin-top: 20px;
+  padding: 18px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  line-height: 1.8;
+  font-size: 18px;
 }
-
-.title{
-text-align:center;
-margin-bottom:20px;
+.title {
+  text-align: center;
+  margin-bottom: 20px;
 }
-
-.progress{
-margin-top:10px;
-color:#666;
-font-size:14px;
-text-align:center;
+.progress {
+  margin-top: 10px;
+  color: #666;
+  font-size: 14px;
+  text-align: center;
 }
-
-.score{
-margin-top:20px;
-padding:15px;
-background:#f1f8e9;
-border-radius:10px;
-text-align:center;
-font-size:18px;
-font-weight:bold;
+.score {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f1f8e9;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
 }
-
-.number{
-font-size:14px;
-color:#666;
-margin-bottom:10px;
+.number {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
 }
-
+.small {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.7;
+}
 </style>
-
 </head>
 
 <body>
-
 <div class="container">
+  <div class="card">
+    <h2 id="title" class="title">🏥 公衆衛生学 一問一答</h2>
+    <div id="quizArea"></div>
 
-<div class="card">
-
-<h2 id="title" class="title"></h2>
-
-<div id="quizArea"></div>
-
-<button
-style="background:#777;"
-onclick="location.href='oneQuestionCategory.html'"
->
-
-戻る
-
-</button>
-
-</div>
-
+    <button
+      style="background:#777"
+      onclick="location.href='oneQuestionMenu.html'">
+      科目選択に戻る
+    </button>
+  </div>
 </div>
 
 <script>
+const questions = [
+  {
+    no: "1",
+    q: "公衆衛生の主な目的は何か。",
+    a: ["集団の健康の保持・増進と疾病の予防"]
+  },
+  {
+    no: "2",
+    q: "公衆衛生は主に個人と集団のどちらを対象とするか。",
+    a: ["集団"]
+  },
+  {
+    no: "3",
+    q: "世界保健機関をアルファベット3文字で何というか。",
+    a: ["WHO"]
+  },
+  {
+    no: "4",
+    q: "WHOの日本語名称を答えよ。",
+    a: ["世界保健機関"]
+  },
+  {
+    no: "5",
+    q: "1978年のアルマ・アタ宣言で重視された考え方は何か。",
+    a: ["プライマリ・ヘルス・ケア", "PHC"]
+  },
+  {
+    no: "6",
+    q: "健康増進や疾病予防を通して、集団の健康を支える活動を何というか。",
+    a: ["公衆衛生活動"]
+  },
+  {
+    no: "7",
+    q: "SDGsのゴールは全部でいくつあるか。",
+    a: ["17", "17個", "17のゴール"]
+  },
+  {
+    no: "8",
+    q: "SDGsの目標3は何を目指しているか。",
+    a: ["すべての人に健康と福祉を"]
+  },
+  {
+    no: "9",
+    q: "SDGsの目標5は何を目指しているか。",
+    a: ["ジェンダー平等を実現しよう", "ジェンダー平等"]
+  },
+  {
+    no: "10",
+    q: "性と生殖に関する健康と権利を何というか。",
+    a: [
+      "リプロダクティブ・ヘルス／ライツ",
+      "リプロダクティブヘルスライツ"
+    ]
+  },
+  {
+    no: "11",
+    q: "以前から知られていた感染症が再び公衆衛生上の問題となるものを何というか。",
+    a: ["再興感染症"]
+  },
+  {
+    no: "12",
+    q: "新たに認識された、または新たな公衆衛生上の問題となった感染症を何というか。",
+    a: ["新興感染症"]
+  },
+  {
+    no: "13",
+    q: "JICAの日本語名称を答えよ。",
+    a: ["国際協力機構"]
+  },
+  {
+    no: "14",
+    q: "保健所を設置する主体の例を1つ答えよ。",
+    a: ["都道府県", "保健所政令市", "特別区"]
+  },
+  {
+    no: "15",
+    q: "地域住民に健康相談や保健指導などを行う市町村の施設を何というか。",
+    a: ["市町村保健センター", "保健センター"]
+  }
+];
 
-const category =
-localStorage.getItem(
-"oneQuestionCategory"
-);
-
-const data = {
-
-"第一回":[
-
-{
-no:"1-1",
-q:"感覚性障害では上行性と下行性どちらが起こりやすいか答えよ",
-a:"上行性"
-},
-
-{
-no:"1-2",
-q:"運動性障害では上行性と下行性どちらが起こりやすいか答えよ",
-a:"下行性"
-},
-
-{
-no:"1-3",
-q:"体性感覚は大きく何感覚と何感覚に分けられるか答えよ",
-a:"皮膚感覚・深部感覚"
-},
-
-{
-no:"1-4",
-q:"皮膚感覚の別名を答えよ",
-a:"表在感覚"
-},
-
-{
-no:"1-5",
-q:"触覚、温度覚、痛覚は何感覚に分類されるか答えよ",
-a:"皮膚感覚"
-},
-
-{
-no:"1-6",
-q:"触覚の受容器を全て記せ",
-a:"ルフィニ終末・メルケル盤・マイスネル小体・毛包受容器・パチニ小体・ピンネス小体"
-},
-
-{
-no:"1-7",
-q:"機械的侵害受容器が連結する一次ニューロンの名称を答えよ",
-a:"Aδ線維"
-},
-
-{
-no:"1-8",
-q:"触覚と振動覚の両方の刺激を受容できる受容器の名称を答えよ",
-a:"パチニ小体"
-}
-
-],
-
-"第二回":[
-
-{
-no:"2-1",
-q:"位置覚は体のどの部位の障害で異常がみられるか答えよ",
-a:"脊髄後索"
-},
-
-{
-no:"2-2",
-q:"振動覚は体のどの部位の障害で異常がみられるか答えよ",
-a:"脊髄後索"
-},
-
-{
-no:"2-3",
-q:"複合感覚は体のどの部位の障害で異常がみられるか答えよ",
-a:"頭頂葉"
-},
-
-{
-no:"2-4",
-q:"痛覚検査で使用するものを答えよ",
-a:"安全ピン"
-},
-
-{
-no:"2-5",
-q:"温度覚検査では温水は何℃程度か答えよ",
-a:"40〜45℃"
-},
-
-{
-no:"2-6",
-q:"冷覚検査では冷水は何℃程度か答えよ",
-a:"5〜10℃"
-},
-
-{
-no:"2-7",
-q:"二点識別覚とは何か答えよ",
-a:"2点の刺激を2点として識別する能力"
-},
-
-{
-no:"2-8",
-q:"立体認知ができない状態を何というか答えよ",
-a:"立体失認"
-}
-
-],
-
-"第三回":[
-
-{
-no:"3-1",
-q:"ブラウンセカール症候群とは何か答えよ",
-a:"脊髄半側障害"
-},
-
-{
-no:"3-2",
-q:"病的反射はどの障害で出現するか答えよ",
-a:"錐体路障害"
-},
-
-{
-no:"3-3",
-q:"折りたたみナイフ現象はどの障害で出現するか答えよ",
-a:"錐体路障害"
-},
-
-{
-no:"3-4",
-q:"歯車様現象はどの障害で出現するか答えよ",
-a:"錐体外路障害"
-},
-
-{
-no:"3-5",
-q:"鉛管現象はどの障害で出現するか答えよ",
-a:"錐体外路障害"
-},
-
-{
-no:"3-6",
-q:"錐体路の別名を答えよ",
-a:"皮質脊髄路"
-},
-
-{
-no:"3-7",
-q:"振動覚の求心性線維を答えよ",
-a:"Aβ線維"
-},
-
-{
-no:"3-8",
-q:"位置覚、運動覚、力覚をまとめて何覚というか答えよ",
-a:"固有感覚"
-}
-
-],
-
-"第四回":[
-
-],
-
-"第五回":[
-
-],
-
-"第六回":[
-
-],
-
-"第七回":[
-
-]
-
-};
-
-if(!category || !data[category]){
-
-document.getElementById(
-"quizArea"
-).innerHTML = `
-
-<p>
-
-カテゴリが見つかりません
-
-</p>
-
-`;
-
-throw new Error("カテゴリなし");
-
-}
-
-let quiz = data[category];
 let index = 0;
 let score = 0;
+let answered = false;
 
-function showQuiz(){
+const quizArea = document.getElementById("quizArea");
 
-if(quiz.length === 0){
-
-document.getElementById(
-"title"
-).innerText = category;
-
-document.getElementById(
-"quizArea"
-).innerHTML = `
-
-<p style="text-align:center;margin-top:30px;">
-
-まだ問題がありません
-
-</p>
-
-`;
-
-return;
-
+function normalize(text) {
+  return String(text)
+    .replace(/[\s・、。，,／/「」『』()（）\-‐‑–—]/g, "")
+    .toLowerCase();
 }
 
-if(index >= quiz.length){
+function showQuiz() {
+  answered = false;
 
-document.getElementById(
-"quizArea"
-).innerHTML = `
+  if (index >= questions.length) {
+    showResult();
+    return;
+  }
 
-<h2>
+  const q = questions[index];
 
-終了！
+  quizArea.innerHTML = `
+    <div class="progress">
+      ${index + 1} / ${questions.length} 問
+    </div>
 
-</h2>
+    <div class="questionBox">
+      <div class="number">問題 ${q.no}</div>
+      <div>${q.q}</div>
+    </div>
 
-<div class="score">
+    <input
+      type="text"
+      id="userAnswer"
+      placeholder="答えを入力"
+      autocomplete="off">
 
-${quiz.length}問中
-${score}問正解！
+    <button id="answerButton">回答する</button>
+    <div id="result"></div>
+  `;
 
-</div>
+  document.getElementById("answerButton")
+    .addEventListener("click", checkAnswer);
 
-<button onclick="restart()">
+  document.getElementById("userAnswer")
+    .addEventListener("keydown", function(event) {
+      if (event.key === "Enter") checkAnswer();
+    });
 
-もう一度
-
-</button>
-
-`;
-
-return;
-
+  document.getElementById("userAnswer").focus();
 }
 
-const q = quiz[index];
+function checkAnswer() {
+  if (answered) return;
 
-document.getElementById(
-"title"
-).innerText = category;
+  const q = questions[index];
+  const inputEl = document.getElementById("userAnswer");
+  const userAnswer = inputEl.value.trim();
 
-document.getElementById(
-"quizArea"
-).innerHTML = `
+  if (!userAnswer) {
+    alert("答えを入力してください");
+    return;
+  }
 
-<div class="progress">
+  answered = true;
 
-${index+1} / ${quiz.length}
+  const correct = q.a.some(function(answer) {
+    return normalize(answer) === normalize(userAnswer);
+  });
 
-</div>
+  if (correct) score++;
 
-<div class="questionBox">
+  const result = document.getElementById("result");
 
-<div class="number">
+  result.innerHTML = `
+    <div class="result ${correct ? "correct" : "wrong"}">
+      ${correct ? "⭕ 正解！" : "❌ 不正解"}
+      <br><br>
+      正解例：${q.a[0]}
+      ${correct ? "" : "<br><br>入力した答え：" + escapeHtml(userAnswer)}
+    </div>
 
-問題 ${q.no}
+    <p class="small">
+      ※答えの表記によっては、意味が合っていても不正解になる場合があります。
+    </p>
 
-</div>
+    <button id="nextButton">
+      ${index + 1 === questions.length ? "結果を見る" : "次へ"}
+    </button>
+  `;
 
-<p>
-
-${q.q}
-
-</p>
-
-</div>
-
-<input
-type="text"
-id="userAnswer"
-placeholder="答えを入力"
->
-
-<button onclick="checkAnswer()">
-
-回答する
-
-</button>
-
-<div id="result"></div>
-
-`;
-
+  document.getElementById("nextButton")
+    .addEventListener("click", function() {
+      index++;
+      showQuiz();
+    });
 }
 
-function normalize(text){
-
-return text
-.replace(/\s/g,"")
-.replace(/・/g,"")
-.replace(/、/g,"")
-.replace(/,/g,"")
-.toLowerCase();
-
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, function(char) {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char];
+  });
 }
 
-function checkAnswer(){
+function showResult() {
+  const percent = Math.round(score / questions.length * 100);
 
-const q = quiz[index];
+  quizArea.innerHTML = `
+    <h2 style="text-align:center">一問一答終了！</h2>
 
-const userAnswer =
-document.getElementById(
-"userAnswer"
-).value.trim();
+    <div class="score">
+      ${questions.length}問中 ${score}問正解！
+      <br>
+      正答率：${percent}%
+    </div>
 
-const result =
-document.getElementById(
-"result"
-);
+    <button id="retryButton">もう一度挑戦</button>
+  `;
 
-if(!userAnswer){
-
-alert("入力してください");
-return;
-
-}
-
-const correct =
-normalize(q.a);
-
-const input =
-normalize(userAnswer);
-
-if(correct === input){
-
-score++;
-
-result.innerHTML = `
-
-<div class="result correct">
-
-⭕ 正解！
-
-<br><br>
-
-正解：
-${q.a}
-
-</div>
-
-<button onclick="nextQuestion()">
-
-次へ
-
-</button>
-
-`;
-
-}
-
-else{
-
-result.innerHTML = `
-
-<div class="result wrong">
-
-❌ 不正解
-
-<br><br>
-
-あなたの答え：
-${userAnswer}
-
-<br><br>
-
-正解：
-${q.a}
-
-</div>
-
-<button onclick="nextQuestion()">
-
-次へ
-
-</button>
-
-`;
-
-}
-
-}
-
-function nextQuestion(){
-
-index++;
-
-showQuiz();
-
-}
-
-function restart(){
-
-index = 0;
-score = 0;
-
-showQuiz();
-
+  document.getElementById("retryButton")
+    .addEventListener("click", function() {
+      index = 0;
+      score = 0;
+      showQuiz();
+    });
 }
 
 showQuiz();
-
 </script>
-
 </body>
 </html>
